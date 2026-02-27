@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Твой дневник заботы</title>
     
-    <!-- Динамическая иконка -->
-    <link id="dynamic-apple-icon" rel="apple-touch-icon" href="">
+    <!-- Ссылка на локальную иконку, которую вы загрузите на GitHub -->
+    <link rel="apple-touch-icon" href="apple-icon.png">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Дневник">
@@ -188,32 +189,7 @@
         const START_DATE_15W = new Date('2026-02-27');
         const DUE_DATE = new Date('2026-08-15'); 
         const ANNIVERSARY_DAY = "03-03";
-        const VERSION = "_v15"; 
-
-        // --- ГЕНЕРАТОР ИДЕАЛЬНОЙ ИКОНКИ ДЛЯ IPHONE ---
-        function generateAppleIcon() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 256;
-            canvas.height = 256;
-            const ctx = canvas.getContext('2d');
-            
-            const grad = ctx.createLinearGradient(0, 0, 256, 256);
-            grad.addColorStop(0, '#fff1f2'); 
-            grad.addColorStop(1, '#fecdd3'); 
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, 256, 256);
-            
-            // Жестко задаем шрифты Apple для гарантии отображения эмодзи мишки
-            ctx.font = '120px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('🧸', 128, 140); 
-            
-            const iconLink = document.getElementById('dynamic-apple-icon');
-            if(iconLink) {
-                iconLink.href = canvas.toDataURL('image/png');
-            }
-        }
+        const VERSION = "_v16"; 
 
         // --- БАЗА ТВОИХ ФРАЗ (Более 60 фраз!) ---
         const warmWords = [
@@ -279,7 +255,7 @@
             "Все будет идеально, потому что мы есть друг у друга. 🫂"
         ];
 
-        // --- БАЗА РАЗВИТИЯ МАЛЫША (РАСШИРЕННАЯ) ---
+        // --- БАЗА РАЗВИТИЯ МАЛЫША ---
         const weekData = {
             15: { size: "🍏 Яблоко", facts: ["Малыш уже различает вкус еды, которую ты ешь!", "У него формируются уникальные отпечатки пальцев.", "Он слышит биение твоего сердца.", "Кожа еще очень прозрачная, видны все сосудики.", "Он вовсю тренируется кувыркаться в водах!", "Малыш уже умеет сжимать крохотные кулачки.", "Его ноги стали длиннее рук, пропорции выравниваются.", "У крохи начинают формироваться голосовые связки!", "Сердечко малыша перекачивает около 24 литров крови в сутки.", "Он активно глотает околоплодные воды, тренируя желудок."] },
             16: { size: "🥑 Авокадо", facts: ["Глазки стали чувствительны к яркому свету извне.", "Маленькое сердце качает целых 23 литра крови в день!", "Малыш учится держать спинку и головку ровнее.", "Ушки заняли свое законное место по бокам головы.", "Появились крошечные, но настоящие реснички!", "Малыш начинает чувствовать твои движения и поглаживания.", "Активно формируется костный скелет.", "Кроха уже умеет строить гримасы!", "На пальчиках рук и ног появляются крошечные ноготки.", "Его мышцы лица развиваются, он учится хмуриться."] },
@@ -339,7 +315,6 @@
         }
 
         function init() {
-            generateAppleIcon(); 
             checkStandalone();
             checkDailyReset(); 
             
@@ -525,7 +500,7 @@
         }
 
         function syncData(type, value) {
-            if (!GOOGLE_APP_SCRIPT_URL || GOOGLE_APP_SCRIPT_URL === "ВСТАВЬТЕ_СЮДА_URL_ИЗ_ШАГА_1") return;
+            if (!GOOGLE_APP_SCRIPT_URL || GOOGLE_APP_SCRIPT_URL === "https://script.google.com/macros/s/AKfycbxmi7BZeZLNqMmqyFBOerqedLn8KksYMSSU9oyP0-UBBLnd7Yi49fiJwV5crNdfSNwLRQ/exec") return;
             
             fetch(GOOGLE_APP_SCRIPT_URL, {
                 method: 'POST',
