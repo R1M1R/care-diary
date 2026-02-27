@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Твой дневник заботы</title>
+    
+    <!-- Нежная иконка для рабочего стола iPhone (детские пяточки) -->
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/144/baby-feet.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Дневник">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    
+    <style>
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            background: #fffafa; 
+            min-height: 100vh; 
+            -webkit-tap-highlight-color: transparent; 
+            /* Безопасная зона для iPhone (челка и полоска внизу) */
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .fancy-title { font-family: 'Pacifico', cursive; }
+        .card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .done-task { opacity: 0.45; filter: grayscale(1); transform: scale(0.96); }
+        .done-text { text-decoration: line-through; text-decoration-color: #fda4af; transition: all 0.3s ease; }
+        .glass-effect { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.4); }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .custom-check { appearance: none; width: 28px; height: 28px; border: 2px solid #fda4af; border-radius: 50%; cursor: pointer; position: relative; background: white; transition: all 0.2s; }
+        .custom-check:checked { background-color: #fb7185; border-color: #fb7185; transform: scale(1.1); }
+        .custom-check:checked::after { content: '✓'; color: white; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px; font-weight: bold; }
+        
+        .fade-in { animation: fadeInText 0.8s ease-in; }
+        @keyframes fadeInText { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Стили для кнопки завершения дня */
+        .finish-day-btn { background: linear-gradient(135deg, #fb7185, #f43f5e); transition: all 0.3s ease; }
+        .finish-day-btn:active { transform: scale(0.95); }
+    </style>
+</head>
+<body class="pb-12">
+
+    <div class="max-w-md mx-auto min-h-screen shadow-2xl relative overflow-hidden bg-white flex flex-col">
+        
+        <!-- Header -->
+        <div class="bg-gradient-to-br from-rose-400 via-pink-400 to-orange-300 p-8 text-white text-center relative rounded-b-[2rem] shadow-sm shrink-0">
+            <h1 id="greeting-title" class="fancy-title text-4xl mb-5 animate-float italic drop-shadow-md">Для любимой</h1>
+            
+            <!-- Стрик (дни подряд) -->
+            <div class="absolute top-4 right-6 bg-white/20 px-3 py-1 rounded-full text-[10px] font-bold shadow-sm backdrop-blur-md flex items-center gap-1">
+                🔥 <span id="streak-counter">0</span>
+            </div>
+
+            <div class="glass-effect rounded-2xl p-6 text-gray-800 shadow-lg border border-white/50 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 opacity-10 text-6xl">❤️</div>
+                <p id="personal-message" class="text-sm font-semibold leading-relaxed text-rose-600 fade-in relative z-10 min-h-[3.5em] flex items-center justify-center">
+                    Загружаю мою любовь к тебе...
+                </p>
+            </div>
+            <p id="current-date" class="mt-5 text-[10px] opacity-90 font-bold tracking-widest uppercase"></p>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="flex-grow">
+            <!-- Блок Малыша -->
+            <div class="px-6 -mt-6 relative z-10">
+                <div class="bg-white rounded-[2rem] shadow-xl p-7 border border-pink-50 text-center transition-all hover:shadow-2xl">
+                    <div id="week-title" class="text-[10px] font-bold text-pink-400 uppercase mb-3 tracking-widest">Срок загружается...</div>
+                    <p id="baby-fact" class="text-[13px] text-gray-700 leading-relaxed font-medium min-h-[5em] flex items-center justify-center fade-in italic">Узнаю, что нового у нашего крохи...</p>
+                    <div class="mt-5 flex flex-wrap justify-center gap-2">
+                        <span id="week-badge" class="px-4 py-2 bg-rose-50 rounded-full text-[11px] text-rose-500 font-bold shadow-sm">-- недель</span>
+                        <span id="size-badge" class="px-4 py-2 bg-blue-50 rounded-full text-[11px] text-blue-500 font-bold shadow-sm">Размер: --</span>
+                        <span id="countdown-badge" class="px-4 py-2 bg-purple-50 rounded-full text-[11px] text-purple-500 font-bold shadow-sm hidden">До встречи: -- дн.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вода -->
+            <div class="px-6 mt-8">
+                <div class="bg-gradient-to-br from-sky-50 to-white rounded-[2rem] p-6 border border-sky-100 shadow-sm">
+                    <div class="flex justify-between items-center mb-5 text-[10px] font-bold text-sky-600 uppercase tracking-widest">
+                        <span>Твой водный баланс 💧</span>
+                        <span id="water-count" class="bg-white px-3 py-1 rounded-full shadow-inner text-[11px]">0/8</span>
+                    </div>
+                    <div class="flex justify-between" id="water-tracker"></div>
+                </div>
+            </div>
+
+            <!-- Прогресс -->
+            <div class="px-10 mt-8">
+                <div class="flex justify-between text-[10px] text-gray-400 mb-2 uppercase tracking-widest font-bold">
+                    <span>План заботы</span>
+                    <span id="progress-text">0%</span>
+                </div>
+                <div class="w-full bg-gray-100 rounded-full h-3 shadow-inner overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-pink-400 to-rose-400 h-full rounded-full transition-all duration-1000 relative" style="width: 0%">
+                        <div class="absolute inset-0 bg-white/20 w-full animate-pulse"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Список дел -->
+            <div id="schedule-container" class="p-6 space-y-4"></div>
+
+            <!-- Кнопка Завершения дня -->
+            <div id="finish-day-container" class="px-6 mb-8 hidden fade-in">
+                <button onclick="finishDay()" id="finish-btn" class="w-full py-4 finish-day-btn text-white rounded-[1.5rem] font-bold uppercase tracking-widest shadow-lg shadow-rose-200 flex items-center justify-center space-x-2">
+                    <span class="text-xl">🌟</span>
+                    <span>Завершить день</span>
+                </button>
+                <p id="finish-msg" class="text-center text-xs text-rose-500 font-bold mt-3 hidden">Умничка! Отчет отправлен папе ❤️</p>
+            </div>
+
+            <!-- Настроение -->
+            <div class="px-6 mb-8">
+                <div class="bg-gray-50 rounded-[2rem] p-6 text-center border border-gray-100 shadow-sm">
+                    <h3 class="text-[10px] font-bold text-gray-400 uppercase mb-5 tracking-widest italic font-semibold">Твоё самочувствие сегодня?</h3>
+                    <div class="flex justify-around text-4xl" id="mood-container">
+                        <button onclick="saveMood('😊')" class="hover:scale-125 transition-transform active:scale-90 filter grayscale hover:grayscale-0">😊</button>
+                        <button onclick="saveMood('🥰')" class="hover:scale-125 transition-transform active:scale-90 filter grayscale hover:grayscale-0">🥰</button>
+                        <button onclick="saveMood('🥱')" class="hover:scale-125 transition-transform active:scale-90 filter grayscale hover:grayscale-0">🥱</button>
+                        <button onclick="saveMood('🤢')" class="hover:scale-125 transition-transform active:scale-90 filter grayscale hover:grayscale-0">🤢</button>
+                        <button onclick="saveMood('✨')" class="hover:scale-125 transition-transform active:scale-90 filter grayscale hover:grayscale-0">✨</button>
+                    </div>
+                    <p id="saved-mood" class="mt-5 text-xs text-rose-400 font-bold uppercase tracking-tighter"></p>
+                </div>
+            </div>
+
+            <!-- iPhone Button -->
+            <div id="iphone-promo" class="px-6 pb-6 fade-in">
+                <button onclick="toggleModal(true)" class="w-full py-5 bg-white border-2 border-dashed border-pink-200 rounded-[1.5rem] text-[10px] text-pink-400 font-bold uppercase tracking-widest flex items-center justify-center space-x-3 active:bg-pink-50 hover:border-pink-300 transition-colors">
+                    <span class="text-lg">📱</span>
+                    <span>Как установить на экран iPhone</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Подвал -->
+        <div class="shrink-0 pt-2 pb-10 text-center opacity-80 mt-auto">
+            <div class="inline-flex items-center justify-center space-x-2 mb-2">
+                <span class="h-px w-8 bg-pink-200"></span>
+                <p class="text-[9px] text-pink-400 font-bold uppercase tracking-[0.2em]">Сделано с бесконечной любовью</p>
+                <span class="h-px w-8 bg-pink-200"></span>
+            </div>
+            <p class="text-[9px] text-gray-400 tracking-wider">Твой личный помощник • 2026</p>
+        </div>
+    </div>
+
+    <!-- Модалка инструкции -->
+    <div id="modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-8 backdrop-blur-sm" onclick="toggleModal(false)">
+        <div class="bg-white rounded-[2.5rem] p-10 max-w-sm w-full space-y-8 shadow-2xl transform transition-all" onclick="event.stopPropagation()">
+            <h3 class="font-bold text-2xl text-center text-gray-800 italic">На экран iPhone 📱</h3>
+            <ol class="space-y-5 text-sm text-gray-600 font-medium">
+                <li class="flex items-center space-x-4 bg-gray-50 p-3 rounded-2xl">
+                    <span class="bg-rose-100 text-rose-500 rounded-full w-8 h-8 flex items-center justify-center font-bold shadow-sm">1</span>
+                    <span>Открой ссылку в <b>Safari</b></span>
+                </li>
+                <li class="flex items-center space-x-4 bg-gray-50 p-3 rounded-2xl">
+                    <span class="bg-rose-100 text-rose-500 rounded-full w-8 h-8 flex items-center justify-center font-bold shadow-sm">2</span>
+                    <span>Нажми <b>«Поделиться»</b> (квадратик со стрелкой ⬆️)</span>
+                </li>
+                <li class="flex items-center space-x-4 bg-gray-50 p-3 rounded-2xl">
+                    <span class="bg-rose-100 text-rose-500 rounded-full w-8 h-8 flex items-center justify-center font-bold shadow-sm">3</span>
+                    <span>Выбери <b>«На экран „Домой“»</b></span>
+                </li>
+            </ol>
+            <p class="text-xs text-center text-gray-400 italic mt-2">После установки эта кнопка-подсказка исчезнет сама ✨</p>
+            <button onclick="toggleModal(false)" class="w-full py-5 bg-gradient-to-r from-rose-400 to-pink-400 text-white rounded-[1.5rem] font-bold shadow-lg shadow-pink-200 uppercase text-xs tracking-widest active:scale-95 transition-transform">Все понятно!</button>
+        </div>
+    </div>
+
+    <script>
+        // === ВСТАВЬТЕ ССЫЛКУ ИЗ GOOGLE APPS SCRIPT СЮДА ===
+        const GOOGLE_APP_SCRIPT_URL = "ВСТАВЬТЕ_СЮДА_URL_ИЗ_ШАГА_1";
+        
+        // --- ОСНОВНЫЕ НАСТРОЙКИ ---
+        const START_DATE_15W = new Date('2026-02-27');
+        const DUE_DATE = new Date('2026-08-15'); 
+        const ANNIVERSARY_DAY = "03-03";
+        const VERSION = "_v13"; 
+
+        // --- БАЗА ТВОИХ ФРАЗ ---
+        const warmWords = [
+            "Я тебя люблю, даже если ты козявка та еще! ❤️",
+            "Ты мой эмоциональный ёжик! Я всегда с тобой и думаю о тебе, даже когда злюсь! 🦔",
+            "Ты самая красивая будущая мамочка во всей Вселенной. ✨",
+            "Я готов бежать за клубникой или шаурмой в 3 ночи, только намекни! 🌯",
+            "Помни: ты делаешь невероятное чудо прямо сейчас — растишь новую жизнь. 🌟",
+            "Я всегда рядом, чтобы обнять, поцеловать и принести вкусняшку. 🍫",
+            "Нашему малышу безумно повезло с такой мамой, а мне — с такой женой. 🥰",
+            "Твоя улыбка делает мой день. Улыбнись прямо сейчас! 😊",
+            "Даже когда ты капризничаешь, для меня ты всё равно самая идеальная.",
+            "Ты — моё сокровище. Береги себя и наш маленький космос внутри. 💎",
+            "Я уже представляю, как мы будем вместе гулять с коляской... Я так счастлив! 👣",
+            "Обещаю массировать тебе ножки столько, сколько потребуется! 🦶",
+            "Ты потрясающе справляешься. Горжусь каждой минутой твоей выдержки. 👑",
+            "Малыш внутри тебя точно делает сальто от радости, слыша твой голос! 🤸‍♂️",
+            "Моя любовь к тебе растет так же быстро, как наш малыш. 📈",
+            "Ты мой самый любимый человек. А скоро вас станет двое самых любимых! 👨‍👩‍👦",
+            "Дыши глубоко, ты в безопасности, я всё контролирую. Люблю тебя. 🛡️",
+            "Никакие гормоны не изменят того факта, что ты — любовь всей моей жизни. 🧬",
+            "Просто знай, что я думаю о тебе каждую секунду, пока мы не вместе. ⏳",
+            "Моя милая, нежная, самая лучшая девочка. Всё будет хорошо! 🌸",
+            "Даже если ты сейчас хочешь убивать, я поднесу тебе патроны. Люблю тебя! 🦖",
+            "Твоё здоровье и спокойствие — мой главный приоритет. 🧘‍♀️",
+            "Ты выглядишь прекрасно даже в домашней пижаме и с растрепанными волосами. 🎀",
+            "Я счастлив, что именно ты станешь мамой моего ребенка. 🐣",
+            "Каждый день благодарю судьбу за то, что мы расписались в тот самый день. 💍",
+            "Скоро мы услышим первый смех нашего малыша. Ради этого стоит потерпеть! 🍼",
+            "Твои глаза светятся по-особенному. Это магия материнства. ✨",
+            "Если тебе тяжело, просто скажи. Я возьму всё на себя. 🦸‍♂️",
+            "Ты мой личный супергерой, выращивающий человека с нуля! 🦸‍♀️",
+            "Не забывай, какая ты сильная. Я бесконечно верю в тебя. 💪",
+            "Ты — смысл моей жизни. А теперь этот смысл умножается на два! ✖️2",
+            "Люблю тебя от Земли до Луны, до самых дальних звезд и обратно! 🚀",
+            "Каждый твой каприз для меня — закон (ну, почти каждый 😅). 📜",
+            "Спасибо тебе за то, что терпишь тошноту, таблетки и усталость ради нас. 🙏",
+            "Ты не одна в этом пути. Мы идем через всё это вместе, за руку. 🤝",
+            "Малыш, наверное, там думает: «Ого, какая у меня классная мама!» 💭",
+            "Я восхищаюсь твоим терпением и твоей красотой. 😍",
+            "Пусть сегодняшний день принесет тебе только радость и легкость. ☀️",
+            "Даже не думай сомневаться в себе — ты уже лучшая мама на свете! 🏆",
+            "Крепко-крепко обнимаю тебя через этот экран! 🤗",
+            "Ты — мой дом, моя семья, моё всё. ❤️"
+        ];
+
+        // --- БАЗА РАЗВИТИЯ МАЛЫША ---
+        const weekData = {
+            15: { size: "🍏 Яблоко", facts: ["Малыш уже различает вкус еды, которую ты ешь!", "У него формируются уникальные отпечатки пальцев.", "Он слышит биение твоего сердца.", "Кожа еще очень прозрачная, видны все сосудики.", "Он вовсю тренируется кувыркаться в водах!", "Малыш уже умеет сжимать крохотные кулачки.", "Его ноги стали длиннее рук, пропорции выравниваются."] },
+            16: { size: "🥑 Авокадо", facts: ["Глазки стали чувствительны к яркому свету извне.", "Маленькое сердце качает целых 23 литра крови в день!", "Малыш учится держать спинку и головку ровнее.", "Ушки заняли свое законное место по бокам головы.", "Появились крошечные, но настоящие реснички!", "Малыш начинает чувствовать твои движения и поглаживания.", "Активно формируется костный скелет."] },
+            17: { size: "🍐 Груша", facts: ["Появляется 'коричневый жир' — он будет согревать малыша после родов.", "Малыш учится сосать палец, тренируя важный рефлекс.", "Плацента растет вместе с ним, обеспечивая питанием.", "Развиваются потовые железы под кожей.", "Появляется первая реакция на громкие звуки.", "Малыш активно глотает амниотическую жидкость.", "Развиваются и крепнут суставы."] },
+            18: { size: "🍠 Батат", facts: ["Малыш уже умеет зевать и смешно икать.", "Слух становится острее — самое время слушать музыку!", "Его отпечатки пальцев теперь окончательно сформированы.", "Он активно двигается, особенно когда ты отдыхаешь.", "Малыш может прикрывать ушки руками от резких звуков.", "Кости становятся тверже, хрящи костенеют.", "Формируются зачатки коренных зубов."] },
+            19: { size: "🥭 Манго", facts: ["Тело покрывается защитной сыровидной смазкой.", "Малыш очень активно кувыркается, места еще много.", "Мозг выделяет специальные зоны для всех пяти чувств.", "Его почки уже полноценно производят мочу.", "На голове начинают расти первые настоящие волосы.", "Он начинает понимать интонацию твоего голоса.", "Запускается в работу его собственная иммунная система."] },
+            20: { size: "🍌 Банан", facts: ["Экватор! Поздравляю, ровно половина пути пройдена.", "У крохи уже хорошо видны брови.", "Малыш начинает различать время суток (утро и вечер).", "Сердцебиение теперь можно услышать обычным стетоскопом.", "Он глотает воду, тренируя пищеварительный тракт.", "У него уже формируются вкусовые предпочтения.", "Кожа становится плотнее, образуется эпидермис."] },
+            21: { size: "🍈 Гранат", facts: ["Малыш чувствует твои прикосновения к животу через стенку.", "Движения стали четкими и скоординированными.", "Появились ярко выраженные периоды сна и бодрствования.", "Активно развиваются легкие для будущего дыхания.", "Малыш уже довольно крупный, около 27 см в длину!", "Рецепторы на языке полностью сформированы.", "Он любит, когда с ним ласково разговаривают."] },
+            22: { size: "🥥 Кокос", facts: ["Глазки сформированы, но радужка пока без пигмента (цвета).", "Малыш уже может чувствовать запахи!", "Он активно тренирует дыхательные движения грудной клеткой.", "Развивается тактильная чувствительность по всему телу.", "В деснах сформировались все зачатки молочных зубов.", "Малыш начинает накапливать подкожный жирок.", "Он может хмуриться и строить гримасы."] },
+            23: { size: "Грейпфрут", facts: ["Малыш запоминает звуки, которые слышит часто (например, голос папы).", "Поджелудочная железа начинает вырабатывать собственный инсулин.", "Кожа становится менее прозрачной и приобретает красноватый оттенок.", "Он буквально пританцовывает под ритмичную музыку!", "Ногти на пальчиках почти доросли до края.", "Кости продолжают активно накапливать кальций.", "Малыш заглатывает сахара из околоплодных вод."] },
+            24: { size: "🌽 Кукуруза", facts: ["С этой недели малыш считается жизнеспособным вне утробы!", "В легких вырабатывается сурфактант — вещество, не дающее им слипнуться.", "Он активно тренирует легкие, совершая до 60 вдохов в минуту.", "У него появляются полноценные фазы быстрого и медленного сна.", "Малыш реагирует на свет, направленный на живот.", "Слух настолько развит, что он различает тембр голоса.", "Он становится пухлее."] },
+            25: { size: "🥦 Цветная капуста", facts: ["Его кулачки уже достаточно сильные, чтобы ухватиться за пуповину.", "Цвет волос уже определяется, хотя они еще очень мягкие.", "Малыш начинает ориентироваться в пространстве: где верх, а где низ.", "В легких формируются кровеносные сосуды.", "Кости становятся всё более прочными.", "Он может вздрагивать от неожиданности.", "Его сердце бьется с частотой около 140 ударов в минуту."] },
+            26: { size: "🥬 Кочан салата", facts: ["Малыш начинает понемногу открывать глазки!", "Он уже умеет осознанно моргать.", "Реакция на звуки становится практически мгновенной.", "Его мозг теперь контролирует температуру тела.", "Сетчатка глаза начинает формироваться окончательно.", "Он активно пинается, если ему неудобна твоя поза.", "Его вес перевалил за 800 граммов."] },
+            27: { size: "🍈 Дыня канталупа", facts: ["Мозг малыша начинает работать ритмично, как у новорожденного.", "Представляешь, он уже видит сны!", "Его вес сейчас стремительно растет каждый день.", "Печень и селезенка активно работают.", "Он может икать от того, что наглотался вод (ты это почувствуешь).", "Легкие продолжают созревать.", "Малыш уже очень похож на того, каким родится."] },
+            28: { size: "🍆 Баклажан", facts: ["Поздравляю, начинается третий триместр!", "Малыш уже умеет кашлять.", "Его реснички стали длинными и очень красивыми.", "Зрение улучшается, он видит размытые тени.", "Мозг покрывается извилинами и бороздами.", "Он накапливает железо, кальций и другие минералы.", "Малышу становится тесновато крутиться."] },
+            29: { size: "🎃 Маленькая тыква", facts: ["Малыш уже может сам регулировать температуру своего тела.", "Его мозг уже может контролировать дыхательные центры.", "Он становится очень любознательным и трогает всё вокруг.", "Кожа разглаживается благодаря растущему жирку.", "Кости впитывают до 250 мг кальция в день!", "Он реагирует на сладкое, которое ты ешь, активными толчками.", "Скелет уже полностью сформирован."] },
+            30: { size: "🥦 Крупная капуста", facts: ["Малыш уже видит свет сквозь кожу твоего живота.", "Его костный мозг теперь полностью взял на себя выработку крови.", "Он становится более избирательным: если вкус вод не нравится, глотает меньше.", "Начинает постепенно исчезать пушок (лануго) с тела.", "Головной мозг стремительно увеличивается в объеме.", "Он спит около 15-16 часов в сутки.", "Пиночки становятся очень сильными."] },
+            31: { size: "🥥 Помело", facts: ["Малыш уже может поворачивать голову из стороны в сторону.", "Его органы чувств (обоняние, зрение, вкус, слух) работают отлично.", "Он активно набирает подкожный белый жир.", "Зрачки могут расширяться и сужаться на свет.", "Ногти доросли до самых кончиков пальцев.", "Ему всё сложнее делать сальто.", "Он готовится к финальному рывку в росте."] },
+            32: { size: "🍍 Ананас", facts: ["Скорее всего, малыш уже занял положение головой вниз для родов.", "Его кожа становится гладкой, нежной и розовой.", "Он уже видит всё в цвете!", "Под кожей накопилось достаточно жира, он больше не сморщенный.", "Иммунитет малыша укрепляется.", "Он забирает у тебя много белка для роста мышц.", "Кости черепа остаются мягкими — так нужно для родов."] },
+            33: { size: "🍈 Средняя дыня", facts: ["Его иммунная система активно получает антитела от тебя.", "У малыша уже есть свой режим дня, который ты наверняка знаешь.", "Он внимательно слушает, когда ты читаешь ему сказки.", "Количество околоплодных вод достигло максимума.", "Его мозг развит настолько, что он может связывать звук и свет.", "Сурфактанта в легких уже достаточно для дыхания.", "Он набирает около 200 граммов в неделю."] },
+            34: { size: "Мускусная дыня", facts: ["Малыш почти полностью готов к встрече, но еще копит силы.", "Его почки уже работают на 100%, очищая кровь.", "Он очень любит, когда ты или папа гладите животик.", "Слух стал идеальным.", "Запускается работа эндокринной системы на полную мощность.", "Его кишечник заполняется меконием (первородным калом).", "Свободного места почти не осталось."] },
+            35: { size: "Медовая дыня", facts: ["Ему очень тесно, поэтому он больше толкается и вытягивается, чем крутится.", "Его печень уже может самостоятельно перерабатывать отходы.", "Он уже совсем как новорожденный, только немного худее.", "Слой защитной смазки становится толще.", "Малыш опускается ниже в таз (живот может 'опуститься').", "Легкие практически полностью созрели.", "Он копит железо для первых месяцев жизни."] },
+            36: { size: "🍉 Арбуз", facts: ["С конца этой недели малыш официально считается доношенным!", "Его щечки стали очаровательно пухлыми.", "Он копит энергию для своего главного путешествия в этот мир.", "Черепные кости подвижны, чтобы пройти через родовые пути.", "Пищеварительная система полностью готова к молоку.", "Его вес может быть уже больше 2.5 кг.", "Он чутко реагирует на твое настроение."] },
+            37: { size: "Зимняя дыня", facts: ["Малыш активно тренирует сосательный рефлекс, посасывая пальчик.", "Его моторика рук развита так, что он может крепко схватить пуповину.", "Он ждет встречи с вами!", "В кишечнике сформировались ворсинки для впитывания пищи.", "Сыровидная смазка осталась только в складочках кожи.", "Гормоны малыша готовы запустить процесс родов.", "Он дышит амниотической жидкостью очень ритмично."] },
+            38: { size: "Крупный арбуз", facts: ["Все системы органов работают на 100%. Мы на финишной прямой!", "Цвет глаз у него сейчас темно-синий или карий, он может измениться позже.", "Он уже очень тяжеленький и сильный.", "У него выросли длинные ноготки, он даже может себя поцарапать.", "Малыш получает через плаценту иммуноглобулины.", "Объем околоплодных вод начинает понемногу уменьшаться.", "Он замер в ожидании."] },
+            39: { size: "🎃 Тыква", facts: ["Плацента продолжает снабжать его всем необходимым до последней секунды.", "Малыш очень спокойный перед стартом, копит силы.", "Мы почти у цели, роды могут начаться в любой день!", "Грудная клетка стала выпуклой.", "Его кожа стала бледно-розовой.", "Все органы чувств работают как у взрослого.", "Он готов к встрече с мамой и папой."] },
+            40: { size: "Огромный арбуз", facts: ["ПДР! Малыш абсолютно готов увидеть этот прекрасный мир.", "С Днем Рождения! (Или совсем-совсем скоро).", "Я люблю вас обоих бесконечно, мы справимся со всем!", "Его вес обычно от 3 до 4 кг.", "Длина тела около 50-54 см.", "В его теле сейчас около 300 костей (у взрослого 206).", "Он ждет твоего первого поцелуя!"] }
+        };
+
+        const allTasks = [
+            { id: 'elevit', time: '08:30', name: 'Элевит 2', dose: '1 капс.', icon: '☀️' },
+            { id: 'trih_1', time: '13:30', name: 'Трихопол', dose: '💊💊 2 табл.', icon: '🌿', endDate: '2026-03-04' },
+            { id: 'iron', time: '16:30', name: 'Мультизан Феррум Л', dose: '1 табл.', icon: '💎' },
+            { id: 'trih_2', time: '19:30', name: 'Трихопол', dose: '💊💊 2 табл.', icon: '🌸', endDate: '2026-03-04' },
+            { id: 'magnes', time: '21:30', name: 'КардиоМагнил', dose: '1 табл.', icon: '🌙' },
+            { id: 'nata', time: '23:00', name: 'Натацин', dose: 'свеча', icon: '✨', endDate: '2026-03-11' }
+        ];
+
+        function getDailyTasks() {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            return allTasks.filter(t => {
+                if (!t.endDate) return true;
+                const parts = t.endDate.split('-');
+                const endDateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+                return today <= endDateObj;
+            });
+        }
+
+        function checkStandalone() {
+            const promo = document.getElementById('iphone-promo');
+            if (window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches) {
+                promo.style.display = 'none';
+            }
+        }
+
+        function init() {
+            checkStandalone();
+            checkDailyReset(); 
+            
+            const now = new Date();
+            renderDate();
+            updateGreeting();
+            updatePregnancyInfo(now);
+            checkAnniversary(now);
+            renderWater();
+            renderSchedule();
+            loadMood();
+            loadStreak();
+            
+            const randomWord = warmWords[Math.floor(Math.random() * warmWords.length)];
+            document.getElementById('personal-message').innerHTML = `«${randomWord}»`;
+        }
+
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            let greeting = "Для любимой";
+            if (hour >= 5 && hour < 12) greeting = "Доброе утро, любимая!";
+            else if (hour >= 12 && hour < 18) greeting = "Добрый день, любимая!";
+            else if (hour >= 18 && hour < 23) greeting = "Добрый вечер, родная!";
+            else greeting = "Доброй ночи, милая!";
+            document.getElementById('greeting-title').innerText = greeting;
+        }
+
+        function updatePregnancyInfo(now) {
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const start = new Date(START_DATE_15W.getFullYear(), START_DATE_15W.getMonth(), START_DATE_15W.getDate());
+            const diffDays = Math.round((today - start) / (1000 * 60 * 60 * 24));
+            
+            let week = 15 + Math.floor(diffDays / 7);
+            if (week > 40) week = 40;
+            if (week < 15) week = 15;
+            
+            document.getElementById('week-title').innerText = `Идет ${week}-я неделя`;
+            document.getElementById('week-badge').innerText = `${week} недель`;
+            
+            const data = weekData[week] || weekData[15];
+            document.getElementById('size-badge').innerText = `Размер: ${data.size}`;
+            
+            const randomFact = data.facts[Math.floor(Math.random() * data.facts.length)];
+            document.getElementById('baby-fact').innerText = randomFact;
+
+            const daysLeft = Math.ceil((DUE_DATE - now) / (1000 * 60 * 60 * 24));
+            if (daysLeft > 0) {
+                document.getElementById('countdown-badge').innerText = `До встречи: ~${daysLeft} дн.`;
+                document.getElementById('countdown-badge').classList.remove('hidden');
+            } else {
+                document.getElementById('countdown-badge').classList.add('hidden');
+            }
+        }
+
+        function checkAnniversary(now) {
+            const md = `${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+            if (md === ANNIVERSARY_DAY) {
+                document.getElementById('personal-message').innerHTML = "✨ <b>С нашей Годовщиной!</b> ✨<br>В этот день мы стали мужем и женой. Я люблю тебя и наше чудо бесконечно!";
+                confetti({ particleCount: 250, spread: 90, origin: { y: 0.5 }, colors: ['#fb7185', '#ffffff', '#ff9a9e', '#fca5a5'] });
+            }
+        }
+
+        function renderDate() {
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            document.getElementById('current-date').innerText = new Date().toLocaleDateString('ru-RU', options);
+        }
+
+        function renderWater() {
+            const container = document.getElementById('water-tracker');
+            const state = JSON.parse(localStorage.getItem('water' + VERSION) || '[]');
+            container.innerHTML = Array.from({length:8}).map((_,i) => `
+                <button onclick="toggleWater(${i})" class="text-3xl transition-all duration-300 active:scale-75 ${state.includes(i) ? 'opacity-100 scale-110 drop-shadow-md' : 'opacity-20 grayscale hover:opacity-50'}">💧</button>
+            `).join('');
+            document.getElementById('water-count').innerText = `${state.length}/8`;
+        }
+
+        function toggleWater(i) {
+            let state = JSON.parse(localStorage.getItem('water' + VERSION) || '[]');
+            state.includes(i) ? state = state.filter(x => x !== i) : state.push(i);
+            localStorage.setItem('water' + VERSION, JSON.stringify(state));
+            renderWater();
+            syncData('Вода (лайв)', state.length + ' стак.');
+        }
+
+        function renderSchedule() {
+            const container = document.getElementById('schedule-container');
+            const state = JSON.parse(localStorage.getItem('tasks' + VERSION) || '{}');
+            const currentTasks = getDailyTasks();
+
+            container.innerHTML = currentTasks.map(t => `
+                <label class="flex items-center p-6 bg-white rounded-[2rem] border border-pink-50 shadow-sm card hover:shadow-md cursor-pointer ${state[t.id] ? 'done-task' : ''}">
+                    <input type="checkbox" class="custom-check shadow-sm shrink-0" ${state[t.id] ? 'checked' : ''} onchange="toggleTask('${t.id}')">
+                    <div class="ml-5 flex-1 text-left">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] font-bold text-gray-300 uppercase">${t.time}</span>
+                            <span class="text-2xl">${t.icon}</span>
+                        </div>
+                        <h3 class="font-bold text-[15px] ${state[t.id] ? 'text-gray-400 done-text' : 'text-gray-700'}">${t.name} <span class="font-normal text-gray-400 text-sm ml-1">(${t.dose})</span></h3>
+                    </div>
+                </label>
+            `).join('');
+            updateProgress();
+        }
+
+        function toggleTask(id) {
+            const state = JSON.parse(localStorage.getItem('tasks' + VERSION) || '{}');
+            state[id] = !state[id];
+            localStorage.setItem('tasks' + VERSION, JSON.stringify(state));
+            renderSchedule();
+            
+            const taskName = allTasks.find(t => t.id === id).name;
+            syncData('Лекарства (лайв)', taskName + (state[id] ? ': Принято ✅' : ': Отмена ❌'));
+        }
+
+        function updateProgress() {
+            const state = JSON.parse(localStorage.getItem('tasks' + VERSION) || '{}');
+            const currentTasks = getDailyTasks();
+            
+            let done = 0;
+            currentTasks.forEach(t => { if (state[t.id]) done++; });
+
+            const p = currentTasks.length === 0 ? 100 : Math.round((done / currentTasks.length) * 100);
+            
+            document.getElementById('progress-bar').style.width = p + '%';
+            document.getElementById('progress-text').innerText = p + '% готово';
+
+            const finishContainer = document.getElementById('finish-day-container');
+            const isFinishedToday = localStorage.getItem('finished_today' + VERSION) === 'true';
+
+            if (p === 100 && !isFinishedToday && currentTasks.length > 0) {
+                finishContainer.classList.remove('hidden');
+                document.getElementById('finish-btn').classList.remove('hidden');
+                document.getElementById('finish-msg').classList.add('hidden');
+            } else if (isFinishedToday) {
+                finishContainer.classList.remove('hidden');
+                document.getElementById('finish-btn').classList.add('hidden');
+                document.getElementById('finish-msg').classList.remove('hidden');
+            } else {
+                finishContainer.classList.add('hidden');
+            }
+        }
+
+        function finishDay() {
+            localStorage.setItem('finished_today' + VERSION, 'true');
+            
+            let streak = parseInt(localStorage.getItem('streak' + VERSION) || '0');
+            streak++;
+            localStorage.setItem('streak' + VERSION, streak.toString());
+            loadStreak();
+
+            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#fb7185', '#a78bfa', '#34d399', '#fcd34d'] });
+            
+            document.getElementById('finish-btn').classList.add('hidden');
+            document.getElementById('finish-msg').classList.remove('hidden');
+
+            const waterCount = JSON.parse(localStorage.getItem('water' + VERSION) || '[]').length;
+            const mood = localStorage.getItem('mood' + VERSION) || 'Не указано';
+            
+            const finalReport = `Лекарства: 100% ✅ | Вода: ${waterCount}/8 💧 | Настроение: ${mood} | Стрик: ${streak} 🔥`;
+            syncData('ИТОГ ДНЯ 🌟', finalReport);
+        }
+
+        function loadStreak() {
+            const streak = localStorage.getItem('streak' + VERSION) || '0';
+            document.getElementById('streak-counter').innerText = streak;
+        }
+
+        function saveMood(emoji) {
+            localStorage.setItem('mood' + VERSION, emoji);
+            document.getElementById('saved-mood').innerText = `Твоё настроение: ${emoji}`;
+            
+            if(emoji === '😊' || emoji === '🥰' || emoji === '✨') {
+                confetti({ particleCount: 50, spread: 50, origin: { y: 0.9 }, colors: ['#fbbf24', '#fb7185'] });
+            }
+            syncData('Настроение (лайв)', emoji);
+        }
+
+        function loadMood() {
+            const m = localStorage.getItem('mood' + VERSION);
+            if (m) document.getElementById('saved-mood').innerText = `Твоё настроение: ${m}`;
+        }
+
+        // --- ФУНКЦИЯ ОТПРАВКИ ДАННЫХ В GOOGLE ---
+        function syncData(type, value) {
+            if (!GOOGLE_APP_SCRIPT_URL || GOOGLE_APP_SCRIPT_URL === "https://script.google.com/macros/s/AKfycbxmi7BZeZLNqMmqyFBOerqedLn8KksYMSSU9oyP0-UBBLnd7Yi49fiJwV5crNdfSNwLRQ/exec") return;
+            
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Важно для обхода блокировок CORS с GitHub
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ type: type, value: value })
+            }).catch(e => console.error("Ошибка синхронизации", e));
+        }
+
+        function checkDailyReset() {
+            const d = new Date().toDateString();
+            if (localStorage.getItem('last' + VERSION) !== d) {
+                if (localStorage.getItem('finished_today' + VERSION) !== 'true' && localStorage.getItem('last' + VERSION)) {
+                    localStorage.setItem('streak' + VERSION, '0');
+                }
+                localStorage.setItem('tasks' + VERSION, '{}');
+                localStorage.setItem('water' + VERSION, '[]');
+                localStorage.setItem('mood' + VERSION, '');
+                localStorage.setItem('finished_today' + VERSION, 'false');
+                localStorage.setItem('last' + VERSION, d);
+            }
+        }
+
+        function toggleModal(s) { document.getElementById('modal').classList.toggle('hidden', !s); }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
