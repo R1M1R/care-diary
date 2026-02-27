@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Твой дневник заботы</title>
     
-    <!-- Нежная иконка для рабочего стола iPhone (детские пяточки) -->
-    <link rel="apple-touch-icon" href="https://img.icons8.com/color/144/baby-feet.png">
+    <!-- Динамическая иконка (будет заменена скриптом на идеальную непрозрачную картинку для iOS) -->
+    <link id="dynamic-apple-icon" rel="apple-touch-icon" href="">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Дневник">
@@ -182,7 +182,35 @@
         const START_DATE_15W = new Date('2026-02-27');
         const DUE_DATE = new Date('2026-08-15'); 
         const ANNIVERSARY_DAY = "03-03";
-        const VERSION = "_v13"; 
+        const VERSION = "_v14"; 
+
+        // --- ГЕНЕРАТОР ИДЕАЛЬНОЙ ИКОНКИ ДЛЯ IPHONE ---
+        function generateAppleIcon() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            
+            // Заливаем красивым пастельным градиентом (Без прозрачности! Айфон не сделает фон черным)
+            const grad = ctx.createLinearGradient(0, 0, 256, 256);
+            grad.addColorStop(0, '#fff1f2'); // Очень нежный розовый
+            grad.addColorStop(1, '#fecdd3'); // Чуть более насыщенный пудровый
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 256, 256);
+            
+            // Рисуем милого эстетичного мишку по центру
+            ctx.font = '130px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            // Можно поменять '🧸' на '🤍' или '👣'
+            ctx.fillText('🧸', 128, 145); // 145 вместо 128 для визуального выравнивания
+            
+            // Вставляем сгенерированную картинку прямо в <head>
+            const iconLink = document.getElementById('dynamic-apple-icon');
+            if(iconLink) {
+                iconLink.href = canvas.toDataURL('image/png');
+            }
+        }
 
         // --- БАЗА ТВОИХ ФРАЗ ---
         const warmWords = [
@@ -288,6 +316,7 @@
         }
 
         function init() {
+            generateAppleIcon(); // Генерируем идеальную иконку до загрузки остального
             checkStandalone();
             checkDailyReset(); 
             
