@@ -16,299 +16,366 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --bg-gradient: #f4f7f9;
-            --card-bg: #ffffff;
-            --card-border: #e2e8f0;
+            --bg-base: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(255, 255, 255, 0.6);
             --accent-color: #fb7185;
             --accent-light: #fff1f2;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --nav-bg: rgba(255, 255, 255, 0.95);
-            --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.03);
-            --shadow-md: 0 12px 35px rgba(251, 113, 133, 0.12);
+            --shadow-sm: 0 8px 32px rgba(251, 113, 133, 0.05);
+            --shadow-md: 0 12px 35px rgba(251, 113, 133, 0.15);
             --gradient-header: linear-gradient(135deg, #fda4af 0%, #fecdd3 100%);
-            --divider: #f1f5f9;
+            --divider: rgba(241, 245, 249, 0.8);
             --font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+            --glass-blur: blur(20px);
         }
 
         [data-theme="dark"] {
-            --bg-gradient: #0f172a;
-            --card-bg: #1e293b;
-            --card-border: #334155;
+            --bg-base: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.85);
+            --card-border: rgba(255, 255, 255, 0.05);
             --accent-color: #fb7185;
-            --accent-light: #33232c;
+            --accent-light: rgba(251, 113, 133, 0.1);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --nav-bg: rgba(15, 23, 42, 0.95);
-            --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.2);
-            --shadow-md: 0 12px 35px rgba(0, 0, 0, 0.4);
+            --shadow-sm: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 12px 35px rgba(0, 0, 0, 0.5);
             --gradient-header: linear-gradient(135deg, #33232c 0%, #1e293b 100%);
-            --divider: #334155;
+            --divider: rgba(51, 65, 85, 0.8);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Nunito', sans-serif; background: var(--bg-gradient); color: var(--text-main);
-            margin: 0; padding: 0; transition: background 0.4s ease, color 0.4s ease;
+            font-family: 'Nunito', sans-serif; background-color: var(--bg-base); color: var(--text-main);
+            margin: 0; padding: 0; transition: background-color 0.5s ease, color 0.5s ease;
             padding-bottom: 120px; min-height: 100vh;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden; position: relative;
+        }
+
+        /* --- ЖИВОЙ ФОН (AMBIENT BLOBS) --- */
+        .ambient-blob {
+            position: fixed; border-radius: 50%; filter: blur(60px); z-index: -1; opacity: 0.6;
+            animation: floatBlob 20s infinite ease-in-out alternate; pointer-events: none;
+        }
+        .blob-1 { width: 300px; height: 300px; background: rgba(251, 113, 133, 0.3); top: -10%; left: -10%; }
+        .blob-2 { width: 400px; height: 400px; background: rgba(56, 189, 248, 0.2); bottom: 10%; right: -20%; animation-delay: -5s; animation-duration: 25s;}
+        [data-theme="dark"] .blob-1 { background: rgba(251, 113, 133, 0.15); }
+        [data-theme="dark"] .blob-2 { background: rgba(56, 189, 248, 0.1); }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            50% { transform: translate(50px, 30px) scale(1.1) rotate(180deg); }
+            100% { transform: translate(-20px, 60px) scale(0.9) rotate(360deg); }
         }
 
         .fancy-title { font-family: 'Pacifico', cursive; font-weight: 400; }
         .handwritten { font-family: 'Caveat', cursive; font-size: 26px; line-height: 1.4; letter-spacing: 0.5px;}
-        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
+        .container { padding: 20px; max-width: 600px; margin: 0 auto; position: relative; z-index: 1;}
         h1, h2, h3, h4 { margin-top: 0; color: var(--text-main); line-height: 1.2; }
         .text-accent { color: var(--accent-color); }
-        .emoji { font-family: var(--font-emoji); }
+        .emoji { font-family: var(--font-emoji); display: inline-block; vertical-align: middle; line-height: 1; }
 
-        /* Универсальные карточки */
+        .section-title { font-weight: 900; font-size: 24px; color: var(--text-main); display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .section-title.center { justify-content: center; }
+        .section-icon { font-size: 34px; line-height: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+
+        /* Универсальные карточки (Glassmorphism) */
         .card {
-            background: var(--card-bg);
+            background: var(--card-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--card-border); border-radius: 32px; padding: 28px;
-            margin-bottom: 24px; box-shadow: var(--shadow-sm); transition: all 0.3s ease;
+            margin-bottom: 24px; box-shadow: var(--shadow-sm); transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative; overflow: hidden;
-            animation: cardFadeIn 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) backwards;
+            animation: cardFadeIn 0.7s cubic-bezier(0.165, 0.84, 0.44, 1) backwards;
         }
-        @keyframes cardFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .card:nth-child(1) { animation-delay: 0.1s; }
-        .card:nth-child(2) { animation-delay: 0.2s; }
-        .card:nth-child(3) { animation-delay: 0.3s; }
-        .card:nth-child(4) { animation-delay: 0.4s; }
-        .card:nth-child(5) { animation-delay: 0.5s; }
+        .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+        @keyframes cardFadeIn { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        
+        .card:nth-child(1) { animation-delay: 0.05s; } .card:nth-child(2) { animation-delay: 0.15s; }
+        .card:nth-child(3) { animation-delay: 0.25s; } .card:nth-child(4) { animation-delay: 0.35s; }
+        .card:nth-child(5) { animation-delay: 0.45s; } .card:nth-child(6) { animation-delay: 0.55s; }
 
         input[type="date"], input[type="text"], textarea {
             width: 100%; padding: 18px 20px; margin: 10px 0; border-radius: 20px;
-            border: 2px solid var(--divider); background: var(--bg-gradient);
+            border: 2px solid var(--divider); background: rgba(255,255,255,0.5);
             color: var(--text-main); font-family: inherit; font-size: 16px; outline: none;
             transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
         }
+        [data-theme="dark"] input, [data-theme="dark"] textarea { background: rgba(0,0,0,0.2); }
         input:focus, textarea:focus { border-color: var(--accent-color); background: var(--card-bg); box-shadow: 0 0 0 4px var(--accent-light); }
         textarea { resize: vertical; min-height: 120px; line-height: 1.5; }
 
+        /* --- ПЕРЕЛИВАЮЩИЕСЯ КНОПКИ (LIQUID BUTTONS) --- */
         button.primary-btn {
             width: 100%; padding: 20px; border-radius: 24px; border: none;
-            background: var(--accent-color); color: white; font-family: inherit;
-            font-size: 18px; font-weight: 800; cursor: pointer; letter-spacing: 0.5px;
-            box-shadow: var(--shadow-md); transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: linear-gradient(135deg, #fb7185, #fda4af, #fb7185); background-size: 200% 200%;
+            color: white; font-family: inherit; font-size: 18px; font-weight: 800; cursor: pointer; letter-spacing: 0.5px;
+            box-shadow: 0 10px 25px rgba(251, 113, 133, 0.4); 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: gradientShift 4s ease infinite; position: relative; overflow: hidden;
         }
-        button.primary-btn:active { transform: scale(0.96); box-shadow: 0 6px 15px rgba(251, 113, 133, 0.2); }
+        @keyframes gradientShift { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
+        button.primary-btn::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        button.primary-btn:active { transform: scale(0.95); box-shadow: 0 5px 15px rgba(251, 113, 133, 0.3); }
+        button.primary-btn:active::after { opacity: 1; }
         
-        .call-btn { background: #06b6d4; box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3); display: flex; align-items: center; justify-content: center; gap: 12px; text-decoration: none; color: white; margin-top: 15px; padding: 18px; border-radius: 24px; font-weight: 800; font-size: 18px; transition: all 0.2s ease;}
-        .call-btn:active { transform: scale(0.96); }
+        .call-btn { 
+            background: linear-gradient(135deg, #06b6d4, #67e8f9, #06b6d4); background-size: 200% 200%;
+            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.4); display: flex; align-items: center; justify-content: center; 
+            gap: 12px; text-decoration: none; color: white; margin-top: 15px; padding: 18px; border-radius: 24px; 
+            font-weight: 900; font-size: 18px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: gradientShift 4s ease infinite;
+        }
+        .call-btn:active { transform: scale(0.95); box-shadow: 0 5px 15px rgba(6, 182, 212, 0.3);}
 
         /* Шапка Главной */
         .header-block {
             background: var(--gradient-header); border-radius: 36px; padding: 45px 20px 35px;
             text-align: center; color: #fff; margin-bottom: 25px; box-shadow: var(--shadow-md);
-            position: relative; overflow: hidden;
+            position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.4);
         }
-        .header-block[data-theme="dark"] { color: var(--text-main); }
+        .header-block::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-20deg); animation: shine 6s infinite;
+        }
+        @keyframes shine { 0% {left: -100%;} 20% {left: 200%;} 100% {left: 200%;} }
+        .header-block[data-theme="dark"] { color: var(--text-main); border-color: rgba(255,255,255,0.05);}
         
         .streak-badge {
             position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.35);
-            padding: 8px 16px; border-radius: 24px; font-size: 14px; font-weight: 800; backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px); color: #e11d48; border: 1px solid rgba(255,255,255,0.5); 
-            display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            padding: 8px 16px; border-radius: 24px; font-size: 14px; font-weight: 900; backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px); color: #be123c; border: 1px solid rgba(255,255,255,0.6); 
+            display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
 
         .week-display {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             width: 170px; height: 170px; border-radius: 50%; border: 8px solid var(--accent-light);
-            margin: 0 auto 25px; background: var(--card-bg); box-shadow: inset 0 4px 20px rgba(0,0,0,0.03);
-            position: relative;
+            margin: 0 auto 25px; background: var(--card-bg); box-shadow: inset 0 4px 20px rgba(0,0,0,0.05), 0 10px 30px rgba(251, 113, 133, 0.1);
+            position: relative; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        .week-display:hover { transform: scale(1.05) rotate(2deg); }
         .week-display .number { font-size: 64px; font-weight: 900; color: var(--accent-color); line-height: 1; letter-spacing: -2px;}
-        .week-display .label { font-size: 14px; color: var(--text-muted); font-weight: 800; margin-top: 5px; text-align: center; text-transform: uppercase; letter-spacing: 1px;}
+        .week-display .label { font-size: 14px; color: var(--text-muted); font-weight: 900; margin-top: 5px; text-align: center; text-transform: uppercase; letter-spacing: 1.5px;}
 
-        /* Улучшенные бейджи */
-        .badges-container { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;}
+        .badges-container { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 25px;}
         .badge { 
             display: inline-flex; align-items: center; gap: 8px;
-            padding: 12px 20px; border-radius: 24px; font-size: 15px; font-weight: 800; 
-            box-shadow: inset 0 2px 4px rgba(255,255,255,0.5), 0 4px 10px rgba(0,0,0,0.03);
+            padding: 14px 22px; border-radius: 24px; font-size: 15px; font-weight: 900; 
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.8), 0 6px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
         }
-        .badge.size { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd;}
-        [data-theme="dark"] .badge.size { background: rgba(2, 132, 199, 0.2); border-color: rgba(2, 132, 199, 0.3); color: #7dd3fc;}
+        .badge:hover { transform: translateY(-2px); }
+        .badge .emoji { font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); } 
+        .badge.size { background: linear-gradient(135deg, #e0f2fe, #bae6fd); color: #0284c7; border: 1px solid #7dd3fc;}
+        [data-theme="dark"] .badge.size { background: linear-gradient(135deg, rgba(2,132,199,0.2), rgba(2,132,199,0.1)); border-color: rgba(2, 132, 199, 0.4); color: #7dd3fc;}
         
-        .badge.days { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff;}
-        [data-theme="dark"] .badge.days { background: rgba(126, 34, 206, 0.2); border-color: rgba(126, 34, 206, 0.3); color: #d8b4fe;}
+        .badge.days { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); color: #7e22ce; border: 1px solid #d8b4fe;}
+        [data-theme="dark"] .badge.days { background: linear-gradient(135deg, rgba(126,34,206,0.2), rgba(126,34,206,0.1)); border-color: rgba(126, 34, 206, 0.4); color: #d8b4fe;}
 
         /* Цитата-записка */
         .quote-box {
-            background: #fef3c7; padding: 35px 25px 25px 25px; border-radius: 4px 24px 24px 24px;
+            background: linear-gradient(135deg, #fef9c3, #fef08a); padding: 35px 25px 25px 25px; border-radius: 4px 24px 24px 24px;
             color: #424242; text-align: center; margin-top: 30px; position: relative;
-            box-shadow: 2px 8px 20px rgba(0,0,0,0.06); transform: rotate(-1deg); border: 1px solid #fde047;
+            box-shadow: 2px 8px 25px rgba(0,0,0,0.08); transform: rotate(-1deg); border: 1px solid #fde047;
+            transition: transform 0.4s ease;
         }
-        [data-theme="dark"] .quote-box { background: #422006; color: #fef3c7; border-color: #713f12;}
+        .quote-box:hover { transform: rotate(0deg) scale(1.02); }
+        [data-theme="dark"] .quote-box { background: linear-gradient(135deg, #422006, #3f2715); color: #fef3c7; border-color: #713f12;}
         .quote-box::before { 
-            content: '📌'; position: absolute; top: -14px; left: 20px; font-size: 32px; 
-            transform: rotate(-15deg); filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.15)); font-family: var(--font-emoji);
+            content: '📌'; position: absolute; top: -14px; left: 20px; font-size: 38px; 
+            transform: rotate(-15deg); filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2)); font-family: var(--font-emoji);
         }
 
-        /* Эстетичное послание от малыша (Chat bubble) */
+        /* Эстетичное послание от малыша */
         .baby-message {
             background: var(--accent-light); padding: 20px 24px; 
-            border-radius: 28px 28px 28px 6px; /* Эффект облачка сообщения */
-            display: flex; align-items: center; gap: 16px; margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(251, 113, 133, 0.08); position: relative;
-            border: 1px solid rgba(251, 113, 133, 0.1);
+            border-radius: 28px 28px 28px 6px; display: flex; align-items: center; gap: 16px; margin-bottom: 25px;
+            box-shadow: inset 0 2px 10px rgba(255,255,255,0.8), 0 6px 20px rgba(251, 113, 133, 0.1); 
+            position: relative; border: 1px solid rgba(251, 113, 133, 0.2);
         }
-        .baby-avatar { font-size: 36px; animation: gentlePulse 3s infinite; cursor: pointer; user-select: none; font-family: var(--font-emoji); flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));}
-        @keyframes gentlePulse { 0% {transform: scale(1);} 50% {transform: scale(1.1);} 100% {transform: scale(1);} }
-        .baby-text { font-size: 15px; font-weight: 700; color: #be123c; line-height: 1.5; margin: 0;}
+        .baby-avatar { 
+            font-size: 46px; animation: gentleFloat 4s ease-in-out infinite; cursor: pointer; 
+            user-select: none; font-family: var(--font-emoji); flex-shrink: 0; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+        }
+        @keyframes gentleFloat { 0% {transform: translateY(0px) rotate(0deg);} 50% {transform: translateY(-8px) rotate(5deg);} 100% {transform: translateY(0px) rotate(0deg);} }
+        .baby-text { font-size: 16px; font-weight: 800; color: #be123c; line-height: 1.5; margin: 0;}
         [data-theme="dark"] .baby-text { color: #fda4af; }
 
         /* БЛОК ДЫХАНИЯ (Анти-стресс) */
         .breathe-container { display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 20px; }
         .breathe-circle {
-            width: 130px; height: 130px; border-radius: 50%; background: linear-gradient(135deg, #99f6e4 0%, #a7f3d0 100%);
-            display: flex; align-items: center; justify-content: center; font-weight: 900; color: #0f766e; font-size: 22px;
-            box-shadow: 0 10px 30px rgba(20, 184, 166, 0.3); cursor: pointer; transition: all 0.3s;
-            text-shadow: 0 1px 2px rgba(255,255,255,0.5); border: 4px solid #fff;
+            width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #99f6e4 0%, #34d399 100%);
+            display: flex; align-items: center; justify-content: center; font-weight: 900; color: #064e3b; font-size: 24px;
+            box-shadow: 0 10px 35px rgba(52, 211, 153, 0.4); cursor: pointer; transition: all 0.3s;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.6); border: 6px solid rgba(255,255,255,0.5); z-index: 10;
         }
-        [data-theme="dark"] .breathe-circle { border-color: var(--card-bg); }
-        .breathe-circle.breathing { animation: breatheAnimation 8s infinite ease-in-out; }
+        [data-theme="dark"] .breathe-circle { border-color: rgba(0,0,0,0.2); }
+        .breathe-circle.breathing { animation: breatheAnimation 8s infinite ease-in-out; background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);}
         @keyframes breatheAnimation {
-            0% { transform: scale(1); box-shadow: 0 10px 30px rgba(20, 184, 166, 0.3); }
-            50% { transform: scale(1.5); box-shadow: 0 20px 50px rgba(20, 184, 166, 0.6); }
-            100% { transform: scale(1); box-shadow: 0 10px 30px rgba(20, 184, 166, 0.3); }
+            0% { transform: scale(1); box-shadow: 0 10px 35px rgba(52, 211, 153, 0.4); }
+            50% { transform: scale(1.6); box-shadow: 0 25px 60px rgba(52, 211, 153, 0.7); }
+            100% { transform: scale(1); box-shadow: 0 10px 35px rgba(52, 211, 153, 0.4); }
         }
-        .breathe-text { font-size: 15px; color: var(--text-muted); font-weight: 800; margin-top: 30px; text-align: center;}
+        .breathe-text { font-size: 16px; color: var(--text-muted); font-weight: 800; margin-top: 35px; text-align: center; position: relative; z-index: 1;}
 
         /* Фото УЗИ */
         .photo-frame {
-            width: 100%; height: 260px; border-radius: 28px; border: 3px dashed var(--divider);
+            width: 100%; height: 280px; border-radius: 32px; border: 3px dashed var(--accent-color);
             display: flex; align-items: center; justify-content: center; flex-direction: column; color: var(--text-muted);
-            cursor: pointer; overflow: hidden; position: relative; background-color: var(--bg-gradient); margin-bottom: 15px;
-            transition: all 0.3s ease;
+            cursor: pointer; overflow: hidden; position: relative; background-color: var(--accent-light); margin-bottom: 15px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .photo-frame:hover { border-color: var(--accent-color); background-color: var(--accent-light); }
+        .photo-frame:hover { transform: scale(1.02); background-color: rgba(251, 113, 133, 0.15); border-style: solid;}
         .photo-frame img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .photo-frame.has-photo { border: none; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
+        .photo-frame.has-photo { border: none; box-shadow: inset 0 0 30px rgba(0,0,0,0.2); }
         .photo-frame.has-photo img { display: block; }
         .photo-frame.has-photo .upload-text { display: none; }
 
         /* Трекер воды */
-        .water-tracker { display: flex; justify-content: space-between; margin-top: 20px; }
-        .drop { font-size: 38px; cursor: pointer; filter: grayscale(100%); opacity: 0.15; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-origin: bottom; font-family: var(--font-emoji);}
-        .drop.active { filter: grayscale(0%); opacity: 1; transform: scale(1.15) translateY(-5px); drop-shadow: 0 8px 12px rgba(56, 189, 248, 0.4); }
+        .water-tracker { display: flex; justify-content: space-between; margin-top: 25px; padding: 0 10px;}
+        .drop { 
+            font-size: 44px; cursor: pointer; filter: grayscale(100%) opacity(0.3); 
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-origin: bottom; font-family: var(--font-emoji);
+        }
+        .drop.active { filter: grayscale(0%) opacity(1); transform: scale(1.2) translateY(-8px); drop-shadow: 0 10px 15px rgba(56, 189, 248, 0.5); }
 
         /* Настроение */
-        .mood-container { display: flex; justify-content: space-around; font-size: 48px; margin-top: 25px; font-family: var(--font-emoji);}
-        .mood-btn { cursor: pointer; filter: grayscale(100%); opacity: 0.25; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: none; border: none; padding: 0; outline: none; -webkit-tap-highlight-color: transparent;}
-        .mood-btn.active { filter: grayscale(0%); opacity: 1; transform: scale(1.25); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.15));}
+        .mood-container { display: flex; justify-content: space-around; margin-top: 30px; align-items: center;}
+        .mood-btn { 
+            font-size: 60px; line-height: 1; margin: 0; padding: 5px;
+            cursor: pointer; filter: grayscale(100%) opacity(0.3); 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: none; border: none; outline: none; -webkit-tap-highlight-color: transparent; font-family: var(--font-emoji);
+        }
+        .mood-btn.active { filter: grayscale(0%) opacity(1); transform: scale(1.3) translateY(-5px); filter: drop-shadow(0 8px 15px rgba(0,0,0,0.2));}
 
         /* Шевеления */
-        .kick-counter { display: flex; justify-content: space-between; align-items: center; background: var(--accent-light); border-radius: 28px; padding: 24px; margin-top: 20px; border: 1px solid rgba(251, 113, 133, 0.1);}
-        .kick-btn { width: 75px; height: 75px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; background: var(--accent-color); color: white; box-shadow: 0 10px 25px rgba(251, 113, 133, 0.4); border: none; padding: 0; transition: transform 0.1s; font-family: var(--font-emoji);}
-        .kick-btn:active { transform: scale(0.9); }
+        .kick-counter { display: flex; justify-content: space-between; align-items: center; background: var(--accent-light); border-radius: 32px; padding: 24px 30px; margin-top: 20px; border: 1px solid rgba(251, 113, 133, 0.2); box-shadow: inset 0 2px 10px rgba(255,255,255,0.8);}
+        .kick-btn { 
+            width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-size: 48px; background: linear-gradient(135deg, #fb7185, #fda4af); color: white; 
+            box-shadow: 0 12px 30px rgba(251, 113, 133, 0.5); border: 4px solid #fff; padding: 0; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-family: var(--font-emoji);
+        }
+        [data-theme="dark"] .kick-btn { border-color: var(--card-bg); }
+        .kick-btn:active { transform: scale(0.85); box-shadow: 0 5px 15px rgba(251, 113, 133, 0.3);}
         .kick-info { flex-grow: 1; margin-left: 20px; }
-        .kick-info h4 { margin: 0 0 4px 0; font-size: 16px; font-weight: 800; color: var(--text-muted);}
+        .kick-info h4 { margin: 0 0 6px 0; font-size: 16px; font-weight: 800; color: var(--text-muted);}
 
         /* Всплывающее уведомление (Toast) */
         #toast {
-            visibility: hidden; min-width: 280px; background-color: rgba(15, 23, 42, 0.95); color: #fff;
-            text-align: center; border-radius: 24px; padding: 18px 24px; position: fixed; z-index: 1000;
-            left: 50%; bottom: 130px; transform: translateX(-50%) translateY(20px); opacity: 0; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            font-weight: 700; box-shadow: 0 15px 40px rgba(0,0,0,0.25); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); font-size: 15px; line-height: 1.4; border: 1px solid rgba(255,255,255,0.1);
+            visibility: hidden; min-width: 280px; background: rgba(15, 23, 42, 0.95); color: #fff;
+            text-align: center; border-radius: 24px; padding: 20px 24px; position: fixed; z-index: 1000;
+            left: 50%; bottom: 140px; transform: translateX(-50%) translateY(20px); opacity: 0; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            font-weight: 800; box-shadow: 0 20px 50px rgba(0,0,0,0.3); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); font-size: 16px; line-height: 1.5; border: 1px solid rgba(255,255,255,0.15);
         }
         #toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
 
         /* === ЭСТЕТИЧНЫЕ КАРТОЧКИ ЛЕКАРСТВ === */
         .task-card { 
             background: var(--card-bg); border-radius: 32px; padding: 24px; margin-bottom: 20px; 
-            border: 1px solid var(--card-border); transition: all 0.3s ease; box-shadow: var(--shadow-sm);
+            border: 1px solid var(--card-border); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: var(--shadow-sm);
         }
-        .task-card.done { opacity: 0.6; filter: grayscale(0.6); background: var(--divider); box-shadow: none; border-color: transparent;}
+        .task-card:hover { transform: translateY(-3px) scale(1.01); box-shadow: var(--shadow-md); }
+        .task-card.done { opacity: 0.65; filter: grayscale(0.6); background: var(--divider); box-shadow: none; border-color: transparent; transform: scale(0.98);}
         [data-theme="dark"] .task-card.done { background: rgba(0,0,0,0.2); }
         
         .task-main { display: flex; align-items: center; justify-content: space-between; gap: 16px;}
         
         .custom-check { 
-            appearance: none; width: 36px; height: 36px; border: 3px solid var(--accent-color); 
+            appearance: none; width: 40px; height: 40px; border: 3px solid var(--accent-color); 
             border-radius: 50%; position: relative; background: var(--card-bg); 
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); flex-shrink: 0; cursor: pointer; outline: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); flex-shrink: 0; cursor: pointer; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
-        .custom-check:checked { background-color: var(--accent-color); border-color: var(--accent-color); transform: scale(1.05); }
-        .custom-check:checked::after { content: '✓'; color: white; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: 900; }
+        .custom-check:checked { background: linear-gradient(135deg, #fb7185, #fda4af); border-color: transparent; transform: scale(1.1); box-shadow: 0 4px 12px rgba(251, 113, 133, 0.4); }
+        .custom-check:checked::after { content: '✓'; color: white; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22px; font-weight: 900; }
         
         .task-content { flex-grow: 1; display: flex; flex-direction: column; align-items: flex-start; }
         .task-time { 
-            background: var(--accent-color); color: white; padding: 4px 14px; border-radius: 20px; 
-            font-size: 13px; font-weight: 900; margin-bottom: 8px; letter-spacing: 0.5px; box-shadow: 0 4px 10px rgba(251, 113, 133, 0.2);
+            background: linear-gradient(135deg, #fb7185, #fda4af); color: white; padding: 6px 16px; border-radius: 20px; 
+            font-size: 13px; font-weight: 900; margin-bottom: 8px; letter-spacing: 0.5px; box-shadow: 0 4px 10px rgba(251, 113, 133, 0.3);
         }
         .task-card.done .task-time { background: var(--text-muted); box-shadow: none;}
-        .task-name { font-size: 20px; font-weight: 800; margin: 0 0 4px 0; color: var(--text-main); line-height: 1.2;}
+        .task-name { font-size: 22px; font-weight: 900; margin: 0 0 4px 0; color: var(--text-main); line-height: 1.2;}
         .task-card.done .task-name { text-decoration: line-through; color: var(--text-muted); }
-        .task-dose { font-size: 14px; color: var(--text-muted); margin: 0; font-weight: 700; }
+        .task-dose { font-size: 15px; color: var(--text-muted); margin: 0; font-weight: 800; }
         
         .task-actions { display: flex; align-items: center; gap: 14px; }
-        .task-icon { font-size: 36px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); font-family: var(--font-emoji); }
+        .task-icon { font-size: 42px; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.1)); font-family: var(--font-emoji); line-height: 1; transition: transform 0.3s;}
+        .task-card:hover .task-icon { transform: scale(1.1) rotate(5deg); }
         
         .info-btn {
             background: var(--accent-light); color: var(--accent-color); border: none; 
-            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; transition: all 0.3s ease; flex-shrink: 0; outline: none;
+            width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); flex-shrink: 0; outline: none;
         }
-        .info-btn svg { width: 24px; height: 24px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .info-btn.open { background: var(--accent-color); color: white; box-shadow: 0 4px 12px rgba(251, 113, 133, 0.3);}
-        .info-btn.open svg { transform: rotate(180deg); }
+        .info-btn svg { width: 26px; height: 26px; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .info-btn.open { background: var(--accent-color); color: white; box-shadow: 0 6px 15px rgba(251, 113, 133, 0.4); transform: rotate(180deg);}
 
         .task-details { 
-            max-height: 0; overflow: hidden; opacity: 0; transition: all 0.4s ease; 
-            font-size: 15px; color: var(--text-muted); line-height: 1.6; font-weight: 600;
+            max-height: 0; overflow: hidden; opacity: 0; transition: all 0.5s ease; 
+            font-size: 15px; color: var(--text-muted); line-height: 1.6; font-weight: 700;
         }
         .task-details.open { 
-            max-height: 400px; opacity: 1; margin-top: 20px; padding-top: 20px; 
+            max-height: 500px; opacity: 1; margin-top: 24px; padding-top: 24px; 
             border-top: 2px dashed var(--divider); 
         }
 
         /* Прогресс бар */
-        .progress-container { margin: 30px 0; background: var(--card-bg); padding: 28px; border-radius: 32px; box-shadow: var(--shadow-sm); border: 1px solid var(--card-border);}
-        .progress-text { display: flex; justify-content: space-between; font-size: 14px; font-weight: 900; color: var(--text-muted); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1px;}
-        .progress-bar-bg { width: 100%; height: 20px; background: var(--divider); border-radius: 20px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);}
-        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #fda4af 0%, #fecdd3 100%); border-radius: 20px; transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;}
-        .progress-bar-fill::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 2s infinite;}
+        .progress-container { margin: 35px 0; background: var(--card-bg); padding: 30px; border-radius: 36px; box-shadow: var(--shadow-sm); border: 1px solid var(--card-border);}
+        .progress-text { display: flex; justify-content: space-between; font-size: 15px; font-weight: 900; color: var(--text-muted); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;}
+        .progress-bar-bg { width: 100%; height: 24px; background: var(--divider); border-radius: 20px; overflow: hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,0.04);}
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #fb7185, #fda4af, #fb7185); background-size: 200% 200%; border-radius: 20px; transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; animation: shimmerGradient 3s infinite;}
+        .progress-bar-fill::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent); animation: shimmer 2s infinite;}
         @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
         
         /* Чеклист сумки */
-        .bag-category { font-size: 18px; font-weight: 900; color: var(--accent-color); margin: 35px 0 15px 0; padding-bottom: 12px; border-bottom: 2px solid var(--accent-light); }
-        .checklist-item { display: flex; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--divider); font-weight: 700; font-size: 16px; cursor: pointer; transition: background 0.2s;}
-        .checklist-item:hover { background: var(--bg-gradient); border-radius: 12px; padding-left: 10px; border-bottom-color: transparent;}
+        .bag-category { font-size: 20px; font-weight: 900; color: var(--accent-color); margin: 40px 0 15px 0; padding-bottom: 12px; border-bottom: 2px solid var(--accent-light); display: flex; align-items: center; gap: 10px;}
+        .checklist-item { display: flex; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--divider); font-weight: 800; font-size: 16px; cursor: pointer; transition: all 0.3s;}
+        .checklist-item:hover { background: var(--bg-gradient); border-radius: 16px; padding-left: 15px; border-bottom-color: transparent;}
         .checklist-item:last-child { border-bottom: none; }
-        .checklist-item input[type="checkbox"] { width: 28px; height: 28px; margin-right: 18px; accent-color: var(--accent-color); cursor: pointer; flex-shrink: 0;}
-        .checklist-item.done span { text-decoration: line-through; color: var(--text-muted); opacity: 0.6;}
+        .checklist-item input[type="checkbox"] { width: 32px; height: 32px; margin-right: 20px; accent-color: var(--accent-color); cursor: pointer; flex-shrink: 0; transition: transform 0.2s;}
+        .checklist-item input[type="checkbox"]:checked { transform: scale(1.1); }
+        .checklist-item.done span { text-decoration: line-through; color: var(--text-muted); opacity: 0.5;}
 
         /* Навигация (Bottom Tabs) */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--nav-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); display: flex; justify-content: space-around; padding: 16px 0 35px 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.06); border-top-left-radius: 40px; border-top-right-radius: 40px; z-index: 100; border-top: 1px solid var(--divider);}
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); background: none; border: none; padding: 5px; width: 25%; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s; outline: none; -webkit-tap-highlight-color: transparent;}
-        .nav-item.active { color: var(--accent-color); transform: translateY(-6px); }
-        .nav-icon { font-size: 28px; margin-bottom: 6px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-family: var(--font-emoji);}
-        .nav-item.active .nav-icon { transform: scale(1.25); filter: drop-shadow(0 6px 8px rgba(251, 113, 133, 0.3));}
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--nav-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; justify-content: space-around; padding: 16px 0 35px 0; box-shadow: 0 -15px 50px rgba(0,0,0,0.08); border-top-left-radius: 40px; border-top-right-radius: 40px; z-index: 100; border-top: 1px solid var(--divider);}
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); background: none; border: none; padding: 5px; width: 25%; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); outline: none; -webkit-tap-highlight-color: transparent;}
+        .nav-item.active { color: var(--accent-color); transform: translateY(-8px); }
+        .nav-icon { font-size: 32px; margin-bottom: 8px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-family: var(--font-emoji); line-height: 1;}
+        .nav-item.active .nav-icon { transform: scale(1.3); filter: drop-shadow(0 8px 12px rgba(251, 113, 133, 0.4));}
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .theme-switch { display: flex; justify-content: space-between; align-items: center; padding: 22px 24px; background: var(--bg-gradient); border-radius: 24px; margin-bottom: 20px; font-weight: 800; border: 1px solid var(--divider);}
+        .theme-switch { display: flex; justify-content: space-between; align-items: center; padding: 24px 28px; background: var(--bg-gradient); border-radius: 28px; margin-bottom: 24px; font-weight: 900; border: 1px solid var(--divider); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);}
     </style>
 </head>
 <body>
+
+<!-- Ambient Background -->
+<div class="ambient-blob blob-1"></div>
+<div class="ambient-blob blob-2"></div>
 
 <div id="toast">Сообщение</div>
 
 <!-- Экран настройки -->
 <div id="setupScreen" class="container tab-content">
-    <div class="card" style="margin-top: 15vh; text-align: center; border-radius: 40px; padding: 50px 30px; box-shadow: var(--shadow-md);">
-        <div style="font-size: 80px; margin-bottom: 20px; animation: fadeIn 1.5s infinite alternate; font-family: var(--font-emoji);">🤍</div>
-        <h1 class="text-accent fancy-title" style="font-size: 42px;">Привет, родная!</h1>
-        <p style="color: var(--text-muted); margin-bottom: 40px; font-size: 18px; font-weight: 700; line-height: 1.5;">Я сделал этот дневник специально для тебя. Введи дату, когда мы ждем наше чудо (ПДР).</p>
-        <input type="date" id="eddDate" style="font-size: 20px; padding: 24px; text-align: center; background: var(--divider); border: none;">
-        <button class="primary-btn" onclick="saveEDD()" style="margin-top: 30px;">Начать наш путь</button>
+    <div class="card" style="margin-top: 15vh; text-align: center; border-radius: 40px; padding: 60px 30px; box-shadow: var(--shadow-md);">
+        <div style="font-size: 80px; margin-bottom: 25px; animation: gentleFloat 3s infinite ease-in-out; font-family: var(--font-emoji); line-height: 1;">🤍</div>
+        <h1 class="text-accent fancy-title" style="font-size: 46px;">Привет, родная!</h1>
+        <p style="color: var(--text-muted); margin-bottom: 45px; font-size: 18px; font-weight: 800; line-height: 1.6;">Я сделал этот дневник специально для тебя, чтобы обнимать тебя даже через экран. Введи дату, когда мы ждем наше чудо (ПДР).</p>
+        <input type="date" id="eddDate" style="font-size: 22px; padding: 24px; text-align: center; font-weight: 800;">
+        <button class="primary-btn" onclick="saveEDD()" style="margin-top: 35px; font-size: 20px;">Начать наш путь ✨</button>
     </div>
 </div>
 
@@ -321,12 +388,12 @@
             
             <div class="header-block">
                 <div class="streak-badge"><span class="emoji">🔥</span> <span id="streakDisplay">0</span></div>
-                <h1 id="greetingTitle" class="fancy-title" style="font-size: 38px; margin-bottom: 8px; text-shadow: 2px 2px 6px rgba(0,0,0,0.15);">Для любимой</h1>
-                <p id="currentDate" style="font-size: 13px; opacity: 0.95; text-transform: uppercase; letter-spacing: 4px; margin:0; font-weight: 900;"></p>
+                <h1 id="greetingTitle" class="fancy-title" style="font-size: 40px; margin-bottom: 10px; text-shadow: 2px 4px 8px rgba(0,0,0,0.2);">Для любимой</h1>
+                <p id="currentDate" style="font-size: 14px; opacity: 0.95; text-transform: uppercase; letter-spacing: 5px; margin:0; font-weight: 900;"></p>
             </div>
 
-            <!-- Тайное послание от малыша (С секретной анимацией при клике) -->
-            <div class="baby-message">
+            <!-- Тайное послание от малыша -->
+            <div class="baby-message card" style="padding: 24px;">
                 <div class="baby-avatar" onclick="sendBabyKiss()">👶</div>
                 <p class="baby-text" id="babySecretMessage">Мамочка, я расту и очень тебя люблю!</p>
             </div>
@@ -340,14 +407,14 @@
                     <div class="badge size" id="sizeBadge"><span class="emoji" id="sizeEmoji">🍎</span> <span id="sizeText">Размер: --</span></div>
                     <div class="badge days"><span class="emoji">🗓️</span> <span id="countdownBadge">До встречи: -- дн.</span></div>
                 </div>
-                <p id="factText" style="color: var(--text-main); font-size: 16px; line-height: 1.7; font-weight: 700; background: var(--bg-gradient); padding: 20px; border-radius: 24px; border: 1px solid var(--divider);"></p>
+                <p id="factText" style="color: var(--text-main); font-size: 16px; line-height: 1.8; font-weight: 800; background: var(--bg-gradient); padding: 24px; border-radius: 24px; border: 1px solid var(--divider); box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);"></p>
                 <div class="quote-box">
                     <div id="dailyQuote" class="handwritten">Загружаю мою любовь...</div>
                 </div>
             </div>
 
             <div class="card">
-                <h3 style="font-weight: 900; font-size: 24px; text-align: center;">Твоё самочувствие?</h3>
+                <h3 class="section-title center">Твоё самочувствие?</h3>
                 <div class="mood-container" id="moodContainer">
                     <button class="mood-btn" onclick="saveMood('😊', this)">😊</button>
                     <button class="mood-btn" onclick="saveMood('🥰', this)">🥰</button>
@@ -359,8 +426,8 @@
 
             <!-- БЛОК ДЫХАНИЯ -->
             <div class="card" id="breatheBlock">
-                <h3 style="font-weight: 900; font-size: 24px; text-align: center;"><span class="emoji">🌬️</span> Подышим вместе?</h3>
-                <p style="text-align: center; color: var(--text-muted); font-size: 15px; font-weight: 700; margin-bottom: 25px;">Помогает при тошноте и тревоге.</p>
+                <h3 class="section-title center"><span class="emoji section-icon">🌬️</span> Подышим вместе?</h3>
+                <p style="text-align: center; color: var(--text-muted); font-size: 15px; font-weight: 800; margin-bottom: 30px;">Помогает при тошноте и тревоге.</p>
                 <div class="breathe-container">
                     <div class="breathe-circle" id="breatheCircle" onclick="toggleBreathe()">Начать</div>
                     <p class="breathe-text" id="breatheText">Нажми на круг, когда будешь готова.</p>
@@ -368,57 +435,57 @@
             </div>
 
             <div class="card">
-                <h3 style="font-weight: 900; font-size: 24px;"><span class="emoji">💧</span> Твоя водичка</h3>
-                <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 15px; font-weight: 700;">Пей за двоих, родная. Отмечай стаканчики!</p>
+                <h3 class="section-title"><span class="emoji section-icon">💧</span> Твоя водичка</h3>
+                <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 20px; font-weight: 800;">Пей за двоих, родная. Отмечай стаканчики!</p>
                 <div class="water-tracker" id="waterTracker"></div>
             </div>
 
             <div class="card">
-                <h3 style="font-weight: 900; font-size: 24px;"><span class="emoji">📸</span> Наше чудо</h3>
-                <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 20px; font-weight: 700;">Сохрани здесь наше любимое УЗИ.</p>
+                <h3 class="section-title"><span class="emoji section-icon">📸</span> Наше чудо</h3>
+                <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 20px; font-weight: 800;">Сохрани здесь наше любимое УЗИ.</p>
                 <div class="photo-frame" id="photoFrame" onclick="document.getElementById('uziInput').click()">
                     <div class="upload-text" style="text-align: center;">
-                        <span class="emoji" style="font-size: 50px; display: block; margin-bottom: 15px;">👼</span>
-                        <span style="font-size: 15px; font-weight: 800; background: var(--card-bg); color: var(--text-main); padding: 12px 24px; border-radius: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--divider);">Добавить фото</span>
+                        <span class="emoji" style="font-size: 64px; display: block; margin-bottom: 15px; line-height: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">👼</span>
+                        <span style="font-size: 16px; font-weight: 900; background: var(--card-bg); color: var(--text-main); padding: 14px 28px; border-radius: 28px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); border: 1px solid var(--divider);">Добавить фото</span>
                     </div>
                     <img id="uziImage" src="" alt="Наш малыш">
                 </div>
                 <input type="file" id="uziInput" accept="image/*" style="display: none;" onchange="loadPhoto(event)">
             </div>
 
-            <div class="card" id="kickCounterCard" style="display: none; border: 2px solid var(--accent-color);">
-                <h3 style="font-weight: 900; font-size: 24px; color: var(--accent-color);"><span class="emoji">👣</span> Шевеления</h3>
-                <p style="color: var(--text-main); font-size: 15px; margin-bottom: 0; font-weight: 700;">Считаем пиночки! Обнулится завтра.</p>
+            <div class="card" id="kickCounterCard" style="display: none; border: 3px solid var(--accent-color); background: linear-gradient(to bottom right, var(--card-bg), var(--accent-light));">
+                <h3 class="section-title" style="color: var(--accent-color);"><span class="emoji section-icon">👣</span> Шевеления</h3>
+                <p style="color: var(--text-main); font-size: 15px; margin-bottom: 0; font-weight: 800;">Считаем пиночки! Обнулится завтра.</p>
                 <div class="kick-counter">
                     <div class="kick-info">
-                        <h4 style="color: var(--text-main); font-weight: 900; font-size: 18px;">За сегодня: <span id="kickCountDisplay" class="text-accent" style="font-size: 32px; vertical-align: middle; margin-left: 5px;">0</span></h4>
+                        <h4 style="color: var(--text-main); font-weight: 900; font-size: 20px;">За сегодня: <span id="kickCountDisplay" class="text-accent" style="font-size: 36px; vertical-align: middle; margin-left: 8px;">0</span></h4>
                     </div>
                     <button id="kickBtn" class="kick-btn emoji" onclick="addKick()">🦶</button>
                 </div>
             </div>
             
-            <div class="card" id="earlyTermCard" style="display: none; background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); color: white; border: none; box-shadow: 0 10px 30px rgba(142, 197, 252, 0.3);">
-                <h3 style="font-weight: 900; font-size: 24px; color: white; margin-bottom: 15px;"><span class="emoji">👣</span> Мамин животик</h3>
-                <p style="font-size: 16px; margin-bottom: 0; font-weight: 700; line-height: 1.6; text-shadow: 0 1px 2px rgba(0,0,0,0.1);">Малыш еще набирается сил. Совсем скоро (около 18-20 недели) здесь появится счетчик шевелений! 🥰</p>
+            <div class="card" id="earlyTermCard" style="display: none; background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 100%); color: white; border: none; box-shadow: 0 12px 35px rgba(139, 92, 246, 0.3);">
+                <h3 class="section-title" style="color: white;"><span class="emoji section-icon">👣</span> Мамин животик</h3>
+                <p style="font-size: 16px; margin-bottom: 0; font-weight: 800; line-height: 1.6; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">Малыш еще набирается сил. Совсем скоро (около 18-20 недели) здесь появится счетчик шевелений! 🥰</p>
             </div>
             
             <div class="card" style="background: var(--accent-light); border: none;">
                 <a href="tel:" id="callHusband" class="call-btn">
-                    <span class="emoji" style="font-size: 26px;">📞</span> Позвонить любимому
+                    <span class="emoji" style="font-size: 30px; line-height: 1;">📞</span> Позвонить любимому
                 </a>
-                <p style="text-align: center; font-size: 13px; font-weight: 900; color: var(--accent-color); margin-top: 20px; margin-bottom: 0; text-transform: uppercase; letter-spacing: 1.5px;">Я всегда на связи 24/7 ❤️</p>
+                <p style="text-align: center; font-size: 14px; font-weight: 900; color: var(--accent-color); margin-top: 24px; margin-bottom: 0; text-transform: uppercase; letter-spacing: 2px;">Я всегда на связи 24/7 ❤️</p>
             </div>
         </div>
 
         <!-- Вкладка 2: ЗАБОТА И ЛЕКАРСТВА -->
         <div id="tab-meds" class="tab-content">
-            <h2 style="font-weight: 900; font-size: 36px; margin-bottom: 10px;">План заботы</h2>
-            <p style="color: var(--text-muted); font-size: 16px; font-weight: 700; margin-bottom: 25px;">Отмечай кружочки, когда выпьешь витаминку.</p>
+            <h2 style="font-weight: 900; font-size: 38px; margin-bottom: 10px;">План заботы</h2>
+            <p style="color: var(--text-muted); font-size: 16px; font-weight: 800; margin-bottom: 30px;">Отмечай кружочки, когда выпьешь витаминку.</p>
             
             <div class="progress-container">
                 <div class="progress-text">
                     <span>Выполнено сегодня</span>
-                    <span id="progressText" class="text-accent">0%</span>
+                    <span id="progressText" class="text-accent" style="font-size: 18px;">0%</span>
                 </div>
                 <div class="progress-bar-bg">
                     <div id="progressBar" class="progress-bar-fill" style="width: 0%"></div>
@@ -429,52 +496,52 @@
                 <!-- Сюда рендерится расписание из allTasks -->
             </div>
 
-            <div id="finishDayContainer" style="display: none; margin-top: 30px;">
-                <button class="primary-btn" onclick="finishDay()" id="finishBtn" style="background: linear-gradient(135deg, #fb7185, #e11d48);">🌟 Завершить день</button>
-                <p id="finishMsg" style="text-align: center; color: #e11d48; font-weight: 900; font-size: 20px; display: none; margin-top: 15px; background: #ffe4e6; padding: 20px; border-radius: 24px;">Умничка! День успешно завершен ❤️</p>
+            <div id="finishDayContainer" style="display: none; margin-top: 35px; animation: cardFadeIn 0.5s;">
+                <button class="primary-btn" onclick="finishDay()" id="finishBtn" style="font-size: 20px; padding: 24px; background: linear-gradient(135deg, #f43f5e, #fb7185);"><span class="emoji">🌟</span> Завершить день</button>
+                <p id="finishMsg" style="text-align: center; color: #e11d48; font-weight: 900; font-size: 22px; display: none; margin-top: 15px; background: #ffe4e6; padding: 24px; border-radius: 28px; box-shadow: 0 10px 25px rgba(225, 29, 72, 0.15);">Умничка! День успешно завершен ❤️</p>
             </div>
 
-            <h2 style="margin-top: 50px; font-weight: 900; font-size: 32px;">Письмо малышу 📝</h2>
+            <h2 style="margin-top: 55px; font-weight: 900; font-size: 34px;">Письмо малышу 📝</h2>
             <div class="card">
-                <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 20px; font-weight: 700;">Запиши свои мысли. Потом будет так здорово это перечитать!</p>
-                <textarea id="diaryEntry" placeholder="Сегодня ты так сильно пинался, когда папа гладил животик..." class="handwritten" style="font-size: 24px; padding: 24px; border-radius: 24px; background: var(--divider); border: none;"></textarea>
-                <button class="primary-btn" onclick="saveDiary()" style="margin-top: 20px;">Сохранить в сердце</button>
+                <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 24px; font-weight: 800;">Запиши свои мысли. Потом будет так здорово это перечитать!</p>
+                <textarea id="diaryEntry" placeholder="Сегодня ты так сильно пинался, когда папа гладил животик..." class="handwritten" style="font-size: 26px; padding: 28px; border-radius: 28px; background: var(--bg-gradient); border: 2px solid var(--divider);"></textarea>
+                <button class="primary-btn" onclick="saveDiary()" style="margin-top: 24px;">Сохранить в сердце 💖</button>
             </div>
         </div>
 
         <!-- Вкладка 3: СУМКА В РОДДОМ -->
         <div id="tab-bag" class="tab-content">
-            <h2 style="font-weight: 900; font-size: 36px;">Сумка в роддом</h2>
-            <p style="font-weight: 700; font-size: 16px; margin-bottom: 25px; color: var(--text-muted); line-height: 1.5;">Отмечай то, что мы уже подготовили. Я помогу всё купить и собрать!</p>
-            <div class="card" style="padding: 10px 25px 30px;">
+            <h2 style="font-weight: 900; font-size: 38px;">Сумка в роддом</h2>
+            <p style="font-weight: 800; font-size: 16px; margin-bottom: 30px; color: var(--text-muted); line-height: 1.6;">Отмечай то, что мы уже подготовили. Я помогу всё купить и собрать!</p>
+            <div class="card" style="padding: 15px 30px 35px;">
                 <div id="bagChecklist"></div>
             </div>
         </div>
 
         <!-- Вкладка 4: НАСТРОЙКИ -->
         <div id="tab-settings" class="tab-content">
-            <h2 style="font-weight: 900; font-size: 36px;">Настройки</h2>
+            <h2 style="font-weight: 900; font-size: 38px;">Настройки</h2>
             <div class="card">
                 <div class="theme-switch">
-                    <span style="font-weight: 800; font-size: 18px;">Темная тема <span class="emoji">🌙</span></span>
-                    <input type="checkbox" id="themeToggle" onchange="toggleTheme()" style="width: 32px; height: 32px; accent-color: var(--accent-color);">
+                    <span style="font-weight: 900; font-size: 18px;">Темная тема <span class="emoji">🌙</span></span>
+                    <input type="checkbox" id="themeToggle" onchange="toggleTheme()" style="width: 34px; height: 34px; accent-color: var(--accent-color);">
                 </div>
 
-                <div class="theme-switch" style="background: #e0f2fe; border-color: #bae6fd;">
+                <div class="theme-switch" style="background: linear-gradient(135deg, #e0f2fe, #bae6fd); border-color: #7dd3fc; box-shadow: 0 8px 20px rgba(2,132,199,0.1);">
                     <span style="font-weight: 900; font-size: 18px; color: #0284c7;">Уведомления <span class="emoji">🔔</span></span>
-                    <button onclick="enableNotifications()" style="width: auto; padding: 14px 28px; font-size: 15px; background: #0284c7; border: none; color: white; border-radius: 20px; font-weight: 800; box-shadow: 0 4px 15px rgba(2,132,199,0.3);">Включить</button>
+                    <button onclick="enableNotifications()" style="width: auto; padding: 16px 32px; font-size: 16px; background: #0284c7; border: none; color: white; border-radius: 24px; font-weight: 900; box-shadow: 0 6px 20px rgba(2,132,199,0.4);">Включить</button>
                 </div>
-                <p style="font-size: 14px; font-weight: 700; color: var(--text-muted); margin-top: -10px; margin-bottom: 30px; padding: 0 15px;">Разреши уведомления, чтобы я мог напоминать тебе о приеме витаминов.</p>
+                <p style="font-size: 15px; font-weight: 800; color: var(--text-muted); margin-top: -10px; margin-bottom: 35px; padding: 0 20px; line-height: 1.5;">Разреши уведомления, чтобы я мог напоминать тебе о приеме витаминов.</p>
                 
-                <h4 style="margin-bottom: 12px; font-weight: 900; font-size: 18px;">Мой номер телефона:</h4>
-                <input type="text" id="husbandPhone" placeholder="Например: +996777123456" style="background: var(--divider); border: none;">
-                <button class="primary-btn" onclick="savePhone()" style="margin-bottom: 40px; background: #06b6d4; box-shadow: 0 8px 25px rgba(6,182,212,0.3);">Сохранить номер</button>
+                <h4 style="margin-bottom: 14px; font-weight: 900; font-size: 20px;">Мой номер телефона:</h4>
+                <input type="text" id="husbandPhone" placeholder="Например: +996777123456" style="background: var(--bg-gradient); font-size: 18px; font-weight: 800;">
+                <button class="primary-btn" onclick="savePhone()" style="margin-bottom: 45px; background: linear-gradient(135deg, #06b6d4, #0891b2); box-shadow: 0 10px 30px rgba(6,182,212,0.4);">Сохранить номер</button>
 
-                <h4 style="margin-bottom: 12px; font-weight: 900; font-size: 18px;">Изменить дату родов (ПДР):</h4>
-                <input type="date" id="newEddDate" style="background: var(--divider); border: none;">
-                <button class="primary-btn" onclick="updateEDD()" style="margin-bottom: 45px; background: var(--text-muted); box-shadow: 0 8px 25px rgba(100,116,139,0.3);">Обновить дату</button>
+                <h4 style="margin-bottom: 14px; font-weight: 900; font-size: 20px;">Изменить дату родов (ПДР):</h4>
+                <input type="date" id="newEddDate" style="background: var(--bg-gradient); font-size: 18px; font-weight: 800;">
+                <button class="primary-btn" onclick="updateEDD()" style="margin-bottom: 50px; background: var(--text-muted); box-shadow: 0 10px 30px rgba(100,116,139,0.3);">Обновить дату</button>
                 
-                <button class="secondary primary-btn" onclick="resetData()" style="color: #ef4444; border: 2px solid #ef4444; background: transparent; padding: 22px; box-shadow: none;">Очистить все данные</button>
+                <button class="secondary primary-btn" onclick="resetData()" style="color: #ef4444; border: 3px solid #ef4444; background: transparent; padding: 24px; box-shadow: none;">Очистить все данные</button>
             </div>
         </div>
 
@@ -502,7 +569,7 @@
 </div>
 
 <script>
-    const VERSION = "_v7"; // Обновили версию для сброса кэша
+    const VERSION = "_v9"; // Максимальное обновление
 
     const warmWords = [
         "Я тебя люблю, даже если ты козявка та еще! ❤️",
@@ -627,7 +694,17 @@
         "Интересно, какого цвета будет моя комната? 🎨",
         "Каждый твой вдох дает мне кислород. Спасибо! 🌬️",
         "Мам, я скоро буду пинаться еще сильнее, готовься! 🥊",
-        "Ты так вкусно пахнешь, я это чувствую. 🌸"
+        "Ты так вкусно пахнешь, я это чувствую. 🌸",
+        "У нас с тобой связь, которую никто не разорвет. 💞",
+        "Мам, я слышал шум воды, когда ты принимала душ. Это как музыка! 🚿",
+        "Ты сегодня просто красавица, я чувствую твою уверенность. 💃",
+        "Иногда я икаю, но это не страшно, я просто тренирую легкие! 🫧",
+        "Папа нас так любит, правда? Я это чувствую каждую секунду. 👨‍👩‍👦",
+        "Мамочка, погладь меня! Я прижмусь к твоей ладони. ✋",
+        "Я обещаю спать по ночам, когда рожусь (но это не точно!). 😇",
+        "С тобой так спокойно. Я никуда не тороплюсь. 🧘",
+        "Я уже могу сгибать пальчики в кулачок. ✊",
+        "Мы — лучшая команда, мамочка! 🚀"
     ];
 
     const moodResponses = {
@@ -653,7 +730,8 @@
             "Бедняжка моя... Попробуй попить воды с лимоном. Я рядом, держись!", 
             "Подыши глубоко. Скоро это пройдет, ты у меня сильная!", 
             "Съешь сухарик или яблочко. Потерпи, любимая, мы справимся.",
-            "Открой окошко, подыши свежим воздухом. Я так хочу забрать твою тошноту себе! 💔"
+            "Открой окошко, подыши свежим воздухом. Я так хочу забрать твою тошноту себе! 💔",
+            "Попробуй дыхательное упражнение ниже, оно должно помочь! 🌬️"
         ],
         '✨': [
             "Ты просто сияешь! Беременность делает тебя еще прекраснее!", 
@@ -663,48 +741,48 @@
         ]
     };
 
-    // Обновленная база с добавлением эмодзи для каждого размера
+    // ГЛОБАЛЬНАЯ БАЗА ФАКТОВ (ПО 8-12 ФАКТОВ НА КАЖДУЮ НЕДЕЛЮ)
     const weekData = {
-        1: { emoji: "🔬", size: "Клеточка", facts: ["Всё только начинается! Твой организм готовится к главному чуду.", "Фолиевая кислота сейчас твой лучший друг.", "Начинается самый волшебный этап в твоей жизни."] },
-        2: { emoji: "⏳", size: "Песчинка", facts: ["В этот период происходит настоящее таинство зарождения.", "Твое тело начинает вырабатывать гормоны беременности.", "Совсем скоро ты узнаешь радостную новость!"] },
-        3: { emoji: "🌱", size: "Маковое зернышко", facts: ["Малыш сейчас размером с песчинку, но уже активно делится.", "Начинает формироваться пуповина и плацента.", "Сейчас закладываются основы нервной трубки."] },
-        4: { emoji: "🫘", size: "Семечко яблока", facts: ["Уже можно сделать первый тест на беременность!", "Формируются зачатки будущих органов.", "Малыш надежно прикрепился к стенке матки."] },
-        5: { emoji: "🌾", size: "Кунжутное семя", facts: ["У крохи начинает формироваться сердце и кровеносная система.", "Появляются зачатки спинного и головного мозга.", "Малыш начинает получать питание от тебя."] },
-        6: { emoji: "🧆", size: "Чечевица", facts: ["Маленькое сердечко уже бьется! Оно делает около 100 ударов в минуту.", "Начинают формироваться ушки и глазки.", "Появляются крошечные бугорки — будущие ручки и ножки."] },
-        7: { emoji: "🫐", size: "Голубика", facts: ["У малыша формируются крошечные ручки и ножки, похожие на плавнички.", "Развиваются полушария головного мозга.", "Сердечко становится четырехкамерным."] },
-        8: { emoji: "🍇", size: "Малина", facts: ["Начинают закладываться черты лица: глазки, носик и ротик.", "Формируются пальчики на руках.", "Малыш уже умеет сгибать ручки в локтях!"] },
-        9: { emoji: "🫒", size: "Оливка", facts: ["Малыш начинает двигаться, хотя ты этого еще не чувствуешь!", "Закладываются фолликулы будущих зубов.", "Хвостик эмбриона полностью исчезает."] },
-        10: { emoji: "🍒", size: "Черешня", facts: ["Все жизненно важные органы уже сформированы и начинают работать.", "Малыш умеет отталкиваться от стенок матки.", "На пальчиках появляются крошечные ноготки."] },
-        11: { emoji: "🍓", size: "Клубника", facts: ["Малыш уже умеет открывать ротик и глотать околоплодные воды.", "Он может потягиваться и зевать.", "Формируется радужка глаз."] },
-        12: { emoji: "🍋", size: "Лайм", facts: ["Первый важный скрининг! Малыш уже совсем похож на человечка.", "Его почки начинают производить первую мочу.", "Пальчики на руках и ногах полностью разделились."] },
-        13: { emoji: "🍑", size: "Персик", facts: ["Начинается второй триместр — самое золотое время!", "У малыша формируются голосовые связки.", "Плацента полностью берет на себя питание крохи."] },
-        14: { emoji: "🍋", size: "Лимон", facts: ["Кроха уже может хмуриться, щуриться и строить гримасы.", "Он активно сосет свой пальчик.", "Его шея удлиняется, подбородок больше не лежит на груди."] },
-        15: { emoji: "🍏", size: "Яблоко", facts: ["Он уже различает вкус еды, которую ты ешь!", "У него формируются уникальные отпечатки пальцев.", "Он слышит биение твоего сердца."] },
-        16: { emoji: "🥑", size: "Авокадо", facts: ["Маленькое сердце качает целых 23 литра крови в день!", "Появились крошечные, но настоящие реснички.", "Малыш начинает чувствовать твои движения и поглаживания."] },
-        17: { emoji: "🍐", size: "Груша", facts: ["Появляется 'коричневый жир' для согрева после родов.", "Скелет начинает твердеть (хрящи превращаются в кости).", "Тельце покрывается тонким пушком — лануго."] },
-        18: { emoji: "🍠", size: "Батат", facts: ["Малыш уже умеет смешно икать.", "Слух становится острым — самое время папе разговаривать с животиком!", "Режим сна и бодрствования становится регулярным."] },
-        19: { emoji: "🥭", size: "Манго", facts: ["Малыш очень активно кувыркается, места еще много.", "На голове растут волосы.", "Он начинает понимать интонацию твоего голоса."] },
-        20: { emoji: "🍌", size: "Банан", facts: ["Экватор! Половина пути пройдена.", "Малыш начинает различать время суток.", "Его вес достигает уже около 300 граммов!"] },
-        21: { emoji: "🍎", size: "Гранат", facts: ["Малыш чувствует твои прикосновения к животу.", "Развиваются легкие для будущего дыхания.", "Рецепторы на языке полностью сформированы."] },
-        22: { emoji: "🥥", size: "Кокос", facts: ["Малыш уже может чувствовать запахи!", "В деснах сформировались все зачатки молочных зубов.", "Он реагирует на резкий свет, просвечивающий через живот."] },
-        23: { emoji: "🍊", size: "Грейпфрут", facts: ["Он буквально пританцовывает под ритмичную музыку!", "Малыш заглатывает сахара из околоплодных вод.", "Пиночки становятся более уверенными и сильными."] },
-        24: { emoji: "🌽", size: "Кукуруза", facts: ["С этой недели малыш считается жизнеспособным вне утробы!", "Он активно тренирует легкие, совершая до 60 вдохов в минуту.", "У него появляются фазы быстрого и медленного сна."] },
-        25: { emoji: "🥦", size: "Цветная капуста", facts: ["Его кулачки уже достаточно сильные, чтобы ухватиться за пуповину.", "Он может вздрагивать от неожиданности.", "Его сердце бьется с частотой около 140 ударов в минуту."] },
-        26: { emoji: "🥬", size: "Кочан салата", facts: ["Он впервые открывает глазки!", "Его мозг теперь контролирует температуру тела.", "Он различает сладкий и горький вкус вод."] },
-        27: { emoji: "🥦", size: "Брокколи", facts: ["Мозг малыша начинает работать ритмично, как у новорожденного.", "Представляешь, он уже видит сны!", "Кроха любит спать, когда мама укачивает его при ходьбе."] },
-        28: { emoji: "🍆", size: "Баклажан", facts: ["Поздравляю, начинается третий триместр!", "Его реснички стали длинными и красивыми.", "Он уже различает голос мамы среди других звуков."] },
-        29: { emoji: "🫑", size: "Мускатная тыква", facts: ["Малыш реагирует на сладкое, которое ты ешь, активными толчками.", "Скелет уже полностью сформирован.", "Он становится очень любознательным и трогает всё вокруг."] },
-        30: { emoji: "🥬", size: "Капуста", facts: ["Ему становится тесновато, поэтому пиночки могут ощущаться сильнее.", "Он спит около 15-16 часов в сутки.", "Малыш начинает тренироваться дышать с закрытой голосовой щелью."] },
-        31: { emoji: "🍍", size: "Ананас", facts: ["Он активно набирает подкожный белый жир.", "Зрачки могут расширяться и сужаться на свет.", "Печень малыша активно запасает железо."] },
-        32: { emoji: "🍈", size: "Дыня", facts: ["Скорее всего, малыш уже занял положение головой вниз.", "Его кожа становится гладкой, нежной и розовой.", "Он уже видит всё в цвете!"] },
-        33: { emoji: "🍈", size: "Круглая дыня", facts: ["Количество околоплодных вод достигло максимума.", "Его мозг развит настолько, что он может связывать звук и свет.", "Он всё чаще икает, готовя легкие к работе."] },
-        34: { emoji: "🎃", size: "Большая тыква", facts: ["Его почки уже работают на 100%, очищая кровь.", "Слух стал идеальным.", "Он уже умеет узнавать мамин голос и успокаиваться от него."] },
-        35: { emoji: "🍉", size: "Маленький арбуз", facts: ["Легкие практически полностью созрели.", "У малыша стремительно растут пухлые щечки.", "Пушок лануго практически полностью исчез."] },
-        36: { emoji: "🍉", size: "Арбуз", facts: ["С конца этой недели малыш официально считается доношенным!", "Пищеварительная система полностью готова к молоку.", "Сосательный рефлекс развит безупречно."] },
-        37: { emoji: "🍉", size: "Зрелый арбуз", facts: ["Он активно тренирует сосательный рефлекс, посасывая пальчик.", "Гормоны малыша готовы запустить процесс родов.", "Нервная система готова к жизни вне мамы."] },
-        38: { emoji: "🍉", size: "Крупный арбуз", facts: ["Животик может опуститься, и тебе станет намного легче дышать.", "Он уже очень тяжеленький и сильный.", "Малыш полностью готов к жизни!"] },
-        39: { emoji: "🎃", size: "Огромная тыква", facts: ["Мы почти у цели, роды могут начаться в любой день!", "Все органы чувств работают как у взрослого.", "Малыш с нетерпением ждет твоего объятия."] },
-        40: { emoji: "👶", size: "Наш малыш", facts: ["ПДР! Наше чудо абсолютно готово увидеть этот прекрасный мир.", "С Днем Рождения! (Или совсем-совсем скоро).", "Я люблю вас обоих бесконечно, мы справимся со всем!"] }
+        1: { emoji: "🔬", size: "Клеточка", facts: ["Всё только начинается! Твой организм готовится к главному чуду.", "Фолиевая кислота сейчас твой лучший друг.", "Начинается самый волшебный этап в твоей жизни.", "Организм обновляет слизистую оболочку матки для будущей посадки.", "Гормональный фон начинает плавно перестраиваться.", "Твое тело работает как идеальный часовой механизм.", "Малыша еще нет, но природа уже стелет для него 'перину'.", "Именно с этой недели акушеры начинают отсчет беременности!"] },
+        2: { emoji: "⏳", size: "Песчинка", facts: ["В этот период происходит настоящее таинство зарождения.", "Твое тело начинает вырабатывать гормоны беременности.", "Совсем скоро ты узнаешь радостную новость!", "Яйцеклетка созревает и готовится к встрече.", "Твой организм выбирает самую лучшую и сильную клеточку.", "Происходит овуляция — момент, когда магия становится возможной.", "Слизистая матки достигает идеальной толщины для приема малыша.", "Природа делает всё, чтобы зарождение новой жизни прошло идеально."] },
+        3: { emoji: "🌱", size: "Маковое зернышко", facts: ["Малыш сейчас размером с песчинку, но уже активно делится.", "Начинает формироваться пуповина и плацента.", "Сейчас закладываются основы нервной трубки.", "Произошло оплодотворение! Две клеточки слились в одну.", "Будущий малыш (зигота) путешествует по маточной трубе.", "Клетки делятся каждые 12 часов с невероятной скоростью.", "Уже сейчас решен пол малыша, цвет его глаз и волос!", "Маленький 'шарик' клеток ищет самое уютное место в матке.", "Кроха состоит примерно из 100 клеток."] },
+        4: { emoji: "🫘", size: "Семечко мака", facts: ["Уже можно сделать первый тест на беременность!", "Формируются зачатки будущих органов.", "Малыш надежно прикрепился к стенке матки.", "Происходит имплантация — малыш 'пустил корни'.", "Начинает вырабатываться гормон ХГЧ (тот самый, что красит тест).", "Из внешних клеток формируется плацента.", "Внутренние клетки делятся на три слоя — из них будут органы.", "Малыш защищен амниотическим пузырем (водным домиком).", "Закладываются основы мозга и позвоночника."] },
+        5: { emoji: "🌾", size: "Кунжутное семя", facts: ["У крохи начинает формироваться сердце и кровеносная система.", "Появляются зачатки спинного и головного мозга.", "Малыш начинает получать питание от тебя.", "У крохи появляется своя собственная кровеносная система.", "Сердечко представляет собой крошечную трубочку, но скоро оно забьется.", "Начинают формироваться почки и печень.", "У эмбриона есть маленькая пуповина.", "Формируется нервная трубка — будущая центральная нервная система.", "Размер крохи всего около 2 миллиметров, но он растет каждый час!"] },
+        6: { emoji: "🧆", size: "Чечевица", facts: ["Маленькое сердечко уже бьется! Оно делает около 100 ударов в минуту.", "Начинают формироваться ушки и глазки.", "Появляются крошечные бугорки — будущие ручки и ножки.", "Кровь малыша уже циркулирует по его маленькому телу.", "Кишечник начинает складываться в трубочку.", "Закладываются зачатки легких.", "Формируются челюсти, щеки и подбородок.", "УЗИ уже может зафиксировать пульсацию маленького сердца!", "Малыш похож на крошечного головастика, но это ненадолго."] },
+        7: { emoji: "🫐", size: "Голубика", facts: ["У малыша формируются крошечные ручки и ножки, похожие на плавнички.", "Развиваются полушария головного мозга.", "Сердечко становится четырехкамерным.", "Начинают формироваться хрусталики глаз.", "Появляются ноздри.", "У малыша уже есть свой аппендикс и поджелудочная железа.", "В ручках и ножках начинают закладываться косточки.", "Малыш производит около 100 000 новых нервных клеток каждую минуту!", "Печень малыша берет на себя функцию производства эритроцитов."] },
+        8: { emoji: "🍇", size: "Малина", facts: ["Начинают закладываться черты лица: глазки, носик и ротик.", "Формируются пальчики на руках (пока с перепонками).", "Малыш уже умеет сгибать ручки в локтях!", "Хрящики начинают превращаться в настоящие кости.", "Кишечник временно выходит в пуповину (это нормально!).", "Начинают формироваться вкусовые рецепторы на языке.", "У малыша появляются веки, но они плотно закрыты.", "Нервная система начинает управлять первыми рефлексами.", "Малыш уже совершает первые, невидимые для тебя, движения."] },
+        9: { emoji: "🫒", size: "Оливка", facts: ["Малыш начинает двигаться, хотя ты этого еще не чувствуешь!", "Закладываются фолликулы будущих зубов.", "Хвостик эмбриона полностью исчезает.", "Формируются ушные раковины.", "Сердце бьется со скоростью 160-170 ударов в минуту.", "Пальчики на руках и ногах избавляются от перепонок.", "Начинают работать суставы — плечи, локти, колени.", "Развивается диафрагма, малыш учится 'дышать' околоплодными водами.", "Плацента практически полностью сформирована."] },
+        10: { emoji: "🍒", size: "Черешня", facts: ["Все жизненно важные органы уже сформированы и начинают работать.", "Малыш умеет отталкиваться от стенок матки.", "На пальчиках появляются крошечные ноготки.", "Почки начинают производить первую мочу.", "Малыш может глотать амниотическую жидкость.", "Если пощекотать живот, малыш попытается отодвинуться.", "Глаза уже полностью сформированы, но закрыты веками.", "Мозг производит 250 000 нейронов в минуту.", "Официально: с этой недели он больше не эмбрион, а ПЛОД! Ура!"] },
+        11: { emoji: "🍓", size: "Клубника", facts: ["Малыш уже умеет открывать ротик и глотать околоплодные воды.", "Он может потягиваться и зевать.", "Формируется радужка глаз.", "В деснах заложены все 20 молочных зубов.", "Кожа малыша прозрачная, через нее видно все сосудики.", "Он начинает активно кувыркаться в своем бассейне.", "Кишечник возвращается из пуповины на свое законное место.", "Голосовые связки начинают формироваться.", "Малыш чувствует запахи, которые проникают в околоплодные воды."] },
+        12: { emoji: "🍋", size: "Лайм", facts: ["Первый важный скрининг! Малыш уже совсем похож на человечка.", "Его почки начинают производить первую мочу.", "Пальчики на руках и ногах полностью разделились.", "Печень начинает вырабатывать желчь.", "Поджелудочная железа начинает производить инсулин.", "Рефлексы становятся сложнее: малыш может сжимать кулачки.", "Кишечник начинает сокращаться (перистальтика).", "Нервная система активно развивается, появляются синапсы.", "Риск выкидыша снижается в разы. Ты переходишь во второй триместр!"] },
+        13: { emoji: "🍑", size: "Персик", facts: ["Начинается второй триместр — самое золотое время!", "У малыша формируются голосовые связки.", "Плацента полностью берет на себя питание крохи.", "Отпечатки пальцев становятся уникальными.", "Малыш начинает улыбаться (пока рефлекторно).", "Голова растет уже не так быстро, тело начинает ее догонять.", "Кости становятся тверже за счет кальция.", "Малыш спит и бодрствует короткими интервалами.", "Твой животик может начать слегка округляться!"] },
+        14: { emoji: "🍋", size: "Лимон", facts: ["Кроха уже может хмуриться, щуриться и строить гримасы.", "Он активно сосет свой пальчик.", "Его шея удлиняется, подбородок больше не лежит на груди.", "Малыш покрывается первородным пушком — лануго.", "Щитовидная железа работает вовсю.", "У мальчиков формируется простата, у девочек — яичники опускаются в таз.", "Он может реагировать на резкие звуки снаружи.", "Его руки стали пропорциональны телу (ножки пока еще коротковаты).", "Малыш начинает тренировать дыхательные мышцы."] },
+        15: { emoji: "🍏", size: "Яблоко", facts: ["Он уже различает вкус еды, которую ты ешь!", "У него формируются уникальные отпечатки пальцев.", "Он слышит биение твоего сердца.", "Кожа малыша очень тонкая, красноватая и покрыта смазкой.", "Кости слухового аппарата твердеют — слух становится лучше.", "Он может сгибать пальчики на руках и ногах.", "Сердце перекачивает около 23 литров крови в сутки.", "Малыш начинает икать, но ты этого еще не чувствуешь.", "Он активно 'плавает' в околоплодных водах, отталкиваясь от стенок."] },
+        16: { emoji: "🥑", size: "Авокадо", facts: ["Маленькое сердце качает целых 23 литра крови в день!", "Появились крошечные, но настоящие реснички.", "Малыш начинает чувствовать твои движения и поглаживания.", "Глаза малыша реагируют на яркий свет через твой живот.", "Он может играть с пуповиной, перебирая ее ручками.", "Мышцы спины укрепляются, малыш пытается держать спинку прямо.", "У девочек в яичниках уже заложены миллионы яйцеклеток.", "Ноги наконец-то стали длиннее рук.", "Ты можешь начать чувствовать 'бабочек в животе' — первые шевеления!"] },
+        17: { emoji: "🍐", size: "Груша", facts: ["Появляется 'коричневый жир' для согрева после родов.", "Скелет начинает твердеть (хрящи превращаются в кости).", "Тельце покрывается тонким пушком — лануго.", "Слух становится острым: малыш отлично слышит твой голос и шум крови.", "Он глотает около литра околоплодных вод в день!", "Малыш умеет зевать во сне.", "Суставы полностью сформированы и работают идеально.", "Глаза переместились с боков на переднюю часть лица.", "Его сердечко бьется под управлением собственного мозга, а не рефлексов."] },
+        18: { emoji: "🍠", size: "Батат", facts: ["Малыш уже умеет смешно икать.", "Слух становится острым — самое время папе разговаривать с животиком!", "Режим сна и бодрствования становится регулярным.", "Нервы покрываются миелином — передача импульсов ускоряется.", "У малыша появляются собственные отпечатки пальцев на ножках.", "Малыш начинает слышать громкие звуки из внешнего мира (собака, музыка).", "Его ушки окончательно заняли свое место на голове.", "Малыш активно исследует свое тело ручками.", "Ты можешь начать ощущать четкие пиночки!"] },
+        19: { emoji: "🥭", size: "Манго", facts: ["Малыш очень активно кувыркается, места еще много.", "На голове растут волосы.", "Он начинает понимать интонацию твоего голоса.", "В мозгу формируются зоны, отвечающие за обоняние, вкус, слух, зрение и осязание.", "Почки производят мочу, которая пополняет околоплодные воды.", "У девочек формируется матка.", "Тело покрывается первородной смазкой (верниксом), чтобы защитить кожу от воды.", "Малыш любит засыпать, когда ты ходишь — его укачивает.", "Пиночки становятся более отчетливыми и сильными."] },
+        20: { emoji: "🍌", size: "Банан", facts: ["Экватор! Половина пути пройдена.", "Малыш начинает различать время суток.", "Его вес достигает уже около 300 граммов!", "Малыш регулярно спит и бодрствует (циклы по 20-40 минут).", "Кожа утолщается и становится четырехслойной.", "Волосики на голове и бровки становятся гуще.", "Малыш тренирует пищеварение, заглатывая воды.", "Ты можешь по УЗИ точно узнать, мальчик это или девочка.", "Верх матки находится уже на уровне твоего пупка!"] },
+        21: { emoji: "🍎", size: "Гранат", facts: ["Малыш чувствует твои прикосновения к животу.", "Развиваются легкие для будущего дыхания.", "Рецепторы на языке полностью сформированы.", "Малыш съедает сладкое с большим удовольствием, чем горькое.", "Кровеносная система работает идеально, обеспечивая кислородом каждый пальчик.", "Малыш часто трогает свое лицо.", "Веки по-прежнему закрыты, но глазки под ними двигаются (фаза быстрого сна).", "Костный мозг начинает производить кровяные клетки.", "Папа уже может почувствовать пиночки, положив руку на живот!"] },
+        22: { emoji: "🥥", size: "Кокос", facts: ["Малыш уже может чувствовать запахи!", "В деснах сформировались все зачатки молочных зубов.", "Он реагирует на резкий свет, просвечивающий через живот.", "Кожа малыша пока сморщенная, так как жирок еще не накопился.", "Растет мозг: извилины и борозды становятся глубже.", "Малыш умеет хмуриться, когда ему что-то не нравится (например, громкий звук).", "Печень начинает перерабатывать билирубин.", "Губы стали очень отчетливыми и пухлыми.", "Малыш может хвататься ручками за пуповину."] },
+        23: { emoji: "🍊", size: "Грейпфрут", facts: ["Он буквально пританцовывает под ритмичную музыку!", "Малыш заглатывает сахара из околоплодных вод.", "Пиночки становятся более уверенными и сильными.", "Поджелудочная железа работает в полную силу.", "В легких начинает вырабатываться сурфактант (чтобы они не слиплись при рождении).", "Слух идеален: малыш различает тембр папиного голоса.", "Он может вздрагивать от твоего чихания или кашля.", "Малыш спит почти 80% времени.", "Кости становятся всё тяжелее и крепче."] },
+        24: { emoji: "🌽", size: "Кукуруза", facts: ["С этой недели малыш считается жизнеспособным вне утробы!", "Он активно тренирует легкие, совершая до 60 'вдохов' вод в минуту.", "У него появляются фазы быстрого и медленного сна.", "Внутреннее ухо полностью сформировано (отвечает за равновесие).", "Малыш знает, когда ты лежишь, а когда стоишь (благодаря вестибулярному аппарату).", "Реснички стали длинными и красивыми.", "Кроха активно накапливает подкожный жирок.", "Его личико полностью сформировано и выглядит как при рождении.", "Мозг весит около 100 граммов!"] },
+        25: { emoji: "🥦", size: "Цветная капуста", facts: ["Его кулачки уже достаточно сильные, чтобы крепко сжать палец.", "Он может вздрагивать от неожиданности.", "Его сердце бьется с частотой около 140 ударов в минуту.", "Кожа постепенно разглаживается за счет жирка.", "В легких развиваются кровеносные сосуды.", "Малыш учится координировать движения рук и глаз.", "Ноздри, которые были закрыты пробочками, открываются.", "Кроха реагирует на твои эмоции: радуется или тревожится вместе с тобой.", "Пиночки могут доставлять небольшой дискомфорт, если он бьет по ребрам."] },
+        26: { emoji: "🥬", size: "Кочан салата", facts: ["Он впервые открывает глазки!", "Его мозг теперь контролирует температуру тела.", "Он различает сладкий и горький вкус вод.", "Глазки уже имеют цвет (чаще всего голубой или серый, потом он может поменяться).", "Малыш может моргать.", "Сеть нервных волокон в ушах стала идеальной — он слышит всё.", "У мальчиков яички начинают опускаться в мошонку.", "Он делает около 300 глотков околоплодных вод в день.", "Ему всё еще достаточно места для кувырков."] },
+        27: { emoji: "🥦", size: "Брокколи", facts: ["Мозг малыша начинает работать ритмично, как у новорожденного.", "Представляешь, он уже видит сны!", "Кроха любит спать, когда мама укачивает его при ходьбе.", "Икота малыша может ощущаться как ритмичные постукивания в животе.", "Он может плакать в животике! (УЗИ это иногда фиксирует).", "Кожа малыша защищена густой белой смазкой.", "В легких всё больше сурфактанта.", "Он узнает голос мамы из тысяч других голосов.", "Ты на пороге третьего триместра!"] },
+        28: { emoji: "🍆", size: "Баклажан", facts: ["Поздравляю, начинается третий триместр!", "Его реснички стали длинными и красивыми.", "Он уже различает голос мамы среди других звуков.", "Мозг увеличивается в размерах, появляются новые извилины.", "Малыш активно накапливает кальций для костей.", "Его глазки могут следить за источником света через живот.", "Иммунная система начинает получать от мамы антитела.", "Вес малыша перевалил за 1 килограмм!", "С этого момента пиночки нужно контролировать (считать шевеления)."] },
+        29: { emoji: "🫑", size: "Мускатная тыква", facts: ["Малыш реагирует на сладкое, которое ты ешь, активными толчками.", "Скелет уже полностью сформирован.", "Он становится очень любознательным и трогает всё вокруг.", "Мышцы становятся значительно сильнее.", "Головка малыша становится пропорциональной телу.", "Он уже может регулировать свою температуру.", "Если надавить на живот, малыш ответит толчком.", "На зубах (внутри десен) появляется эмаль.", "Малышу становится всё теснее в мамином животике."] },
+        30: { emoji: "🥬", size: "Капуста", facts: ["Ему становится тесновато, поэтому пиночки могут ощущаться сильнее.", "Он спит около 15-16 часов в сутки.", "Малыш начинает тренироваться дышать с закрытой голосовой щелью.", "Пушок (лануго) начинает постепенно исчезать с тела.", "Волосы на голове становятся гуще (а у некоторых уже целая шевелюра!).", "Зрение развивается: он сфокусируется на объекте в 20 см от лица после родов.", "Околоплодных вод становится чуть меньше, так как малыш растет.", "Он всё чаще принимает позу эмбриона (скрестив ручки и ножки).", "Малыш запоминает сказки или песенки, которые ты ему часто читаешь."] },
+        31: { emoji: "🍍", size: "Ананас", facts: ["Он активно набирает подкожный белый жир.", "Зрачки могут расширяться и сужаться на свет.", "Печень малыша активно запасает железо.", "Кроха прибавляет по 200 граммов в неделю!", "Нервные связи работают так быстро, что малыш может поймать свою ножку.", "Он может испытывать боль и реагировать на нее.", "Легкие практически готовы к самостоятельному дыханию.", "Кожа становится более розовой и менее прозрачной.", "Мочевой пузырь пропускает через себя около 500 мл мочи в день."] },
+        32: { emoji: "🍈", size: "Дыня", facts: ["Скорее всего, малыш уже занял положение головой вниз.", "Его кожа становится гладкой, нежной и розовой.", "Он уже видит всё в цвете!", "Иммунитет малыша укрепляется за счет маминых иммуноглобулинов.", "Ногти на ручках доросли до кончиков пальцев.", "Он уже не может активно кувыркаться — только пинаться и вытягиваться.", "Малыш много спит, набираясь сил перед родами.", "Его сердечко бьется ровно и спокойно.", "Третий скрининг (если назначен) покажет, как малыш подготовился."] },
+        33: { emoji: "🍈", size: "Круглая дыня", facts: ["Количество околоплодных вод достигло максимума.", "Его мозг развит настолько, что он может связывать звук и свет.", "Он всё чаще икает, готовя легкие к работе.", "Малыш различает день и ночь по свету через стенку живота.", "Черепные кости остаются мягкими, чтобы пройти через родовые пути.", "Сурфактанта в легких уже достаточно для первого вдоха.", "Он активно накапливает железо и кальций.", "Ты можешь угадать, чем именно (пяткой или локтем) он тебя ударил.", "Его вес уже более 2 килограммов!"] },
+        34: { emoji: "🎃", size: "Большая тыква", facts: ["Его почки уже работают на 100%, очищая кровь.", "Слух стал идеальным.", "Он уже умеет узнавать мамин голос и успокаиваться от него.", "Жирок делает его щечки восхитительно пухлыми.", "Надпочечники производят ферменты для пищеварения.", "Если малыш родится сейчас, он уже сможет дышать сам.", "Мальчики: яички полностью опустились в мошонку.", "Он очень внимательно прислушивается к биению твоего сердца.", "Слой сыровидной смазки становится толще (особенно в складочках)."] },
+        35: { emoji: "🍉", size: "Маленький арбуз", facts: ["Легкие практически полностью созрели.", "У малыша стремительно растут пухлые щечки.", "Пушок лануго практически полностью исчез.", "Кишечник малыша заполняется меконием (первородным калом).", "Ему очень тесно! Движения становятся перекатывающимися.", "Малыш набирает около 30 граммов жира в день.", "Радужка глаз приобрела базовый цвет (который поменяется к году).", "Печень и почки полностью готовы к автономной работе.", "Мама может почувствовать, как живот иногда 'ходит ходуном'."] },
+        36: { emoji: "🍉", size: "Арбуз", facts: ["С конца этой недели малыш официально считается доношенным!", "Пищеварительная система полностью готова к маминому молоку.", "Сосательный рефлекс развит безупречно.", "Малыш опускается ниже в таз, готовясь к 'выходу'.", "Кости черепа могут заходить друг на друга (роднички).", "Малыш всё больше времени проводит в фазе медленного сна.", "Он может сосать палец так усердно, что рождается с мозолью!", "Его щечки стали настолько большими из-за жевательных мышц.", "Дышать маме становится легче, так как животик опустился."] },
+        37: { emoji: "🍉", size: "Зрелый арбуз", facts: ["Он активно тренирует сосательный рефлекс, посасывая пальчик.", "Гормоны малыша готовы запустить процесс родов.", "Нервная система готова к жизни вне мамы.", "Малыш вырабатывает гормон кортизол, который 'даст сигнал' к родам.", "Хрящи ушек и носика стали твердыми.", "Пуповина имеет длину около 50-60 см и толщину с большой палец.", "У малыша отличная координация: он может схватить себя за носик.", "Его вес составляет около 3 килограммов или больше.", "Малыш полностью готов к встрече с вами!"] },
+        38: { emoji: "🍉", size: "Крупный арбуз", facts: ["Животик может опуститься, и тебе станет намного легче дышать.", "Он уже очень тяжеленький и сильный.", "Малыш полностью готов к жизни!", "Смазка (верникс) остается только в складочках тела.", "Кишечник готов переваривать первое молоко (молозиво).", "Малыш забирает у мамы антитела для формирования крепкого иммунитета.", "Его легкие ждут момента, чтобы расправиться и закричать.", "Пиночки становятся редкими, но очень сильными.", "Сумка в роддом уже должна стоять в коридоре!"] },
+        39: { emoji: "🎃", size: "Огромная тыква", facts: ["Мы почти у цели, роды могут начаться в любой день!", "Все органы чувств работают как у взрослого.", "Малыш с нетерпением ждет твоего объятия.", "Грудные железки малыша (и мальчиков, и девочек) могут быть слегка набухшими из-за маминых гормонов.", "Сердечко бьется ровно и ждет первого вдоха кислорода.", "Стенки матки стали тонкими, в животике стало светло.", "Малыш сбросил почти весь пушок лануго.", "Его ноготки стали такими длинными, что он может сам себя поцарапать.", "Ждем с минуты на минуту!"] },
+        40: { emoji: "👶", size: "Наш малыш", facts: ["ПДР! Наше чудо абсолютно готово увидеть этот прекрасный мир.", "С Днем Рождения! (Или совсем-совсем скоро).", "Я люблю вас обоих бесконечно, мы справимся со всем!", "Размер малыша около 50-54 см, вес 3-4 кг.", "В его организме есть запас железа на первые полгода жизни.", "У него идеальный слух, зрение, обоняние и осязание.", "Череп готов к мягкому прохождению через родовые пути.", "Плацента выполнила свою работу на 100%.", "Малыш готов сказать миру 'Привет!' самым громким криком."] }
     };
 
     const allTasks = [
@@ -806,7 +884,7 @@
 
     function updateEDD() {
         const date = document.getElementById('newEddDate').value;
-        if (date) { localStorage.setItem('eddDate', date); calculateTerm(date); showToast("Дата родов обновлена!"); }
+        if (date) { localStorage.setItem('eddDate', date); calculateTerm(date); showToast("Дата родов обновлена! ✨"); }
     }
 
     function updateGreeting() {
@@ -833,6 +911,7 @@
             banner.className = "anniversary-banner card";
             banner.style.background = "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)";
             banner.style.color = "#d63031";
+            banner.style.border = "none";
             banner.innerHTML = "✨ С нашей Годовщиной! ✨<br><span style='font-size: 16px; font-weight: 800; display: block; margin-top: 8px;'>Я люблю тебя и наше чудо бесконечно!</span>";
             document.getElementById('greetingTitle').after(banner);
             confetti({ particleCount: 300, spread: 120, origin: { y: 0.5 }, colors: ['#fb7185', '#ffffff', '#ff9a9e', '#ffd700'] });
@@ -841,8 +920,8 @@
 
     function sendBabyKiss() {
         confetti({
-            particleCount: 20,
-            spread: 40,
+            particleCount: 25,
+            spread: 50,
             origin: { x: 0.2, y: 0.3 },
             colors: ['#fb7185', '#fda4af'],
             shapes: ['circle']
@@ -881,13 +960,15 @@
         document.getElementById('sizeEmoji').innerText = dataToDisplay.emoji;
         document.getElementById('sizeText').innerText = `Размер: ${dataToDisplay.size}`;
         
+        // Рандомный факт из большой базы (меняется при каждом релоаде страницы)
         const randomFact = dataToDisplay.facts[Math.floor(Math.random() * dataToDisplay.facts.length)];
         document.getElementById('factText').innerText = randomFact;
 
         const daysLeft = Math.ceil((edd - today) / (1000 * 60 * 60 * 24));
         if (daysLeft > 0) document.getElementById('countdownBadge').innerText = `До встречи: ~${daysLeft} дн.`;
 
-        const quoteIndex = today.getDate() % warmWords.length;
+        // Случайная цитата на сегодня
+        const quoteIndex = Math.floor(Math.random() * warmWords.length);
         document.getElementById('dailyQuote').innerText = `${warmWords[quoteIndex]}`;
     }
 
@@ -1173,7 +1254,7 @@
         const p = document.getElementById('husbandPhone').value;
         if(p) { localStorage.setItem('husbandPhone', p); document.getElementById('callHusband').href = "tel:" + p; showToast("Мой номер сохранен!"); }
     }
-    function saveDiary() { localStorage.setItem('diaryEntry', document.getElementById('diaryEntry').value); showToast("Письмо сохранено в сердце!"); }
+    function saveDiary() { localStorage.setItem('diaryEntry', document.getElementById('diaryEntry').value); showToast("Письмо сохранено в сердце! 💖"); }
 
     function switchTab(tabId, btn) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
