@@ -225,7 +225,8 @@
             <!-- Baby Message -->
             <div class="glass-card rounded-3xl p-5 flex items-center gap-4 mb-6 border-l-4 border-l-accent cursor-pointer active:scale-[0.98] transition-transform" onclick="sendBabyKiss()">
                 <div class="text-[46px] animate-[gentleFloat_4s_ease-in-out_infinite] emoji drop-shadow-sm">👶</div>
-                <p class="text-accent-dark dark:text-rose-300 font-extrabold text-[15px] leading-tight m-0" id="babySecretMessage">Мамочка, я расту и очень тебя люблю!</p>
+                <!-- Добавлен transition-opacity для плавной смены текста -->
+                <p class="text-accent-dark dark:text-rose-300 font-extrabold text-[15px] leading-tight m-0 transition-opacity duration-300" id="babySecretMessage">Мамочка, я расту и очень тебя люблю!</p>
             </div>
             
             <!-- Main Stats Card -->
@@ -268,6 +269,15 @@
                         <span class="emoji text-3xl">❤️</span> Просто скучаю
                     </button>
                 </div>
+            </div>
+
+            <!-- COUPONS FROM HUSBAND (ЧЕКОВАЯ КНИЖКА) -->
+            <div class="glass-card rounded-[32px] p-6 mb-6 bg-gradient-to-br from-amber-50 to-yellow-100 dark:from-amber-900/20 dark:to-yellow-900/10 border border-yellow-300/50 dark:border-amber-700/50">
+                <h3 class="font-heading font-black text-2xl text-center mb-2 flex items-center justify-center gap-3 text-amber-800 dark:text-amber-500"><span class="emoji text-3xl">🎟️</span> Чековая книжка</h3>
+                <p class="text-center text-amber-700/80 dark:text-amber-200/60 font-extrabold text-sm mb-5">Вытяни купон! Сделай скриншот и отправь мне, я всё исполню.</p>
+                <button onclick="openCouponModal()" class="w-full bg-gradient-to-r from-amber-400 to-orange-400 text-white font-black text-lg py-4 rounded-3xl shadow-[0_10px_25px_rgba(245,158,11,0.3)] active:scale-95 transition-transform flex justify-center items-center gap-2">
+                    Вытянуть купон ✨
+                </button>
             </div>
 
             <!-- SMART FAQ -->
@@ -460,12 +470,25 @@
     </div>
 </div>
 
+<!-- Modal: Coupon -->
+<div id="couponModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-[110] hidden items-center justify-center p-5 opacity-0 transition-opacity duration-300">
+    <div class="bg-gradient-to-br from-yellow-50 to-amber-100 dark:from-slate-800 dark:to-slate-900 rounded-[32px] w-full max-w-sm p-8 relative transform scale-95 transition-transform duration-300 shadow-2xl border-2 border-dashed border-amber-400 dark:border-amber-600" id="couponModalCard">
+        <button onclick="closeCouponModal()" class="absolute top-4 right-4 w-10 h-10 bg-amber-200/50 dark:bg-slate-700/50 rounded-full flex items-center justify-center font-black text-xl text-amber-700 dark:text-slate-300 active:scale-90 transition-transform">×</button>
+        <div class="text-center mb-2">
+            <span class="emoji text-[60px] drop-shadow-md">🎟️</span>
+        </div>
+        <h3 class="font-heading font-black text-sm text-amber-800/60 dark:text-amber-400/60 mb-4 text-center uppercase tracking-widest">Купон на:</h3>
+        <div class="font-black text-[24px] leading-tight text-slate-800 dark:text-slate-100 text-center mb-6" id="couponModalBody">
+            <!-- Text goes here -->
+        </div>
+        <p class="text-center font-bold text-xs text-amber-700/70 dark:text-amber-500/70 bg-white/50 dark:bg-black/20 py-2 rounded-xl">Сделай скриншот и отправь мужу ❤️<br>Срок годности: бесконечен.</p>
+    </div>
+</div>
+
 <script>
     const VERSION = "_v13"; // Updated version to force cache refresh
 
-    // --- DATA ARRAYS ---
-    
-    // Реакции на настроение (ВОССТАНОВЛЕНО)
+    // Реакции на настроение
     const moodResponses = {
         '😊': ["Рад видеть твою улыбку! Твоё настроение передается малышу.", "Твоя улыбка делает мой день ярче! Обожаю тебя!", "Малыш тоже сейчас улыбается в животике, я уверен!", "Продолжай в том же духе, моя счастливая девочка! ✨"],
         '🥰': ["Моя самая нежная девочка! Шлю тебе миллион поцелуев.", "Я так сильно тебя люблю! Скоро буду дома обнимать.", "Ты — моё всё. Спасибо за то, что ты есть.", "Тоже думаю о тебе! Наш малыш счастливчик с такой мамой. ❤️"],
@@ -495,6 +518,25 @@
     };
 
     const petNames = ["моя любимая", "мой эмоциональный ёжик", "моя пердушка", "солнышко", "солнце", "моя радость", "моя королева", "родная", "моя девочка"];
+
+    // Список купонов
+    const husbandCoupons = [
+        "Массаж ножек и ступней (30 минут)",
+        "Расслабляющий массаж спины и поясницы",
+        "Поход за любой вкусняшкой прямо сейчас",
+        "Освобождение от ВСЕХ домашних дел на сегодня",
+        "Вкусный завтрак в постель",
+        "Просмотр любого фильма/сериала на твой выбор",
+        "100 поцелуев в животик и щечки",
+        "Заказ доставки твоей любимой еды",
+        "Вечер молчаливого выслушивания всех капризов 😅",
+        "Внеочередная прогулка на свежем воздухе",
+        "Покупка приятной мелочи, которую ты давно хотела",
+        "День абсолютной лени (я всё делаю сам)",
+        "Приготовлю твое любимое блюдо",
+        "Беспрекословное согласие с любым твоим решением на 24 часа",
+        "Просто быть рядом и слушать все что ты хочешь рассказать, мой эмоцианальный ёжик ❤️"
+    ];
 
     const faqData = {
         trimester1: [
@@ -823,11 +865,11 @@
         const options = { weekday: 'long', day: 'numeric', month: 'long' };
         document.getElementById('currentDate').innerText = new Date().toLocaleDateString('ru-RU', options);
         
-        // Послание от малыша (зависит от дня, чтобы не менялось каждую секунду)
-        const msgIndex = new Date().getDate() % babyMessages.length;
+        // Послание от малыша
+        const msgIndex = Math.floor(Math.random() * babyMessages.length);
         document.getElementById('babySecretMessage').innerText = babyMessages[msgIndex];
 
-        // ПРОВЕРКА НА ГОДОВЩИНУ (ВОССТАНОВЛЕНО)
+        // ПРОВЕРКА НА ГОДОВЩИНУ
         const ANNIVERSARY_DAY = "03-03";
         const now = new Date();
         const md = `${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
@@ -836,7 +878,7 @@
             const banner = document.createElement('div');
             banner.className = "anniversary-banner bg-gradient-to-br from-yellow-200 to-amber-400 dark:from-amber-600 dark:to-amber-800 rounded-[32px] p-6 text-center text-amber-900 dark:text-amber-50 mb-6 shadow-lg border border-amber-300 dark:border-amber-700 animate-pulse";
             banner.innerHTML = "<div class='text-2xl mb-2 emoji'>✨🎉✨</div><h2 class='font-pacifico text-3xl mb-2'>С нашей Годовщиной!</h2><span class='font-extrabold text-sm'>Я люблю тебя и наше чудо бесконечно! ❤️</span>";
-            document.getElementById('greetingTitle').parentNode.after(banner); // Вставляем сразу под шапкой
+            document.getElementById('greetingTitle').parentNode.after(banner);
             
             setTimeout(() => {
                 confetti({ particleCount: 300, spread: 120, origin: { y: 0.5 }, colors: ['#fb7185', '#ffffff', '#ff9a9e', '#ffd700'] });
@@ -848,6 +890,15 @@
         haptic();
         confetti({ particleCount: 40, spread: 60, origin: { x: 0.2, y: 0.3 }, colors: ['#fb7185', '#fda4af'], shapes: ['circle'] });
         showToast("Малыш шлет тебе поцелуй! 💋");
+
+        const msgElement = document.getElementById('babySecretMessage');
+        msgElement.style.opacity = 0;
+        
+        setTimeout(() => {
+            const msgIndex = Math.floor(Math.random() * babyMessages.length);
+            msgElement.innerText = babyMessages[msgIndex];
+            msgElement.style.opacity = 1;
+        }, 300);
     }
 
     function calculateTerm(eddStr) {
@@ -975,7 +1026,7 @@
             isBreathing = true;
             circle.classList.add('breathing');
             
-            let phase = 'in'; // 'in', 'hold', 'out'
+            let phase = 'in';
             
             const updateUI = () => {
                 if(phase === 'in') {
@@ -992,7 +1043,7 @@
             breatheInterval = setInterval(() => {
                 phase = phase === 'in' ? 'out' : 'in';
                 updateUI();
-                if(navigator.vibrate) navigator.vibrate([30, 50, 30]); // Haptic pulse on switch
+                if(navigator.vibrate) navigator.vibrate([30, 50, 30]);
             }, 4000); 
         }
     }
@@ -1035,7 +1086,7 @@
         }
     }
 
-    // ЛОГИКА НАСТРОЕНИЙ (ВОССТАНОВЛЕНО)
+    // ЛОГИКА НАСТРОЕНИЙ
     function saveMood(emoji, btnElement) {
         haptic();
         localStorage.setItem('mood' + VERSION, emoji);
@@ -1067,7 +1118,7 @@
         setTimeout(function(){ 
             toast.classList.add("opacity-0", "translate-y-4", "pointer-events-none");
             toast.classList.remove("opacity-100", "translate-y-0"); 
-        }, 4500); // Чуть дольше, чтобы успеть прочитать
+        }, 4500);
     }
 
     // --- MODAL LETTERS ---
@@ -1083,7 +1134,6 @@
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         
-        // Force reflow
         void modal.offsetWidth;
         
         modal.classList.add('opacity-100');
@@ -1106,7 +1156,44 @@
         }, 300);
     }
 
-    // --- SCHEDULE (С КНОПКОЙ ИНФОРМАЦИИ) ---
+    // --- COUPON MODAL LOGIC ---
+    function openCouponModal() {
+        haptic();
+        const randomCoupon = husbandCoupons[Math.floor(Math.random() * husbandCoupons.length)];
+        document.getElementById('couponModalBody').innerText = randomCoupon;
+        
+        const modal = document.getElementById('couponModal');
+        const card = document.getElementById('couponModalCard');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        void modal.offsetWidth;
+        
+        modal.classList.add('opacity-100');
+        card.classList.remove('scale-95');
+        card.classList.add('scale-100');
+        
+        setTimeout(() => {
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#fbbf24', '#f59e0b', '#fb7185'] });
+        }, 300);
+    }
+
+    function closeCouponModal() {
+        haptic();
+        const modal = document.getElementById('couponModal');
+        const card = document.getElementById('couponModalCard');
+        
+        modal.classList.remove('opacity-100');
+        card.classList.remove('scale-100');
+        card.classList.add('scale-95');
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 300);
+    }
+
+    // --- SCHEDULE ---
     function getDailyTasks() {
         const today = new Date();
         today.setHours(0,0,0,0);
@@ -1141,13 +1228,11 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-[36px] drop-shadow-sm emoji">${t.icon}</span>
-                        <!-- Кнопка Информации -->
                         <button class="w-10 h-10 rounded-full bg-accent-light dark:bg-rose-900/30 text-accent flex items-center justify-center transition-transform duration-300" onclick="event.stopPropagation(); toggleDetails('${t.id}', this)">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-6 h-6 transition-transform duration-300" id="icon-${t.id}"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                     </div>
                 </div>
-                <!-- Скрытое по умолчанию описание -->
                 <div id="details-${t.id}" class="text-sm text-text-muted font-bold leading-relaxed overflow-hidden max-h-0 opacity-0 transition-all duration-500 ease-in-out">
                     <div class="pt-4 mt-4 border-t border-dashed border-divider">
                         ${t.details}
@@ -1158,21 +1243,18 @@
         updateProgress();
     }
 
-    // ЛОГИКА РАСКРЫТИЯ ДЕТАЛЕЙ ЛЕКАРСТВА (ВОССТАНОВЛЕНО)
     function toggleDetails(id, btn) {
         haptic();
         const details = document.getElementById('details-' + id);
         const icon = document.getElementById('icon-' + id);
         
         if (details.classList.contains('max-h-0')) {
-            // Открываем
             details.classList.remove('max-h-0', 'opacity-0');
             details.classList.add('max-h-[500px]', 'opacity-100');
             btn.classList.add('bg-accent', 'text-white', 'shadow-md');
             btn.classList.remove('bg-accent-light', 'text-accent');
             icon.classList.add('rotate-180');
         } else {
-            // Закрываем
             details.classList.add('max-h-0', 'opacity-0');
             details.classList.remove('max-h-[500px]', 'opacity-100');
             btn.classList.remove('bg-accent', 'text-white', 'shadow-md');
@@ -1290,7 +1372,7 @@
             }
             localStorage.setItem('tasks' + VERSION, '{}');
             localStorage.setItem('water' + VERSION, '[]');
-            localStorage.setItem('mood' + VERSION, '[]'); // Сброс настроения
+            localStorage.setItem('mood' + VERSION, ''); // Сброс настроения
             localStorage.setItem('kickCount' + VERSION, '0');
             localStorage.setItem('finished_today' + VERSION, 'false');
             localStorage.setItem('last' + VERSION, d);
