@@ -132,8 +132,8 @@
   --sh:0 20px 60px rgba(0,0,0,0.65);--sh2:0 8px 24px rgba(0,0,0,0.4);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
-body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .5s,color .5s}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{overflow-x:hidden;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .5s,color .5s}
 
 /* ══ NOISE TEXTURE OVERLAY ══ */
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px 200px}
@@ -176,7 +176,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opa
 @keyframes gbA{from{transform:translate(0,0) scale(1)}to{transform:translate(50px,40px) scale(1.14)}}
 
 /* ══ LAYOUT ══ */
-#app{position:relative;z-index:2;max-width:440px;margin:0 auto;padding:0 15px 132px}
+#app{position:relative;z-index:2;max-width:440px;margin:0 auto;padding:0 0 132px}
 
 /* ══ CARD ══ */
 .card{background:var(--card);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border:1px solid var(--cb);border-radius:var(--r);box-shadow:var(--sh2);margin-bottom:14px;overflow:hidden;animation:cIn .7s cubic-bezier(.34,1.56,.64,1) backwards;position:relative}
@@ -186,18 +186,18 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opa
 .cb{padding:20px}
 
 /* ══ HERO ══ */
-.hero{border-radius:28px;padding:24px 22px 28px;position:relative;overflow:hidden;margin:14px 0;box-shadow:0 20px 56px rgba(232,50,90,.38)}
-.hero::after{content:'';position:absolute;inset:0;background:linear-gradient(175deg,rgba(255,255,255,.1) 0%,transparent 55%);pointer-events:none}
+.hero{border-radius:0 0 34px 34px;padding:calc(env(safe-area-inset-top,0px) + 22px) 22px 30px;position:relative;overflow:hidden;margin:0 0 16px;box-shadow:0 18px 50px rgba(232,50,90,.38)}
+.hero::after{content:'';position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,0.14) 0%,transparent 50%),linear-gradient(180deg,rgba(0,0,0,0.08) 0%,transparent 30%);pointer-events:none;z-index:0}
 .hero-orb{position:absolute;border-radius:50%;opacity:.28;filter:blur(44px)}
-.hero-orb1{width:220px;height:220px;background:rgba(255,255,255,.9);top:-70px;right:-50px;animation:hOrb 9s ease-in-out infinite alternate}
-.hero-orb2{width:160px;height:160px;background:rgba(255,220,234,.95);bottom:-50px;left:-30px;animation:hOrb 11s ease-in-out infinite alternate-reverse}
+.hero-orb1{width:240px;height:240px;background:rgba(255,240,248,.92);top:-80px;right:-60px;animation:hOrb 9s ease-in-out infinite alternate}
+.hero-orb2{width:180px;height:180px;background:rgba(255,200,225,.88);bottom:-60px;left:-40px;animation:hOrb 11s ease-in-out infinite alternate-reverse}
 @keyframes hOrb{from{transform:translate(0,0) scale(1)}to{transform:translate(18px,14px) scale(1.1)}}
 .hero-shine{position:absolute;top:0;left:-100%;width:45%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);transform:skewX(-28deg);animation:hShine 8s ease-in-out infinite}
 @keyframes hShine{0%,100%{left:-100%}55%{left:165%}}
-.hero-streak{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.22);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.4);border-radius:50px;padding:5px 12px;font-size:12px;font-weight:900;color:#fff;display:flex;align-items:center;gap:5px;z-index:2}
-.hero-date{font-size:10px;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:2px;position:relative;z-index:1;margin-bottom:6px}
-.hero-title{font-family:'Playfair Display',serif;font-size:26px;font-style:italic;font-weight:900;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.18);line-height:1.24;margin-bottom:0;position:relative;z-index:1;max-width:calc(100% - 70px)}
-.hero-bottom{display:flex;align-items:stretch;justify-content:space-between;margin-top:16px;position:relative;z-index:1;gap:10px}
+.hero-streak{position:absolute;top:calc(env(safe-area-inset-top,16px) + 16px);right:16px;z-index:10;background:rgba(255,255,255,.22);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.4);border-radius:50px;padding:5px 12px;font-size:12px;font-weight:900;color:#fff;display:flex;align-items:center;gap:5px;z-index:2}
+.hero-date{font-size:11px;font-weight:900;color:rgba(255,255,255,.88);text-transform:uppercase;letter-spacing:2.5px;position:relative;z-index:2;margin-bottom:8px;}
+.hero-title{font-family:'Playfair Display',serif;font-size:26px;font-style:italic;font-weight:900;color:#fff;text-shadow:0 2px 18px rgba(0,0,0,0.22);line-height:1.22;margin-bottom:0;position:relative;z-index:2;max-width:calc(100% - 72px)}
+.hero-bottom{display:flex;align-items:stretch;justify-content:space-between;margin-top:18px;position:relative;z-index:2;gap:10px}
 .hero-chip{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.3);border-radius:20px;padding:12px 16px;color:#fff;backdrop-filter:blur(10px);flex:1}
 .hero-chip-num{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;line-height:1}
 .hero-chip-lbl{font-size:11px;font-weight:800;line-height:1.45;opacity:.9}
@@ -212,7 +212,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opa
 .cd-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.08) 0%,transparent 50%);pointer-events:none}
 .cd-title{font-size:11px;font-weight:900;color:rgba(255,255,255,.78);text-transform:uppercase;letter-spacing:3px;margin-bottom:18px;position:relative;z-index:1}
 .cd-grid{display:flex;justify-content:center;gap:10px;position:relative;z-index:1}
-.cd-unit{background:rgba(255,255,255,.18);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.28);border-radius:18px;padding:13px 14px;min-width:70px}
+.cd-unit{background:rgba(255,255,255,0.2);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:14px 16px;min-width:76px;transition:transform .15s}
 .cd-num{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:#fff;line-height:1}
 .cd-lbl{font-size:10px;color:rgba(255,255,255,.75);font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
 
@@ -290,7 +290,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opa
 
 /* ══ LETTERS ══ */
 .lg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.lb{border:none;border-radius:18px;padding:18px 12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);display:flex;flex-direction:column;align-items:center;gap:8px}
+.lb{border:none;border-radius:20px;padding:18px 12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);display:flex;flex-direction:column;align-items:center;gap:8px;backdrop-filter:blur(8px);}
 .lb:active{transform:scale(.9)}
 .lb em{font-size:32px;font-style:normal}
 .lb1{background:rgba(99,102,241,.1);color:#3730A3;border:1.5px solid rgba(99,102,241,.2)}.dark .lb1{color:#A5B4FC}
@@ -422,7 +422,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opa
 @keyframes brAu{0%{width:100px;height:100px;opacity:.9}100%{width:440px;height:440px;opacity:0}}
 
 /* ══ SMART TIP ══ */
-.stip{border-radius:18px;padding:16px 18px;margin-bottom:11px;display:flex;align-items:flex-start;gap:12px}
+.stip{border-radius:20px;padding:16px 18px;margin-bottom:11px;display:flex;align-items:flex-start;gap:12px;transition:transform .2s}
 .stip-ic{font-size:28px;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,.15))}
 .stip-txt{font-size:13px;font-weight:700;color:var(--t1);line-height:1.58}
 .stip-txt b{color:var(--rose)}
@@ -488,7 +488,7 @@ input:checked+.tog-sl::before{transform:translateX(22px)}
 .nb{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--t3);transition:all .25s;padding:6px 12px;border-radius:16px;min-width:60px}
 .nb span:first-child{font-size:27px;transition:transform .28s cubic-bezier(.34,1.56,.64,1)}
 .nb.act{color:var(--rose);background:rgba(var(--rose-rgb,232,50,90),.09)}
-.nb.act span:first-child{transform:scale(1.24) translateY(-3px);filter:drop-shadow(0 4px 10px rgba(232,50,90,.42))}
+.nb.act span:first-child{transform:scale(1.3) translateY(-4px);filter:drop-shadow(0 5px 14px rgba(232,50,90,0.5));}
 
 /* ══ SETUP ══ */
 #setupScreen{display:flex;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:24px;position:relative;z-index:2}
@@ -508,6 +508,322 @@ input:focus,textarea:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(23
 .anniv{border-radius:var(--r);padding:24px 20px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:0 16px 44px rgba(212,160,23,.4)}
 .anniv::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#C8860A,#F0C060,#E8A020)}
 .anniv::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.1) 0%,transparent 60%)}
+
+
+/* ══ HERO EDGE-TO-EDGE FIX ══ */
+.hero{border-radius:0 0 32px 32px!important;margin:-1px -15px 14px!important;padding:calc(env(safe-area-inset-top,18px) + 54px) 22px 28px!important;}
+/* Subtle status bar gradient overlay */
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:calc(env(safe-area-inset-top,18px) + 44px);background:linear-gradient(180deg,rgba(0,0,0,0.22) 0%,transparent 100%);z-index:0;pointer-events:none}
+
+/* ══ WEIGHT TRACKER V2 ══ */
+.wt-input-row{display:flex;gap:10px;align-items:stretch;margin-bottom:16px;}
+.wt-input-wrap{flex:1;display:flex;align-items:center;background:rgba(255,255,255,0.6);border:1.5px solid rgba(255,255,255,0.75);border-radius:18px;padding:0 14px;backdrop-filter:blur(10px);gap:8px;}
+.wt-inp-v2{flex:1;font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--t1);background:transparent;border:none;outline:none;padding:14px 0;width:0;min-width:0;}
+.wt-inp-v2::placeholder{color:var(--t3);opacity:0.5;}
+.wt-unit{font-size:14px;font-weight:900;color:var(--t3);flex-shrink:0;}
+.wt-save-btn{background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;border:none;border-radius:18px;padding:0 22px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 6px 20px rgba(232,50,90,0.38);transition:transform .2s,box-shadow .2s;white-space:nowrap;min-height:54px;}
+.wt-save-btn:active{transform:scale(0.94);box-shadow:0 2px 8px rgba(232,50,90,0.25);}
+
+/* Chart area */
+.wt-chart-v2{display:flex;align-items:flex-end;gap:5px;height:80px;margin:4px 0 6px;padding:0 2px;}
+.wt-bar-w{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0;}
+.wt-bar{width:100%;transition:height .6s cubic-bezier(.34,1.56,.64,1);background:rgba(232,50,90,0.2);border-radius:8px 8px 0 0;}
+.wt-bar.latest{background:linear-gradient(180deg,var(--rose),var(--rose2));box-shadow:0 4px 16px rgba(232,50,90,0.4);}
+.wt-lbl{font-size:8px;font-weight:900;color:var(--t3);margin-top:3px;text-align:center;white-space:nowrap;}
+.wt-val{font-size:9px;font-weight:900;color:var(--rose);margin-bottom:2px;opacity:0;transition:opacity .3s;}
+.wt-bar-w.show-val .wt-val{opacity:1;}
+
+/* Stats row */
+.wt-stats-v2{background:rgba(232,50,90,0.07);border:1px solid rgba(232,50,90,0.14);border-radius:14px;padding:10px 14px;font-size:12px;font-weight:700;color:var(--t2);line-height:1.6;margin-bottom:12px;min-height:40px;display:flex;align-items:center;justify-content:center;text-align:center;}
+
+/* BMI toggle button */
+.bmi-toggle-btn{width:100%;background:rgba(30,156,176,0.08);color:var(--teal);border:1.5px solid rgba(30,156,176,0.22);border-radius:14px;padding:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;cursor:pointer;transition:all .2s;letter-spacing:.3px;}
+.bmi-toggle-btn:active{transform:scale(0.97);}
+.bmi-toggle-btn.open{background:rgba(30,156,176,0.13);border-color:rgba(30,156,176,0.35);}
+
+/* BMI section v2 */
+.bmi-section-v2{margin-top:12px;animation:cIn .4s ease;}
+.bmi-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.bmi-title{font-size:11px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1px;}
+.bmi-val{font-size:13px;font-weight:900;color:var(--rose);}
+.bmi-labels-v2{display:flex;justify-content:space-between;font-size:9px;font-weight:800;color:var(--t3);opacity:.8;margin-bottom:3px;}
+.bmi-bar-track{height:10px;border-radius:8px;overflow:hidden;background:linear-gradient(90deg,#4EC8DC 0%,#52B882 28%,#F0C060 58%,#E8325A 100%);position:relative;margin-bottom:6px;}
+.bmi-indicator{position:absolute;top:-6px;width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--rose);box-shadow:0 2px 10px rgba(0,0,0,0.25);transform:translateX(-50%);transition:left 1.3s cubic-bezier(.34,1.56,.64,1);}
+.who-box{padding:12px 14px;background:rgba(82,184,130,0.1);border:1.5px solid rgba(82,184,130,0.28);border-radius:14px;font-size:12px;font-weight:700;color:#2D7A55;line-height:1.6;}
+.dark .who-box{color:var(--sage2);}
+
+/* ══ SMART TIPS — glass style ══ */
+.stip{backdrop-filter:blur(12px);border-radius:20px!important;}
+
+/* ══ SOFTER PALETTE TWEAKS ══ */
+/* Warmer, cozier card backgrounds */
+
+/* Warm card override */
+.card{background:rgba(255,248,252,0.74)!important;}
+.gB .card{background:rgba(245,252,255,0.74)!important;}
+.dark .card{background:rgba(26,6,16,0.8)!important;}
+
+.dark .card{background:rgba(26,6,16,0.78)!important;}
+/* Baby card float shadow */
+.baby-em{filter:drop-shadow(0 6px 18px rgba(232,50,90,0.28))!important;}
+/* Quote note warmer */
+.q-note{background:linear-gradient(135deg,rgba(255,252,235,0.92),rgba(255,246,210,0.85))!important;}
+/* Countdown nicer */
+.cd-unit{min-width:78px!important;}
+
+/* ══ PAGE TITLE SPACING ══ */
+#tab-journal .sh, #tab-meds .sh, #tab-bag .sh{padding-top:16px;}
+
+/* ══ HERO DATE MORE VISIBLE ══ */
+.hero-date{font-size:11px!important;font-weight:900!important;letter-spacing:2.5px!important;margin-bottom:8px!important;}
+.hero-title{font-size:28px!important;line-height:1.2!important;}
+
+/* ══ GLASSMORPHISM & UI UPGRADE ══ */
+:root{--glass:rgba(255,255,255,0.68);--glass2:rgba(255,255,255,0.45);--sh-glass:0 8px 40px rgba(232,50,90,0.12),inset 0 1px 0 rgba(255,255,255,0.85);}
+.dark{--glass:rgba(26,6,16,0.78);--glass2:rgba(26,6,16,0.55);--sh-glass:0 8px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06);}
+.gG{--glass:rgba(255,240,248,0.7)}.gB{--glass:rgba(240,248,255,0.7)}.dark.gG{--glass:rgba(28,8,24,0.78)}.dark.gB{--glass:rgba(4,10,22,0.78)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(232,50,90,0.07) 0%,transparent 60%),radial-gradient(ellipse 70% 50% at 80% 90%,rgba(196,78,232,0.06) 0%,transparent 60%)}
+.card{background:var(--glass)!important;backdrop-filter:blur(40px) saturate(1.6)!important;-webkit-backdrop-filter:blur(40px) saturate(1.6)!important;border:1px solid rgba(255,255,255,0.62)!important;box-shadow:var(--sh-glass)!important;}
+.dark .card{border:1px solid rgba(255,255,255,0.09)!important;}.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.9),transparent);pointer-events:none;z-index:1;}
+.pg-fill{position:relative;overflow:hidden;}.pg-fill::after{content:'';position:absolute;top:0;right:0;bottom:0;width:22px;background:rgba(255,255,255,0.5);border-radius:8px;animation:pgPulse 1.6s ease-in-out infinite;}
+@keyframes pgPulse{0%,100%{opacity:0}50%{opacity:1}}
+@keyframes checkPop{0%{transform:scale(0) rotate(-10deg)}65%{transform:scale(1.25) rotate(3deg)}100%{transform:scale(1)}}
+.sc-chk.done{animation:checkPop 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;}
+.tab-c.act{animation:tabIn 0.38s cubic-bezier(0.34,1.2,0.64,1) backwards;}
+@keyframes tabIn{from{opacity:0;transform:translateY(14px) scale(0.97)}to{opacity:1;transform:none}}
+.nb.act{background:rgba(232,50,90,0.11)!important;color:var(--rose)!important;}
+.nb.act span:first-child{transform:scale(1.28) translateY(-4px)!important;filter:drop-shadow(0 4px 12px rgba(232,50,90,0.5))!important;}
+.ms{background:var(--glass)!important;backdrop-filter:blur(55px) saturate(1.8)!important;-webkit-backdrop-filter:blur(55px) saturate(1.8)!important;border:1px solid rgba(255,255,255,0.55)!important;}
+.dark .ms{background:rgba(26,6,16,0.92)!important;border-color:rgba(255,255,255,0.08)!important;}
+.ms-close{background:rgba(255,255,255,0.55)!important;backdrop-filter:blur(10px)!important;border:1px solid rgba(255,255,255,0.62)!important;}.dark .ms-close{background:rgba(255,255,255,0.08)!important;}
+#toast{background:rgba(16,4,10,0.94)!important;backdrop-filter:blur(28px)!important;border:1px solid rgba(232,50,90,0.28)!important;}
+.dark #toast{background:rgba(255,248,250,0.97)!important;color:#12040A!important;}
+#nav{background:rgba(255,252,253,0.88)!important;backdrop-filter:blur(44px) saturate(1.8)!important;-webkit-backdrop-filter:blur(44px) saturate(1.8)!important;border-top:1px solid rgba(255,255,255,0.6)!important;padding-bottom:max(32px,env(safe-area-inset-bottom))!important;}
+.dark #nav{background:rgba(17,4,8,0.94)!important;border-top:1px solid rgba(255,255,255,0.07)!important;}
+.hero{border-radius:0 0 34px 34px!important;box-shadow:0 18px 52px rgba(232,50,90,0.4),inset 0 1px 0 rgba(255,255,255,0.18)!important;}
+.hero-progress-fill{background:linear-gradient(90deg,rgba(255,255,255,0.7),rgba(255,255,255,1))!important;box-shadow:0 0 10px rgba(255,255,255,0.5)!important;}
+.bag-item{background:rgba(255,255,255,0.45)!important;backdrop-filter:blur(10px)!important;border:1px solid rgba(255,255,255,0.55)!important;}
+.dark .bag-item{background:rgba(255,255,255,0.05)!important;border-color:rgba(255,255,255,0.07)!important;}
+.sc-item{background:rgba(255,255,255,0.5)!important;backdrop-filter:blur(20px)!important;border:1px solid rgba(255,255,255,0.6)!important;}
+.dark .sc-item{background:rgba(255,255,255,0.06)!important;border-color:rgba(255,255,255,0.09)!important;}
+.mb{background:rgba(255,255,255,0.6)!important;backdrop-filter:blur(8px)!important;border:2.5px solid transparent!important;}
+.mb.sel{border-color:var(--rose)!important;background:rgba(232,50,90,0.13)!important;box-shadow:0 6px 22px rgba(232,50,90,0.3)!important;transform:scale(1.2)!important;}
+.faq-item{background:rgba(255,255,255,0.4)!important;backdrop-filter:blur(12px)!important;border:1px solid rgba(255,255,255,0.55)!important;}
+.dark .faq-item{background:rgba(255,255,255,0.04)!important;border-color:rgba(255,255,255,0.08)!important;}
+.faq-q{background:rgba(255,255,255,0.22)!important;}
+.tog-w{background:rgba(255,255,255,0.45)!important;backdrop-filter:blur(10px)!important;border:1px solid rgba(255,255,255,0.55)!important;}
+.dark .tog-w{background:rgba(255,255,255,0.05)!important;border-color:rgba(255,255,255,0.07)!important;}
+.dw.act svg{filter:drop-shadow(0 4px 16px rgba(67,200,224,0.72))!important;}
+.card:nth-child(1){animation-delay:0.05s!important}.card:nth-child(2){animation-delay:0.12s!important}.card:nth-child(3){animation-delay:0.19s!important}.card:nth-child(4){animation-delay:0.26s!important}.card:nth-child(5){animation-delay:0.33s!important}.card:nth-child(6){animation-delay:0.40s!important}
+#app{padding-bottom:max(132px,calc(100px + env(safe-area-inset-bottom)))!important;}
+.fetus-visual{border-radius:20px;background:rgba(255,255,255,0.5);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.65);padding:16px 20px;margin-top:12px;text-align:center;}
+.dark .fetus-visual{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.1);}
+.fetus-row{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:8px;}
+.fetus-obj{text-align:center;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);}.fetus-obj:hover{transform:scale(1.18);}
+.fetus-em{font-size:52px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.1));}
+.fetus-lbl{font-size:11px;font-weight:800;color:var(--t3);margin-top:4px;}
+.fetus-vs{font-size:20px;font-weight:900;color:var(--t3);opacity:0.32;}
+.bmi-section{margin-top:14px;}
+.bmi-bar-track{height:12px;border-radius:8px;overflow:hidden;background:linear-gradient(90deg,#4EC8DC 0%,#52B882 28%,#F0C060 58%,#E8325A 100%);position:relative;margin:8px 0;}
+.bmi-indicator{position:absolute;top:-5px;width:22px;height:22px;border-radius:50%;background:#fff;border:3.5px solid var(--rose);box-shadow:0 2px 10px rgba(0,0,0,0.28);transform:translateX(-50%);transition:left 1.2s cubic-bezier(0.34,1.56,0.64,1);}
+.bmi-labels{display:flex;justify-content:space-between;font-size:9px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:0.5px;}
+.who-box{margin-top:10px;padding:11px 14px;background:rgba(82,184,130,0.1);border:1.5px solid rgba(82,184,130,0.3);border-radius:14px;font-size:12px;font-weight:700;color:#2D7A55;line-height:1.55;}
+.dark .who-box{color:var(--sage2);}
+.report-btn{width:100%;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border:none;border-radius:18px;padding:15px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 8px 26px rgba(30,156,176,0.35);transition:transform 0.2s;margin-bottom:11px;}
+.report-btn:active{transform:scale(0.96);}
+.report-area{width:100%;min-height:110px;font-family:'Nunito',sans-serif;font-size:12px;padding:14px;border-radius:16px;resize:vertical;line-height:1.6;background:rgba(255,255,255,0.5);backdrop-filter:blur(8px);border:1.5px solid rgba(255,255,255,0.65);color:var(--t1);outline:none;}
+.copy-btn{width:100%;background:rgba(30,156,176,0.12);color:var(--teal);border:1.5px solid rgba(30,156,176,0.3);border-radius:16px;padding:13px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;cursor:pointer;transition:transform 0.2s;margin-top:8px;}
+.copy-btn:active{transform:scale(0.96);}
+
+
+/* ══ WARM SOFT PALETTE ══ */
+:root {
+  /* Softer, warmer rose */
+  --rose:#E8325A; --rose2:#FF6B8A; --rose3:#FFBECE; --rose4:#FFE8EF;
+  /* Warmer bg */
+  --bg:#FFF5F8; --bg2:#FFF9FB; --bg3:#FFFFFF;
+  --t1:#1A0510; --t2:#6B1C34; --t3:#C08098;
+  /* Softer card */
+  --card:rgba(255,249,252,0.75);
+}
+
+/* ══ LAYOUT: hero bleeds full-width, rest has 15px margins ══ */
+#tab-home > *:not(.hero){margin-left:15px!important;margin-right:15px!important;}
+#tab-home > .hero{margin-left:0!important;margin-right:0!important;}
+#smartTips{margin-left:15px!important;margin-right:15px!important;}
+#smartTips .stip{margin-left:0!important;margin-right:0!important;}
+#tab-meds > div{padding-left:15px;padding-right:15px;}
+#tab-journal > div{padding-left:15px;padding-right:15px;}
+#tab-bag > div{padding-left:15px;padding-right:15px;}
+#tab-settings > div{padding-left:15px;padding-right:15px;}
+#tab-meds .card,#tab-journal .card,#tab-bag .card,#tab-settings .card{margin-left:0!important;margin-right:0!important;}
+
+/* ══ SOFT PALETTE OVERRIDE — тёплый, нежный, мило ══ */
+:root{
+  /* Основные акценты — мягче, теплее */
+  --rose:#E8405C;       /* чуть теплее */
+  --rose2:#FF6B8A;      /* нежный коралл */
+  --rose3:#FFAEC3;      --rose4:#FFE8EF;
+  --plum:#A855C8;       --plum2:#CC77EE;     --plum3:#EABCF8;
+  --gold:#C9920A;       --gold2:#EDB93A;     --gold3:#FDE8A0;
+  --teal:#1A9AAE;       --teal2:#44BECE;     --teal3:#A2E4EF;
+  --sage:#2D7A55;       --sage2:#4EB87A;     --sage3:#A8E4C0;
+  /* Фон — чуть теплее, кремовее */
+  --bg:#FFF3F7;         --bg2:#FFF8FB;       --bg3:#FFFFFF;
+  /* Текст */
+  --t1:#1A0812;         --t2:#6B1E36;        --t3:#BC7A93;
+  --card:rgba(255,255,255,0.88);
+  --cb:rgba(232,64,92,0.11);
+  --nav:rgba(255,252,254,0.94);
+  --sh:0 24px 72px rgba(232,64,92,0.18);
+  --sh2:0 10px 32px rgba(232,64,92,0.12);
+  --r:22px;--r-sm:16px;--r-lg:28px;
+  /* Hero gradients — warmer, softer */
+  --h1:linear-gradient(135deg,#E8405C 0%,#FF6B8A 45%,#A855C8 100%);
+  --h2:linear-gradient(135deg,#C42040 0%,#E8405C 50%,#8B30AA 100%);
+  --h3:linear-gradient(135deg,#6020A8 0%,#E8405C 55%,#FF9AB4 100%);
+  --cd:linear-gradient(135deg,#A855C8,#CC77EE);
+  --tmm:linear-gradient(135deg,#C03020,#E8405C);
+  --tmd:linear-gradient(135deg,#D46020,#E8405C);
+  --tme:linear-gradient(135deg,#7010A0,#A855C8);
+  --tmn:linear-gradient(135deg,#100040,#3A0068);
+  --glass:rgba(255,248,252,0.70);
+  --glass2:rgba(255,248,252,0.50);
+  --sh-glass:0 8px 40px rgba(232,64,92,0.10),inset 0 1px 0 rgba(255,255,255,0.88);
+}
+.dark{
+  --bg:#120310;  --bg2:#1C0518;  --bg3:#240922;
+  --t1:#FFE4EE;  --t2:#FF9AB8;  --t3:#8C4060;
+  --card:rgba(28,5,24,0.90);
+  --cb:rgba(232,64,92,0.18);
+  --nav:rgba(18,3,16,0.96);
+  --sh:0 20px 60px rgba(0,0,0,0.65);
+  --sh2:0 8px 24px rgba(0,0,0,0.40);
+  --glass:rgba(28,5,24,0.82);
+  --glass2:rgba(28,5,24,0.60);
+  --sh-glass:0 8px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06);
+}
+/* Girl theme — rose petals */
+.gG{
+  --rose:#D62872;  --rose2:#EE5A96;  --rose3:#F8B8D4;  --rose4:#FDE8F2;
+  --plum:#9933A8;  --plum2:#C260CC;  --plum3:#E8B8F2;
+  --bg:#FFF0F8;    --bg2:#FFF6FC;    --bg3:#FFFFFF;
+  --t2:#6B1840;    --t3:#BC7098;
+  --cb:rgba(214,40,114,0.11);
+  --sh:0 24px 72px rgba(214,40,114,0.20);
+  --sh2:0 10px 32px rgba(214,40,114,0.12);
+  --glass:rgba(255,240,248,0.72);
+  --sh-glass:0 8px 40px rgba(214,40,114,0.12),inset 0 1px 0 rgba(255,255,255,0.88);
+  --h1:linear-gradient(135deg,#D62872 0%,#EE5A96 40%,#C260CC 100%);
+  --h2:linear-gradient(135deg,#B81860 0%,#D62872 55%,#9933A8 100%);
+  --h3:linear-gradient(135deg,#7A1090 0%,#D62872 58%,#F8A0C8 100%);
+  --cd:linear-gradient(135deg,#9933A8,#C260CC);
+  --tmm:linear-gradient(135deg,#B81858,#D62872);
+  --tmd:linear-gradient(135deg,#CC3878,#D62872);
+  --tme:linear-gradient(135deg,#7A1090,#9933A8);
+  --tmn:linear-gradient(135deg,#1A0030,#500068);
+}
+.dark.gG{--bg:#130510;--bg2:#1C0818;--bg3:#24091E;--glass:rgba(28,5,24,0.82);}
+/* Boy theme — sky blue */
+.gB{
+  --rose:#1872C4;  --rose2:#44A4EE;  --rose3:#A4D4F8;  --rose4:#DFF0FE;
+  --plum:#1250A0;  --plum2:#2268CC;  --plum3:#9CC0EE;
+  --bg:#F0F8FF;    --bg2:#F4FBFF;    --bg3:#FFFFFF;
+  --t1:#040C18;    --t2:#1A3866;     --t3:#4E7EA8;
+  --cb:rgba(24,114,196,0.11);
+  --sh:0 24px 72px rgba(24,114,196,0.16);
+  --sh2:0 10px 32px rgba(24,114,196,0.10);
+  --glass:rgba(240,248,255,0.72);
+  --sh-glass:0 8px 40px rgba(24,114,196,0.10),inset 0 1px 0 rgba(255,255,255,0.88);
+  --h1:linear-gradient(135deg,#1872C4 0%,#44A4EE 50%,#1250A0 100%);
+  --h2:linear-gradient(135deg,#1060B0 0%,#1872C4 55%,#0C3C88 100%);
+  --h3:linear-gradient(135deg,#0C3080 0%,#1872C4 58%,#70BCEE 100%);
+  --cd:linear-gradient(135deg,#1250A0,#2268CC);
+  --tmm:linear-gradient(135deg,#1460A4,#1872C4);
+  --tmd:linear-gradient(135deg,#1A68BC,#2888DC);
+  --tme:linear-gradient(135deg,#0C2870,#1250A0);
+  --tmn:linear-gradient(135deg,#020C30,#0C2060);
+}
+.dark.gB{--bg:#040810;--bg2:#060C16;--bg3:#081018;--glass:rgba(4,8,16,0.82);--t1:#D4EAFF;--t2:#7CB4E4;--t3:#3E6090;}
+
+
+/* ══ TYPOGRAPHY REFINEMENTS ══ */
+body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;}
+body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px) fixed,var(--bg)!important;}
+.dark body{background:linear-gradient(180deg,rgba(80,0,40,0.35) 0%,var(--bg) 140px) fixed,var(--bg)!important;}
+
+/* Countdown — bigger, more impactful */
+.cd-num{font-family:'Playfair Display',serif;font-size:38px;font-weight:900;color:#fff;line-height:1;transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1);}
+.cd-unit{min-width:76px;padding:14px 12px;}
+
+/* Hero date smaller caps */
+.hero-date{font-size:10px;font-weight:800;color:rgba(255,255,255,0.72);text-transform:uppercase;letter-spacing:2.5px;margin-bottom:5px;}
+
+/* Hero title bigger and warmer */
+.hero-title{font-family:'Playfair Display',serif;font-size:28px;font-style:italic;font-weight:900;color:#fff;line-height:1.22;text-shadow:0 2px 18px rgba(0,0,0,0.16);}
+
+/* Card section headers */
+.sh{font-size:21px;font-weight:700;letter-spacing:-0.2px;}
+
+/* Countdown bar — more pill-like */
+.cd-bar{border-radius:26px;padding:20px 16px;}
+.cd-grid{gap:8px;}
+
+/* Smart tips — rounder */
+.stip{border-radius:20px;padding:14px 16px;margin-bottom:10px;}
+
+/* Mood buttons — rounder */
+.mb{width:54px;height:54px;border-radius:50%;font-size:28px;}
+
+/* Quote card — warmer */
+.q-note{background:linear-gradient(135deg,rgba(255,252,235,0.92),rgba(255,247,210,0.88));box-shadow:4px 8px 28px rgba(0,0,0,0.06);}
+.q-txt{font-size:22px;line-height:1.48;}
+
+/* Badges — softer */
+.badge{border-radius:50px;font-size:12px;padding:7px 13px;}
+
+/* Baby card floating */
+.baby-em{animation:babyFloat 4s ease-in-out infinite;}
+@keyframes babyFloat{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-9px) rotate(3deg)}}
+
+/* Body change cards */
+.bc-title{font-size:10px;letter-spacing:0.8px;}
+.bc-text{font-size:12px;line-height:1.55;}
+
+/* Ring number */
+.ring-num{font-size:62px;background:var(--h1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* Hero bottom chips */
+.hero-chip{border-radius:18px;padding:11px 14px;}
+.hero-chip-num{font-size:34px;}
+
+/* Hero streak badge */
+.hero-streak{top:14px;right:14px;padding:5px 11px;font-size:11px;border-radius:50px;}
+
+/* Time message */
+.tmsg-text{font-size:21px;line-height:1.44;}
+
+/* Progress bar */
+.pg-track{height:9px;border-radius:9px;}
+
+/* Bag items */
+.bag-item{border-radius:16px;padding:13px 15px;margin-bottom:6px;}
+
+/* Schedule items */
+.sc-name{font-size:13px;}
+.sc-time{font-size:11px;border-radius:10px;}
+
+/* Page title style (Meds, Journal etc.) */
+.page-h1{font-family:'Playfair Display',serif;font-size:34px;font-style:italic;font-weight:900;margin-bottom:4px;padding-top:18px;letter-spacing:-0.5px;}
+.page-sub{font-size:13px;font-weight:700;color:var(--t3);margin-bottom:16px;line-height:1.55;}
+
+/* Fetus visual */
+.fetus-em{font-size:54px;}
+
+/* BMI bar */
+.bmi-bar-track{height:10px;border-radius:6px;}
+.bmi-indicator{width:20px;height:20px;top:-5px;border-width:3px;}
+
 </style>
 </head>
 <body>
@@ -537,11 +853,11 @@ input:focus,textarea:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(23
 </div>
 
 <!-- APP -->
-<div id="appInterface" style="display:none">
+<div id="appInterface" style="display:none;overflow-x:hidden;">
   <div id="app">
 
     <!-- ── HOME ── -->
-    <div id="tab-home" class="tab-c act">
+    <div id="tab-home" class="tab-c act" style="padding-top:0">
       <div id="annexBanner" style="display:none" class="anniv">
         <div style="font-size:38px;margin-bottom:8px;position:relative;z-index:1">✨🎉✨</div>
         <div style="font-family:'Playfair Display',serif;font-size:30px;font-style:italic;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.2);position:relative;z-index:1">С нашей годовщиной!</div>
@@ -575,7 +891,7 @@ input:focus,textarea:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(23
         <div class="hero-progress-bar"><div class="hero-progress-fill" id="heroProgressFill" style="width:0%"></div></div>
       </div>
 
-      <div id="smartTips"></div>
+      <div id="smartTips" style="margin-top:4px"></div>
 
       <div class="cd-bar">
         <div class="cd-title">✨ До встречи с малышом</div>
@@ -617,6 +933,16 @@ input:focus,textarea:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(23
             <div class="badge b-plum"><span id="sizeE">👶</span> <span id="cdBadge">-- дн.</span></div>
             <div class="badge b-gold" id="weightBadge" style="display:none">⚖️ <span id="wBadge">— г</span></div>
             <div class="badge b-rose" id="lengthBadge" style="display:none">📏 <span id="lBadge">— см</span></div>
+          </div>
+          
+          <!-- FETUS SIZE VISUAL -->
+          <div class="fetus-visual" id="fetusVisual">
+            <div style="font-size:11px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">Малыш сейчас как...</div>
+            <div class="fetus-row">
+              <div class="fetus-obj"><div class="fetus-em" id="fetusEm1">🥭</div><div class="fetus-lbl" id="fetusLbl1">манго</div></div>
+              <div class="fetus-vs">≈</div>
+              <div class="fetus-obj"><div class="fetus-em" id="fetusEm2">✋</div><div class="fetus-lbl" id="fetusLbl2">ладошка</div></div>
+            </div>
           </div>
           <div id="factT" class="fact-card"></div>
           <!-- Quote note - tappable, rotates quotes -->
@@ -775,7 +1101,7 @@ input:focus,textarea:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(23
     <!-- ── MEDS ── -->
     <div id="tab-meds" class="tab-c">
       <div style="padding-top:16px">
-        <div style="font-family:'Playfair Display',serif;font-size:36px;font-style:italic;font-weight:900;margin-bottom:5px">План заботы</div>
+        <div class="page-h1">План заботы</div>
         <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:18px">Отмечай кружочки когда выпьешь витаминку 💊</p>
         <div class="card"><div class="cb">
           <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin-bottom:10px">
@@ -797,30 +1123,64 @@ input:focus,textarea:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(23
             <button class="lq" style="margin-top:12px" onclick="saveDiary()">Сохранить в сердце 💖</button>
           </div></div>
         </div>
+      
+        <div style="margin-top:20px">
+          <div style="font-family:'Playfair Display',serif;font-size:30px;font-style:italic;font-weight:900;margin-bottom:14px">Отчёт для врача 📋</div>
+          <div class="card"><div class="cb">
+            <p style="font-size:13px;font-weight:700;color:var(--t3);margin-bottom:14px;line-height:1.6">Сформируй сводку приёма препаратов и самочувствия — удобно показать врачу!</p>
+            <button class="report-btn" onclick="generateReport()">📊 Сформировать отчёт</button>
+            <textarea class="report-area" id="reportArea" style="display:none" readonly></textarea>
+            <button class="copy-btn" id="reportCopyBtn" style="display:none" onclick="copyReport()">📋 Скопировать в буфер</button>
+          </div></div>
+        </div>
       </div>
     </div>
 
     <!-- ── JOURNAL ── -->
     <div id="tab-journal" class="tab-c">
       <div style="padding-top:16px">
-        <div style="font-family:'Playfair Display',serif;font-size:36px;font-style:italic;font-weight:900;margin-bottom:5px">Дневник</div>
+        <div class="page-h1">Дневник</div>
         <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:18px">История настроений, вес и наш животик по неделям</p>
         <div class="card"><div class="cb">
           <div class="sh">📊 История настроений</div>
           <div class="ssub">Последние 14 дней</div>
           <div class="mh-grid" id="mhGrid"></div>
         </div></div>
-        <div class="card"><div class="cb">
-          <div class="sh">⚖️ Весовой трекер</div>
-          <div class="ssub">Следим за прибавкой вместе — это важно!</div>
-          <div style="display:flex;gap:10px;align-items:center">
-            <input type="number" class="wt-inp" id="wtIn" placeholder="62.5" step="0.1" min="30" max="150">
-            <span style="font-size:15px;font-weight:800;color:var(--t3)">кг</span>
-            <button onclick="saveWt()" style="background:var(--rose);color:#fff;border:none;border-radius:16px;padding:14px 17px;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 6px 18px rgba(232,50,90,.32);transition:transform .2s;flex-shrink:0" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform=''">Записать</button>
+        <div class="card">
+          <div class="cb" style="padding:20px 20px 16px">
+            <div class="sh">⚖️ Весовой трекер</div>
+            <div class="ssub" style="margin-bottom:14px">Следим за прибавкой вместе — это важно!</div>
+
+            <!-- INPUT ROW -->
+            <div class="wt-input-row">
+              <div class="wt-input-wrap">
+                <input type="number" class="wt-inp-v2" id="wtIn" placeholder="62.5" step="0.1" min="30" max="150">
+                <span class="wt-unit">кг</span>
+              </div>
+              <button onclick="saveWt()" class="wt-save-btn">Записать</button>
+            </div>
+
+            <!-- CHART -->
+            <div class="wt-chart-v2" id="wtChart"></div>
+            <div class="wt-stats-v2" id="wtStats"></div>
+
+            <!-- BMI TOGGLE BUTTON -->
+            <button class="bmi-toggle-btn" onclick="toggleBMI()" id="bmiToggleBtn">📊 Показать коридор ВОЗ</button>
+
+            <!-- BMI SECTION -->
+            <div class="bmi-section-v2" id="bmiSection" style="display:none">
+              <div class="bmi-header">
+                <span class="bmi-title">ИМТ до беременности</span>
+                <span class="bmi-val" id="bmiVal">—</span>
+              </div>
+              <div class="bmi-labels-v2">
+                <span>Недовес</span><span>Норма</span><span>Избыток</span><span>Ожирение</span>
+              </div>
+              <div class="bmi-bar-track"><div class="bmi-indicator" id="bmiIndicator" style="left:40%"></div></div>
+              <div class="who-box" id="whoBox">Сохрани первый вес для расчёта ИМТ 📊</div>
+            </div>
           </div>
-          <div style="display:flex;align-items:flex-end;gap:4px;height:88px;margin-top:17px" id="wtChart"></div>
-          <div id="wtStats" style="margin-top:16px;font-size:13px;font-weight:700;color:var(--t3);text-align:center"></div>
-        </div></div>
+        </div>
         <div class="card"><div class="cb">
           <div class="sh">📷 Животик по неделям</div>
           <div class="ssub">Тапни на ячейку — добавь фото. Галерея с 19 по 40 неделю! Текущая неделя выделена ✨</div>
@@ -832,7 +1192,7 @@ input:focus,textarea:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(23
     <!-- ── BAG ── -->
     <div id="tab-bag" class="tab-c">
       <div style="padding-top:16px">
-        <div style="font-family:'Playfair Display',serif;font-size:36px;font-style:italic;font-weight:900;margin-bottom:5px">Сумка в роддом</div>
+        <div class="page-h1">Сумка в роддом</div>
         <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:18px">Отмечай что уже подготовили — вместе соберём всё!</p>
         <div class="card"><div class="cb" id="bagBox"></div></div>
       </div>
@@ -841,7 +1201,7 @@ input:focus,textarea:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(23
     <!-- ── SETTINGS ── -->
     <div id="tab-settings" class="tab-c">
       <div style="padding-top:16px">
-        <div style="font-family:'Playfair Display',serif;font-size:36px;font-style:italic;font-weight:900;margin-bottom:20px">Настройки</div>
+        <div class="page-h1" style="margin-bottom:18px">Настройки</div>
 
         <!-- GENDER CARD -->
         <div class="card" style="border:2px solid rgba(232,50,90,.18);overflow:visible">
@@ -867,6 +1227,13 @@ input:focus,textarea:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(23
           <div class="tog-w"><span style="font-size:15px;font-weight:800">Тёмная тема 🌙</span><label class="tog"><input type="checkbox" id="thmTog" onchange="toggleTheme()"><span class="tog-sl"></span></label></div>
           <div class="tog-w"><span style="font-size:15px;font-weight:800">Уведомления 🔔</span><button onclick="reqNotifs()" style="background:linear-gradient(135deg,#1E9CB0,#30C0D8);color:#fff;border:none;border-radius:50px;padding:9px 20px;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(30,156,176,.3)">Включить</button></div>
           <p style="font-size:12px;font-weight:700;color:var(--t3);padding:2px 4px 20px;line-height:1.65">Разреши уведомления — буду напоминать о витаминах в нужное время.</p>
+          
+          <div style="font-size:15px;font-weight:800;margin-bottom:8px">Твой рост (для расчёта ИМТ):</div>
+          <div style="display:flex;gap:8px;margin-bottom:22px;align-items:center">
+            <input type="number" id="heightIn" placeholder="165" min="140" max="210" style="flex:1;font-size:16px;padding:14px;text-align:center;font-weight:800">
+            <span style="font-size:15px;font-weight:800;color:var(--t3)">см</span>
+            <button onclick="saveHeight()" style="background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border:none;border-radius:16px;padding:14px 18px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 6px 18px rgba(30,156,176,0.32)">Сохранить</button>
+          </div>
           <div style="font-size:15px;font-weight:800;margin-bottom:8px">Мой номер телефона:</div>
           <input type="text" id="phoneIn" placeholder="+7 (999) 123-45-67 / +996 777 123 456" style="width:100%;font-size:15px;padding:14px;margin-bottom:10px">
           <button class="lq" style="margin-bottom:22px;font-size:16px" onclick="savePhone()">Сохранить номер</button>
@@ -926,7 +1293,7 @@ input:focus,textarea:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(23
 </div>
 
 <script>
-const V="_v15";
+const V="_v16";
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -1201,7 +1568,8 @@ const letters={
     "Моя бусинка, не бойся. Все тревоги — это гормоны, усталость и материнский инстинкт. Положи руку на животик — там бьётся маленькое сердечко, которое любит тебя так же сильно, как и я. Ты не одна. Мы трое справляемся вместе. Эмир рядом.",
     "Жаным, когда тебе тревожно — позвони мне. Прямо сейчас. Среди урока — ничего, я всё брошу. Твоё спокойствие важнее любого урока. Я учитель, я разберусь 😄 Но главное — ты и малыш. Дыши. Всё хорошо.",
     "Алтыным, тревога — это твоя любовь к малышу. Ты уже лучшая мама, потому что переживаешь. Но сейчас переживать не за что — малыш растёт, ты справляешься, Чока сторожит 😄🐱 Всё хорошо. Я рядом.",
-  ]},
+  ,
+    "Жанымка, тревога при беременности — это нормально. Это любовь к малышу. Попробуй 4-7-8: вдох 4 сек, задержка 7, выдох 8. Три раза. Я делаю это вместе с тобой мысленно. 💕"]},
   tired:{title:'Я устала 😫',ls:[
     "Любимая, ты устала, и это совершенно нормально! Внутри тебя прямо сейчас строится целый человек — это колоссальная работа. Пожалуйста, брось всё. Ляг на диван, вытяни ножки, включи любимый сериал. Я всё уберу, всё приготовлю и принесу тебе всё что захочешь. Твоя единственная задача сейчас — отдыхать. Я так горжусь тобой, моя трудяжка.",
     "Моя пердушка устала? Немедленно прекращаем все дела! Это приказ от мужа 😄 Ложись. Укутайся. Я сделаю тебе массаж ножек когда приду. А пока — никакой домашней работы, никаких дел. Просто отдых. Ты заслужила это трижды. Люблю тебя бесконечно.",
@@ -1220,7 +1588,8 @@ const letters={
   games:{title:'Поиграем вместе? 🎮',ls:[
     "Жаным, помнишь тот раз когда мы играли в It Takes Two? Мне так понравилось играть с тобой — смотреть как ты смеёшься, злишься на уровне, радуешься. Это был один из самых тёплых вечеров. После того как малыш появится на свет — обязательно найдём время снова. Обещаю! А пока я играю один и думаю о тебе. 🎮❤️",
     "Алтыным, я иногда сижу за компьютером работаю над игрой и думаю: вот бы ты сидела рядом. Тот вечер с джойстиками был особенным. Скоро снова так посидим — уже втроём, малыш будет смотреть на нас большими глазами и не понимать что происходит 😄 Берегу это время для нас.",
-  ]}
+  ,
+    "Жанымка, я уже придумал первую игру для нашего малыша 😄 Но пока он подрастает — давай мы с тобой поиграем вечером? Это обещание от мужа! 🎮❤️"]}
 };
 
 // COUPONS — 20 штук
@@ -1245,6 +1614,11 @@ const coupons=[
   "Три часа тишины пока ты спишь — я слежу за всем 🤫",
   "Сам схожу в аптеку и куплю всё что нужно 💊",
   "Поход в любое место которое ты давно хотела посетить 🗺️",
+  "Весь вечер твоя любимая музыка — без комментариев от мужа 🎵",
+  "Завтра — твой выходной от всего. Я беру весь быт на себя 👑",
+  "Особый вечер: кино + попкорн + ты можешь дремать на моём плече ❤️",
+  "Бесплатный пропуск на ОДИН каприз любого размера 😇",
+  "Завтрак из любимого кафе Бишкека — заказываю на доставку 🍳",
 ];
 
 // WEEK DATA — 20+ научно достоверных фактов на каждую неделю
@@ -1320,12 +1694,56 @@ const bodyChanges={
   ]
 };
 
+// Week-specific body changes (medically verified, ACOG/WHO 2024)
+const weekBodyChanges={
+  16:{sub:'Слух! Малыш уже слышит тебя 🎶',items:[
+    {type:'bc-good',icon:'👂',title:'Малыш слышит!',text:'Слуховые косточки окостенели. Говори с ним — он реагирует изменением ЧСС. Пой, читай вслух!'},
+    {type:'bc-info',icon:'🤰',title:'Живот растёт',text:'Матка — размером с авокадо. Начинает выходить за лоно. Удобная одежда — уже актуальна.'},
+    {type:'bc-warn',icon:'💆',title:'Боли в спине',text:'Центр тяжести смещается. Упражнения кошка-корова, правильная обувь без каблука (или 3-4 см).'},
+    {type:'bc-good',icon:'✨',title:'Кожа светится',text:'Усиленный кровоток даёт тот самый беременный "гlow". Ты сейчас особенно красива!'}
+  ]},
+  17:{sub:'17 нед — малыш активно тренируется 🏃',items:[
+    {type:'bc-good',icon:'🥭',title:'Размер как груша',text:'140 г, 13 см. Малыш глотает воды (200-500 мл/сут) и тренирует почки — всё работает!'},
+    {type:'bc-info',icon:'🦴',title:'Кальций важен',text:'Скелет малыша активно кальцинируется. Творог, молоко, сыр — каждый день. Элевит помогает!'},
+    {type:'bc-warn',icon:'💤',title:'Судороги ночью',text:'Дефицит магния и кальция. КардиоМагнил в 21:30 — именно для этого. Растяни икры перед сном.'},
+    {type:'bc-pink',icon:'🌙',title:'Сон на левом боку',text:'Улучшает кровоток к плаценте на 30%. Подушка между коленями снимает боль в пояснице.'}
+  ]},
+  18:{sub:'18 нед — первые шевеления совсем скоро! 🦋',items:[
+    {type:'bc-good',icon:'🦋',title:'Скоро шевеления!',text:'У первородящих — 18-22 нед. Ощущение: "пузырьки", "лёгкое порхание". Это он!'},
+    {type:'bc-info',icon:'🧠',title:'Мозг малыша',text:'Слуховые зоны сформированы. Его мозг обрабатывает твой голос — лучший для него звук в мире.'},
+    {type:'bc-warn',icon:'🦷',title:'Дёсны',text:'Эстроген усиливает кровоснабжение — дёсны чувствительнее. Мягкая щётка, полоскание.'},
+    {type:'bc-pink',icon:'💧',title:'Отёки',text:'8 стаканов воды — обязательно! Парадокс: недостаток воды = больше отёков. Пей!'}
+  ]},
+  19:{sub:'19 нед — твоё тело сейчас 🌸',items:[
+    {type:'bc-good',icon:'🥭',title:'Малыш — манго!',text:'240 г, 15 см. Слышит тебя, видит свет, чувствует вкус. Верникс (белая смазка) уже защищает кожу.'},
+    {type:'bc-info',icon:'🩺',title:'Скрининг 25 марта',text:'Второй скрининг: проверяем сердце, мозг, почки, позвоночник, губу. И, возможно, узнаем пол!'},
+    {type:'bc-pink',icon:'🦵',title:'Боли в пояснице',text:'Связка круглая матки растягивается — острая боль сбоку при движении. Тепло, бандаж, медленно вставать.'},
+    {type:'bc-warn',icon:'💊',title:'Железо — критично',text:'Мультизан Феррум в 16:30 с апельсиновым соком. Без железа — усталость, головокружение, гипоксия малыша.'}
+  ]},
+  20:{sub:'20 нед — половина пути пройдена! 🏆',items:[
+    {type:'bc-good',icon:'🏆',title:'Экватор!',text:'Ровно половина беременности! Матка — на уровне пупка. Малыш весит 300 г и отлично слышит!'},
+    {type:'bc-info',icon:'🦶',title:'Шевеления',text:'Сейчас ты уже должна чувствовать движения. 10 за 2 активных часа — минимальная норма.'},
+    {type:'bc-warn',icon:'😮‍💨',title:'Изжога нарастает',text:'Матка давит снизу на желудок. Малые порции, не лежать 1-2 ч после еды, спать с возвышением.'},
+    {type:'bc-pink',icon:'💤',title:'Сон на спине — стоп',text:'После 20 нед матка пережимает нижнюю полую вену. Только левый бок + подушка между коленями.'}
+  ]}
+};
+
 function renderBodyChanges(week){
-  const tri=week<=13?'t1':week<=27?'t2':'t3';
-  const items=bodyChanges[tri];
-  const subs={t1:'1-й триместр: адаптация организма',t2:'2-й триместр: расцвет беременности',t3:'3-й триместр: финальный этап'};
-  document.getElementById('bodyChangesSub').textContent=subs[tri]+' (неделя '+week+')';
-  document.getElementById('bodyChangesContent').innerHTML=`<div class="bc-grid">${items.slice(0,4).map(b=>`<div class="bc-item ${b.type}"><div class="bc-icon">${b.icon}</div><div class="bc-title">${b.title}</div><div class="bc-text">${b.text}</div></div>`).join('')}</div>`;
+  let items, sub;
+  if(weekBodyChanges[week]){
+    items=weekBodyChanges[week].items;
+    sub=weekBodyChanges[week].sub;
+  } else {
+    const tri=week<=13?'t1':week<=27?'t2':'t3';
+    items=bodyChanges[tri].slice(0,4);
+    const subs={t1:'1-й триместр: адаптация организма',t2:'2-й триместр: расцвет беременности',t3:'3-й триместр: финальный этап'};
+    sub=subs[tri]+' (неделя '+week+')';
+  }
+  document.getElementById('bodyChangesSub').textContent=sub;
+  document.getElementById('bodyChangesContent').innerHTML=
+    '<div class="bc-grid">'+
+    items.map(b=>`<div class="bc-item ${b.type}"><div class="bc-icon">${b.icon}</div><div class="bc-title">${b.title}</div><div class="bc-text">${b.text}</div></div>`).join('')+
+    '</div>';
 }
 
 // SMART TIPS по неделям + специальные даты
@@ -1484,6 +1902,7 @@ function init(){
   const di=localStorage.getItem('diaryEntry');
   if(di)document.getElementById('diaryT').value=di;
   document.getElementById('newEdd').value=edd;
+  const savedH=localStorage.getItem('heightCm');if(savedH&&document.getElementById('heightIn'))document.getElementById('heightIn').value=savedH;
   // Load gender on startup
   applyGender(localStorage.getItem('babyGender')||'n',false);
   updateAll(edd);
@@ -1667,8 +2086,10 @@ function updateAll(edd){
   document.getElementById('faqSub').textContent=fSubs[faqK]+' — неделя '+week;
   document.getElementById('faqBox').innerHTML=faqs[faqK].map((f,i)=>`<div class="faq-item"><div class="faq-q" id="fq${i}" onclick="tFaq(${i})"><span>${f.q}</span><span class="faq-ic">▾</span></div><div class="faq-a" id="fa${i}">${f.a}</div></div>`).join('');
   const tips=getSmartTips(week);
-  document.getElementById('smartTips').innerHTML=tips.slice(0,2).map(t=>`<div class="stip ${t.c}"><div class="stip-ic">${t.i}</div><div class="stip-txt">${t.t}</div></div>`).join('');
+  document.getElementById('smartTips').innerHTML=tips.slice(0,3).map(t=>`<div class="stip ${t.c}"><div class="stip-ic">${t.i}</div><div class="stip-txt">${t.t}</div></div>`).join('');
   renderBodyChanges(week);
+  updateFetusVisual(week);
+  updateBMI(week);
 }
 
 function tFaq(i){H();const q=document.getElementById('fq'+i),a=document.getElementById('fa'+i);const o=a.classList.contains('o');document.querySelectorAll('.faq-q').forEach(e=>e.classList.remove('o'));document.querySelectorAll('.faq-a').forEach(e=>e.classList.remove('o'));if(!o){q.classList.add('o');a.classList.add('o')}}
@@ -1781,28 +2202,37 @@ function renderWtChart(){
   const el=document.getElementById('wtChart');
   if(!el)return;
   const k=Object.keys(h).sort().slice(-10);
-  if(!k.length){el.innerHTML='<p style="color:var(--t3);font-size:13px;font-weight:700;width:100%;text-align:center;padding:12px 0">Запиши первый вес!</p>';return}
+  if(!k.length){
+    el.innerHTML='<p style="color:var(--t3);font-size:13px;font-weight:700;width:100%;text-align:center;padding:16px 0;opacity:.6">Запиши первый вес!</p>';
+    return;
+  }
   const v=k.map(k2=>h[k2]);
   const mn=Math.min(...v);
   const mx=Math.max(...v);
   const range=mx-mn;
-  // Fix: if all same value, show equal bars
   el.innerHTML=k.map((k2,i)=>{
-    const ht=range===0?50:Math.max(14,((v[i]-mn)/range)*68+14);
+    const ht=range===0?50:Math.max(14,((v[i]-mn)/range)*60+14);
     const dt=new Date(k2);
     const isLast=i===k.length-1;
     const isFirst=i===0;
-    const color=isLast?'background:linear-gradient(180deg,var(--rose),var(--rose2));box-shadow:0 4px 12px rgba(232,50,90,.38)':'';
-    const valLbl=isLast||isFirst?`<div style="font-size:8px;font-weight:900;color:var(--rose);margin-bottom:2px">${v[i]}</div>`:'';
-    return `<div class="wt-bar-w">${valLbl}<div class="wt-bar" style="height:${ht}px;${color}border-radius:6px 6px 0 0"></div><div class="wt-lbl">${dt.getDate()}/${dt.getMonth()+1}</div></div>`;
+    const barClass=isLast?'wt-bar latest':'wt-bar';
+    const showVal=isLast||isFirst;
+    return `<div class="wt-bar-w${showVal?' show-val':''}">
+      <div class="wt-val">${showVal?v[i]:''}</div>
+      <div class="${barClass}" style="height:${ht}px"></div>
+      <div class="wt-lbl">${dt.getDate()}/${dt.getMonth()+1}</div>
+    </div>`;
   }).join('');
   const s=document.getElementById('wtStats');
   if(s){
-    if(v.length===1){s.textContent='Первая запись: '+v[0]+' кг'}
-    else{
+    if(v.length===1){
+      s.innerHTML='<span>📍 Первая запись: <b>'+v[0]+' кг</b></span>';
+    } else {
       const g=(v[v.length-1]-v[0]).toFixed(1);
-      const trend=g>0?'▲ +'+g:g<0?'▼ '+g:'→ 0';
-      s.innerHTML=`Прибавка: <b>${trend} кг</b> &nbsp;·&nbsp; Сейчас: <b>${v[v.length-1]} кг</b>`;
+      const gNum=parseFloat(g);
+      const arrow=gNum>0?'↑':gNum<0?'↓':'→';
+      const col=gNum>0?'var(--rose)':gNum<0?'var(--teal)':'var(--t3)';
+      s.innerHTML=`Прибавка: <b style="color:${col}">${arrow} ${gNum>0?'+':''}${g} кг</b> &nbsp;·&nbsp; Сейчас: <b>${v[v.length-1]} кг</b>`;
     }
   }
 }
@@ -1975,6 +2405,243 @@ function saveDiary(){H();localStorage.setItem('diaryEntry',document.getElementBy
 function switchTab(id,btn){H();document.querySelectorAll('.tab-c').forEach(e=>e.classList.remove('act'));document.getElementById('tab-'+id).classList.add('act');document.querySelectorAll('.nb').forEach(e=>e.classList.remove('act'));btn.classList.add('act');window.scrollTo({top:0,behavior:'smooth'})}
 function toggleTheme(){H();const d=document.getElementById('thmTog').checked;if(d){document.documentElement.classList.add('dark');localStorage.setItem('theme','dark')}else{document.documentElement.classList.remove('dark');localStorage.setItem('theme','light')}}
 function resetAll(){H();if(confirm("Родная, это удалит все данные и фотографии. Точно сбрасываем?")){{localStorage.clear();location.reload()}}}
+
+// ══ FETUS COMPARISON DATA ══
+const fetusCompare={
+  5:{e1:'🌾',l1:'кунжут',e2:'💧',l2:'капля'},
+  6:{e1:'🧆',l1:'чечевица',e2:'🐜',l2:'муравей'},
+  7:{e1:'🫐',l1:'голубика',e2:'💅',l2:'ноготь'},
+  8:{e1:'🍇',l1:'малина',e2:'🍬',l2:'конфетка'},
+  9:{e1:'🫒',l1:'оливка',e2:'🍇',l2:'виноград'},
+  10:{e1:'🍒',l1:'черешня',e2:'🌰',l2:'орешек'},
+  11:{e1:'🍓',l1:'клубника',e2:'🐞',l2:'божья коровка'},
+  12:{e1:'🍋',l1:'лайм',e2:'🌷',l2:'тюльпан'},
+  13:{e1:'🍑',l1:'персик',e2:'🐹',l2:'хомячок'},
+  14:{e1:'🍋',l1:'лимон',e2:'✊',l2:'кулачок'},
+  15:{e1:'🍏',l1:'яблоко',e2:'📱',l2:'телефон'},
+  16:{e1:'🥑',l1:'авокадо',e2:'🖐',l2:'ладонь'},
+  17:{e1:'🍐',l1:'груша',e2:'👟',l2:'кроссовок'},
+  18:{e1:'🍠',l1:'батат',e2:'📏',l2:'30 см линейка'},
+  19:{e1:'🥭',l1:'манго',e2:'✋',l2:'ладошка'},
+  20:{e1:'🍌',l1:'банан',e2:'💼',l2:'папина ладонь'},
+  21:{e1:'🍎',l1:'гранат',e2:'🎾',l2:'теннисный мяч'},
+  22:{e1:'🥥',l1:'кокос',e2:'🍦',l2:'стакан'},
+  23:{e1:'🍊',l1:'грейпфрут',e2:'🐰',l2:'кролик'},
+  24:{e1:'🌽',l1:'кукуруза',e2:'📖',l2:'книга'},
+  25:{e1:'🥦',l1:'капуста',e2:'🎃',l2:'мини-тыква'},
+  26:{e1:'🧅',l1:'кабачок',e2:'🐈',l2:'котёнок'},
+  27:{e1:'🥬',l1:'брокколи',e2:'🧸',l2:'мишка'},
+  28:{e1:'🍆',l1:'баклажан',e2:'📦',l2:'коробка'},
+  29:{e1:'🥜',l1:'кабачок',e2:'🎒',l2:'рюкзак'},
+  30:{e1:'🥕',l1:'кочан',e2:'💻',l2:'ноутбук'},
+  31:{e1:'🧆',l1:'ананас',e2:'🐶',l2:'щенок'},
+  32:{e1:'🥦',l1:'дыня',e2:'👜',l2:'сумочка'},
+  33:{e1:'🍍',l1:'ананас',e2:'🐇',l2:'кролик'},
+  34:{e1:'🧇',l1:'дыня',e2:'🐱',l2:'кошка как Чока 🐱'},
+  35:{e1:'🥥',l1:'кокос',e2:'🏈',l2:'мяч'},
+  36:{e1:'🍈',l1:'папайя',e2:'🎈',l2:'воздушный шар'},
+  37:{e1:'🍉',l1:'арбузик',e2:'🐕',l2:'собачка'},
+  38:{e1:'🎃',l1:'тыква',e2:'💪',l2:'сила любви'},
+  39:{e1:'🍉',l1:'арбуз',e2:'❤️',l2:'наша любовь'},
+  40:{e1:'🎉',l1:'чудо',e2:'👶',l2:'наш малыш'}
+};
+
+function updateFetusVisual(week){
+  const d=fetusCompare[week]||fetusCompare[19];
+  const e1=document.getElementById('fetusEm1');
+  const l1=document.getElementById('fetusLbl1');
+  const e2=document.getElementById('fetusEm2');
+  const l2=document.getElementById('fetusLbl2');
+  if(e1){e1.textContent=d.e1;l1.textContent=d.l1;e2.textContent=d.e2;l2.textContent=d.l2;}
+}
+
+// ══ BMI & WHO WEIGHT CORRIDOR ══
+// ВОЗ рекомендации по прибавке веса (2022 update)
+const whoGain={
+  underweight:{range:'12.5–18 кг',wkRate:'0.51 кг/нед (II-III тр)',label:'Недовес (ИМТ <18.5)',color:'#4EC8DC'},
+  normal:{range:'11.5–16 кг',wkRate:'0.42 кг/нед (II-III тр)',label:'Норма (ИМТ 18.5–24.9)',color:'#52B882'},
+  overweight:{range:'7–11.5 кг',wkRate:'0.28 кг/нед (II-III тр)',label:'Избыток (ИМТ 25–29.9)',color:'#F0C060'},
+  obese:{range:'5–9 кг',wkRate:'0.22 кг/нед (II-III тр)',label:'Ожирение (ИМТ ≥30)',color:'#E8325A'}
+};
+
+function getBMICategory(bmi){
+  if(bmi<18.5)return 'underweight';
+  if(bmi<25)return 'normal';
+  if(bmi<30)return 'overweight';
+  return 'obese';
+}
+
+function updateBMI(week){
+  const h=parseFloat(localStorage.getItem('heightCm')||'165');
+  const hm=h/100;
+  const wts=JSON.parse(localStorage.getItem('wtH'+V)||'{}');
+  const keys=Object.keys(wts).sort();
+  const section=document.getElementById('bmiSection');
+  const btn=document.getElementById('bmiToggleBtn');
+
+  // Hide section if no weights saved
+  if(!keys.length){
+    if(section)section.style.display='none';
+    return;
+  }
+  // Show BMI section and toggle button
+  if(section&&section.style.display==='none')return; // user toggled off — respect that
+  if(btn)btn.style.display='block';
+
+  const firstWt=wts[keys[0]];
+  const curWt=wts[keys[keys.length-1]];
+  const bmi=firstWt/(hm*hm);
+  const cat=getBMICategory(bmi);
+  const wo=whoGain[cat];
+
+  // BMI indicator position: map to gradient bar %
+  let pct;
+  if(bmi<18.5)      pct=3+(bmi/18.5)*22;
+  else if(bmi<25)   pct=25+((bmi-18.5)/6.5)*28;
+  else if(bmi<30)   pct=53+((bmi-25)/5)*22;
+  else              pct=Math.min(95,75+((bmi-30)/10)*20);
+
+  const ind=document.getElementById('bmiIndicator');
+  if(ind)setTimeout(()=>{ind.style.left=Math.min(94,Math.max(6,pct))+'%'},350);
+
+  const bmiValEl=document.getElementById('bmiVal');
+  if(bmiValEl)bmiValEl.textContent='ИМТ '+bmi.toFixed(1);
+
+  const whoBox=document.getElementById('whoBox');
+  if(!whoBox)return;
+
+  const isSingleEntry=keys.length===1;
+  const gain=parseFloat((curWt-firstWt).toFixed(1));
+  const gainFmt=(gain>0?'+':'')+gain.toFixed(1)+' кг';
+
+  if(isSingleEntry){
+    // Only one weight — can't calculate gain yet
+    whoBox.innerHTML=
+      '<b>'+wo.label+'</b> · ИМТ <b>'+bmi.toFixed(1)+'</b><br>'+
+      '📋 ВОЗ рекомендует: <b>'+wo.range+'</b> за всю беременность<br>'+
+      '⏱ Темп II–III тр.: <b>'+wo.wkRate+'</b><br>'+
+      '<span style="opacity:0.65;font-size:11px">Записывай вес регулярно — буду отслеживать динамику вместе с тобой! 📈</span>';
+  } else {
+    // Calculate expected gain range by week (WHO 2022)
+    const wksFromStart=week<=13?week:week;
+    const expectedMax=week<=13?2.0:2.0+((week-13)*parseFloat(wo.wkRate));
+    const expectedMin=week<=13?-0.5:-0.5;
+    const gainOk=gain>=expectedMin&&gain<=expectedMax+1.5;
+    const gainEmoji=gain>0?(gainOk?'✅':'💛'):(gain===0?'➡️':'⚠️');
+    const gainNote=gainOk?'В норме по ВОЗ 🤍':'Обсуди с врачом на следующем приёме';
+    whoBox.innerHTML=
+      '<b>'+wo.label+'</b> · ИМТ <b>'+bmi.toFixed(1)+'</b><br>'+
+      '📋 ВОЗ рекомендует: <b>'+wo.range+'</b> за всю беременность<br>'+
+      '⏱ Темп: <b>'+wo.wkRate+'</b><br>'+
+      '📦 Прибавка: <b>'+gainFmt+'</b> '+gainEmoji+' — '+gainNote+'<br>'+
+      '<span style="opacity:0.55;font-size:10px">* Первый вес ('+keys[0]+') принят за допреременный</span>';
+  }
+}
+
+
+// ══ DOCTOR REPORT ══
+function generateReport(){
+  H();
+  const edd=localStorage.getItem('eddDate');
+  if(!edd){toast('Сначала укажи дату родов!');return;}
+  const {week}=calcW(edd);
+  const now=new Date();
+  const gender=localStorage.getItem('babyGender')||'n';
+  const gStr=gender==='g'?'Девочка 🎀':gender==='b'?'Мальчик 🩵':'Не определён';
+  
+  // Meds history
+  const tasks=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
+  const medsLines=allTasks.filter(t=>!t.end||new Date(t.end)>=now).map(t=>{
+    const done=!!tasks[t.id];
+    return `  ${done?'✓':'✗'} ${t.time} — ${t.name} ${t.dose} ${done?'(выпито)':'(не отмечено сегодня)'}`;
+  });
+  
+  // Weight
+  const wts=JSON.parse(localStorage.getItem('wtH'+V)||'{}');
+  const wtKeys=Object.keys(wts).sort();
+  const wtLines=wtKeys.slice(-5).map(k=>`  ${k}: ${wts[k]} кг`);
+  
+  // Mood
+  const moodH=JSON.parse(localStorage.getItem('moodH'+V)||'{}');
+  const moodKeys=Object.keys(moodH).sort().slice(-7);
+  const moodLines=moodKeys.map(k=>`  ${k}: ${moodH[k]}`);
+  
+  // Diary
+  const diary=(localStorage.getItem('diaryEntry')||'(не заполнено)').slice(0,200);
+  
+  // Kick
+  const kicks=localStorage.getItem('kickCount'+V)||'0';
+  const streak=localStorage.getItem('streak'+V)||'0';
+  
+  const report=[
+    '═══════════════════════════════',
+    'ОТЧЁТ ДЛЯ ВРАЧА',
+    `Дата формирования: ${now.toLocaleDateString('ru-RU')} ${now.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}`,
+    `Пациентка: Индира`,
+    `Срок беременности: ${week} нед.`,
+    `ПДР: ${new Date(edd).toLocaleDateString('ru-RU')}`,
+    `Пол малыша: ${gStr}`,
+    '',
+    '─── ПРЕПАРАТЫ СЕГОДНЯ ───',
+    ...medsLines,
+    `Дней подряд витаминки выпиты: ${streak}`,
+    '',
+    '─── ВЕС (последние 5 записей) ───',
+    ...wtLines,
+    '',
+    '─── НАСТРОЕНИЕ (последние 7 дней) ───',
+    ...moodLines,
+    '',
+    '─── ШЕВЕЛЕНИЯ СЕГОДНЯ ───',
+    `  ${kicks} шевелений (норма ≥10 за 2ч)`,
+    '',
+    '─── ЗАМЕТКИ ───',
+    `  ${diary}`,
+    '',
+    '═══════════════════════════════',
+    'Сформировано приложением "Для Индиры"',
+  ].join('\n');
+  
+  const area=document.getElementById('reportArea');
+  const copyBtn=document.getElementById('reportCopyBtn');
+  if(area){area.style.display='block';area.value=report;}
+  if(copyBtn)copyBtn.style.display='block';
+  toast('Отчёт сформирован! 📋');
+}
+
+function copyReport(){
+  H();
+  const area=document.getElementById('reportArea');
+  if(!area)return;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(area.value).then(()=>toast('Скопировано в буфер! 📋')).catch(()=>{area.select();document.execCommand('copy');toast('Скопировано! 📋');});
+  } else {area.select();document.execCommand('copy');toast('Скопировано! 📋');}
+}
+
+// ══ HEIGHT SAVE (for BMI) ══
+function saveHeight(){
+  const h=parseFloat(document.getElementById('heightIn').value);
+  if(h>=140&&h<=210){localStorage.setItem('heightCm',h.toString());toast('Рост сохранён для расчёта ИМТ!');updateBMI(calcW(localStorage.getItem('eddDate')||'').week||19);}
+  else toast('Укажи рост от 140 до 210 см');
+}
+
+
+// ══ BMI TOGGLE ══
+function toggleBMI(){
+  H();
+  const section=document.getElementById('bmiSection');
+  const btn=document.getElementById('bmiToggleBtn');
+  if(!section||!btn)return;
+  const open=section.style.display!=='none';
+  section.style.display=open?'none':'block';
+  btn.textContent=open?'📊 Показать коридор ВОЗ':'📊 Скрыть коридор ВОЗ';
+  btn.classList.toggle('open',!open);
+  if(!open){
+    const edd=localStorage.getItem('eddDate');
+    const{week}=calcW(edd||'');
+    updateBMI(week||19);
+  }
+}
 
 init();
 </script>
