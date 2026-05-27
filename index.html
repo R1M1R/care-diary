@@ -369,8 +369,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opa
 .sc-name{font-size:14px;font-weight:800;flex:1}
 .sc-tog{background:rgba(232,50,90,.1);border:1.5px solid rgba(232,50,90,.2);color:var(--rose);border-radius:50px;padding:6px 13px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
 .sc-tog.o{background:var(--rose);color:#fff;border-color:var(--rose)}
-.sc-det{max-height:0;overflow:hidden;transition:max-height .4s ease,opacity .3s;opacity:0;padding:0 17px}
-.sc-det.o{max-height:320px;opacity:1;padding:0 17px 15px}
+.sc-det{max-height:0;overflow:hidden;transition:max-height .45s ease,opacity .3s;opacity:0;padding:0 17px}
+.sc-det.o{max-height:480px;opacity:1;padding:0 17px 16px}
+.sc-det:empty{display:none!important;}
 .sc-chk-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--cb);margin-top:9px;cursor:pointer}
 .sc-chk{width:28px;height:28px;border-radius:50%;border:2.5px solid var(--rose3);display:flex;align-items:center;justify-content:center;transition:all .3s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
 .sc-chk.done{background:var(--rose);border-color:var(--rose);box-shadow:0 4px 12px rgba(232,50,90,.35)}
@@ -635,6 +636,73 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .copy-btn{width:100%;background:rgba(30,156,176,0.12);color:var(--teal);border:1.5px solid rgba(30,156,176,0.3);border-radius:16px;padding:13px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;cursor:pointer;transition:transform 0.2s;margin-top:8px;}
 .copy-btn:active{transform:scale(0.96);}
 
+/* ══ SC-TAKE-BTN — кнопка «Принять» всегда видна ══ */
+.sc-take-btn{
+  display:flex;align-items:center;gap:12px;
+  margin:0 14px 14px;padding:13px 16px;
+  border-radius:16px;cursor:pointer;
+  transition:all .25s cubic-bezier(.34,1.56,.64,1);
+  border:2px solid rgba(232,64,92,0.22);
+  background:rgba(232,64,92,0.06);
+  font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;
+  color:var(--rose);user-select:none;-webkit-user-select:none;
+}
+.sc-take-btn:active{transform:scale(.97);}
+.sc-take-btn.done{
+  background:linear-gradient(135deg,rgba(45,122,85,0.11),rgba(78,184,130,0.09));
+  border-color:rgba(45,122,85,0.3);color:var(--sage);
+}
+.dark .sc-take-btn.done{color:var(--sage2);}
+.sc-take-icon{
+  width:34px;height:34px;border-radius:50%;
+  border:2.5px solid var(--rose);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:16px;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  background:transparent;
+}
+.sc-take-btn.done .sc-take-icon{
+  background:linear-gradient(135deg,#2D7A55,#4EB87A);
+  border-color:transparent;
+  box-shadow:0 4px 14px rgba(45,122,85,0.38);
+  font-size:18px;
+}
+.sc-take-label{flex:1;line-height:1.3;overflow-wrap:break-word;}
+.sc-take-label small{display:block;font-size:11px;font-weight:700;opacity:.65;margin-top:1px;}
+.sc-item.upcoming .sc-take-btn{
+  border-color:rgba(212,160,23,0.35);
+  background:rgba(212,160,23,0.08);
+  color:var(--gold);
+}
+.sc-item.upcoming .sc-take-btn .sc-take-icon{border-color:var(--gold);}
+.sc-item.overdue .sc-take-btn{
+  border-color:rgba(239,68,68,0.35);
+  background:rgba(239,68,68,0.07);
+  color:#DC2626;
+}
+.sc-item.overdue .sc-take-btn .sc-take-icon{border-color:#EF4444;}
+.sc-chk-row{display:none!important;}
+
+/* ══ MED REGISTRY ══ */
+.med-toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.med-add-btn{flex:1;min-width:140px;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 18px;border:none;border-radius:18px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;color:#fff;background:linear-gradient(135deg,var(--rose),var(--rose2));box-shadow:0 8px 26px rgba(232,50,90,.32);transition:transform .2s,box-shadow .2s;}
+.med-add-btn:active{transform:scale(.96);}
+.med-next-pill{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:16px;background:rgba(212,160,23,.12);border:1.5px solid rgba(212,160,23,.28);font-size:12px;font-weight:800;color:var(--t2);flex:1;min-width:0;}
+.med-next-pill b{color:var(--rose);white-space:nowrap;}
+.sc-actions{display:flex;gap:6px;flex-shrink:0;}
+.sc-edit{width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(232,50,90,.22);background:rgba(255,255,255,.55);backdrop-filter:blur(8px);color:var(--rose);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s;}
+.sc-edit:active{transform:scale(.88);}
+.med-form-lbl{display:block;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin:14px 0 6px;}
+.med-form-inp{width:100%;font-size:16px;padding:14px;border-radius:16px;border:2px solid var(--cb);background:rgba(255,255,255,.5);backdrop-filter:blur(8px);color:var(--t1);}
+.dark .med-form-inp{background:rgba(255,255,255,.06);}
+.med-form-ta{width:100%;min-height:88px;font-size:14px;padding:14px;border-radius:16px;border:2px solid var(--cb);background:rgba(255,255,255,.5);resize:vertical;line-height:1.55;color:var(--t1);}
+.med-emoji-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.med-emoji-pick{width:44px;height:44px;border-radius:14px;border:2px solid transparent;background:rgba(255,255,255,.45);font-size:22px;cursor:pointer;transition:all .2s;}
+.med-emoji-pick.sel{border-color:var(--rose);background:rgba(232,50,90,.12);transform:scale(1.08);}
+.med-form-tog{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.55);}
+.med-del-btn{width:100%;margin-top:12px;background:none;border:2px solid #EF4444;color:#EF4444;border-radius:18px;padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;}
+.med-del-btn:active{transform:scale(.97);}
+
 
 /* ══ WARM SOFT PALETTE ══ */
 :root {
@@ -648,8 +716,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 }
 
 /* ══ LAYOUT: hero bleeds full-width, rest has 15px margins ══ */
-#tab-home > *:not(.hero){margin-left:15px!important;margin-right:15px!important;}
-#tab-home > .hero{margin-left:0!important;margin-right:0!important;}
+#tab-home > *:not(.hero):not(.hero-zone){margin-left:15px!important;margin-right:15px!important;}
+#tab-home > .hero,#tab-home > .hero-zone{margin-left:0!important;margin-right:0!important;}
 #smartTips{margin-left:15px!important;margin-right:15px!important;}
 #smartTips .stip{margin-left:0!important;margin-right:0!important;}
 #tab-meds > div{padding-left:15px;padding-right:15px;}
@@ -851,6 +919,504 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 /* ══ FACT SOURCE STYLE ══ */
 .fact-source{font-size:9px;color:var(--t3);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;opacity:0.65;font-style:italic;}
 
+/* ══════════════════════════════════════════════════════════
+   PREMIUM GLASS SYSTEM — iOS Design Refinement v3
+   Только CSS-правила. ID, JS, localStorage — не тронуты.
+   ══════════════════════════════════════════════════════════ */
+
+/* ── 1. СИСТЕМНЫЕ ПЕРЕМЕННЫЕ РАДИУСОВ И СТЕКЛА ── */
+:root{
+  --r:22px; --r-sm:14px; --r-lg:28px;
+  --glass-border:1px solid rgba(255,255,255,0.62);
+  --glass-border-inner:1px solid rgba(255,255,255,0.38);
+  --card-shadow:0 6px 32px rgba(232,64,92,0.10), 0 1px 0 rgba(255,255,255,0.85) inset;
+}
+.dark{
+  --glass-border:1px solid rgba(255,255,255,0.09);
+  --glass-border-inner:1px solid rgba(255,255,255,0.06);
+  --card-shadow:0 8px 36px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05) inset;
+}
+
+/* ── 2. ЕДИНЫЙ СТИЛЬ ВСЕХ КАРТОЧЕК ── */
+.card{
+  border-radius:var(--r)!important;
+  background:rgba(255,252,254,0.76)!important;
+  backdrop-filter:blur(44px) saturate(1.8)!important;
+  -webkit-backdrop-filter:blur(44px) saturate(1.8)!important;
+  border:var(--glass-border)!important;
+  box-shadow:var(--card-shadow)!important;
+  overflow:hidden;
+  position:relative;
+  margin-bottom:14px!important;
+}
+.dark .card{
+  background:rgba(26,5,20,0.84)!important;
+  box-shadow:var(--card-shadow)!important;
+}
+.gG .card{background:rgba(255,240,250,0.76)!important;}
+.gB .card{background:rgba(240,248,255,0.76)!important;}
+.dark.gG .card{background:rgba(26,5,22,0.84)!important;}
+.dark.gB .card{background:rgba(4,8,20,0.84)!important;}
+
+/* Хромированная верхняя линия на каждой карточке */
+.card::before{
+  content:''!important;
+  position:absolute!important;
+  top:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.95),transparent)!important;
+  pointer-events:none;z-index:10;
+}
+
+/* ── 3. УНИФИЦИРОВАННЫЕ ВНУТРЕННИЕ ОТСТУПЫ ── */
+.cb{
+  padding:20px 20px 22px!important;
+  overflow-wrap:break-word;
+  word-break:break-word;
+}
+/* Карточки с нестандартным содержимым — минимальный отступ */
+.baby-card{padding:18px 20px!important;}
+.cpn-inner{padding:22px 20px 24px!important;border-radius:20px;}
+
+/* ── 4. ЗАЩИТА ТЕКСТА ОТ ВЫХОДА ЗА ПРЕДЕЛЫ ── */
+.sh,.ssub,.baby-txt,.tmsg-text,.q-txt,.q-sig,.fact-card-inner,
+.bc-text,.bc-title,.stip-txt,.sc-name,.mood-resp,
+#careTip,#babyT,.hero-title,.tmsg-text{
+  overflow-wrap:break-word;
+  word-break:break-word;
+  hyphens:auto;
+}
+/* Мягкая обрезка для очень длинных строк-меток */
+.badge,.hero-chip-lbl,.cd-lbl,.sc-time{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.sc-name{white-space:normal!important;min-width:0;}
+
+/* ── 5. ЗАГОЛОВКИ СЕКЦИЙ — единый ритм ── */
+.sh{
+  font-family:'Playfair Display',serif!important;
+  font-size:20px!important;
+  font-style:italic;
+  font-weight:700!important;
+  color:var(--t1);
+  margin-bottom:5px!important;
+  line-height:1.28;
+  letter-spacing:-0.1px;
+}
+.ssub{
+  font-size:13px!important;
+  font-weight:700!important;
+  color:var(--t3);
+  margin-bottom:14px!important;
+  line-height:1.58;
+}
+
+/* ── 6. КАРТОЧКИ BODY-CHANGES — радиус в системе ── */
+.bc-item{
+  border-radius:var(--r-sm)!important;
+  padding:14px 13px!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1),box-shadow .18s!important;
+}
+.bc-item:active{transform:scale(.96)!important;}
+.dark .bc-item{border-color:rgba(255,255,255,0.09)!important;}
+.dark .bc-item.bc-good{background:rgba(45,122,85,0.12)!important;border-color:rgba(45,122,85,0.25)!important;}
+.dark .bc-item.bc-warn{background:rgba(212,160,23,0.12)!important;border-color:rgba(212,160,23,0.25)!important;}
+.dark .bc-item.bc-info{background:rgba(30,156,176,0.12)!important;border-color:rgba(30,156,176,0.25)!important;}
+.dark .bc-item.bc-pink{background:rgba(232,64,92,0.12)!important;border-color:rgba(232,64,92,0.22)!important;}
+.bc-grid{gap:10px!important;}
+
+/* ── 7. FACT-CARD — равные скругления ── */
+.fact-card-inner{
+  border-radius:var(--r-sm)!important;
+  padding:18px 18px 14px!important;
+  background:rgba(255,248,252,0.65)!important;
+  backdrop-filter:blur(16px)!important;
+  border:var(--glass-border-inner)!important;
+}
+.dark .fact-card-inner{
+  background:rgba(255,255,255,0.05)!important;
+  border-color:rgba(255,255,255,0.08)!important;
+}
+
+/* ── 8. FETUS-VISUAL — согласован с системой ── */
+.fetus-visual{
+  border-radius:var(--r-sm)!important;
+  background:rgba(255,248,252,0.60)!important;
+  backdrop-filter:blur(16px)!important;
+  border:var(--glass-border-inner)!important;
+  padding:14px 16px!important;
+  margin-top:14px!important;
+}
+.dark .fetus-visual{
+  background:rgba(255,255,255,0.05)!important;
+  border-color:rgba(255,255,255,0.08)!important;
+}
+
+/* ── 9. ЦИТАТА (СТИКЕР) — мягче угол, сохранён стиль sticky-note ── */
+.q-note{
+  border-radius:12px 22px 22px 22px!important;
+  padding:26px 20px 22px!important;
+  margin-top:18px!important;
+  overflow:hidden;
+  max-width:100%;
+}
+
+/* ── 10. КАРТОЧКА ЗАБОТЫ ОТ ЭМИРА ── */
+#careCard{
+  background:linear-gradient(135deg,rgba(255,240,247,0.82),rgba(248,232,255,0.78))!important;
+  border:1.5px solid rgba(232,64,92,0.18)!important;
+}
+.dark #careCard{
+  background:linear-gradient(135deg,rgba(42,8,24,0.88),rgba(36,6,32,0.88))!important;
+}
+#careTip{font-family:'Caveat',cursive;font-size:20px;color:var(--t1);line-height:1.52;max-width:100%;}
+
+/* ── 11. КУПОН (DASHED CARD) — сохраняем золотую рамку ── */
+.card[style*="dashed"]{
+  background:rgba(255,248,224,0.55)!important;
+  backdrop-filter:blur(20px)!important;
+}
+.dark .card[style*="dashed"]{background:rgba(36,24,0,0.70)!important;}
+.cpn-inner{border-radius:18px!important;}
+
+/* ── 12. ПОСЛОЖЕНИЯ-КНОПКИ (письма) ── */
+.lb{
+  border-radius:var(--r-sm)!important;
+  padding:16px 10px!important;
+  min-height:76px;
+  backdrop-filter:blur(10px)!important;
+}
+.lb em{line-height:1;}
+
+/* ── 13. MOOD RESPONSE ── */
+.mood-resp{
+  border-radius:var(--r-sm)!important;
+  padding:16px 16px!important;
+  overflow-wrap:break-word;
+  word-break:break-word;
+}
+
+/* ── 14. ФОТО РАМКА ── */
+.pf{border-radius:var(--r-sm)!important;}
+
+/* ── 15. WATER-ROW ОТСТУП ── */
+.water-row{gap:2px;}
+#waterTxt{padding:0 2px;}
+
+/* ── 16. TIME-MESSAGE: overflow-safe ── */
+.tmsg{
+  overflow:hidden;
+}
+.tmsg-text{
+  font-size:21px!important;
+  line-height:1.44!important;
+  max-width:100%;
+}
+
+/* ── 17. COUNTDOWN: flex, не переполняется ── */
+.cd-bar{border-radius:var(--r-lg)!important;padding:22px 18px!important;}
+.cd-grid{flex-wrap:nowrap!important;gap:8px!important;}
+.cd-unit{
+  min-width:0!important;
+  flex:1!important;
+  padding:14px 8px!important;
+  border-radius:var(--r-sm)!important;
+}
+.cd-num{font-size:34px!important;line-height:1!important;}
+
+/* ── 18. HERO CHIPS: текст не выпирает ── */
+.hero-chip{border-radius:16px!important;padding:11px 12px!important;min-width:0;overflow:hidden;}
+.hero-chip-lbl{font-size:10px!important;line-height:1.4!important;white-space:normal!important;}
+
+/* ── 19. RING CARD: отступ под SVG ── */
+.ring-wrap{margin:6px 0 20px!important;}
+
+/* ── 20. KICK CARD: выравнивание ── */
+.kick-btn{border-radius:50%!important;}
+
+/* ── 21. SMART TIPS: overflow-safe ── */
+.stip{
+  border-radius:var(--r-sm)!important;
+  padding:14px 16px!important;
+  overflow:hidden;
+}
+.stip-txt{overflow-wrap:break-word;word-break:break-word;}
+
+/* ── 22. BABY-TXT: не вылезает ── */
+.baby-txt{
+  font-size:20px!important;
+  overflow-wrap:break-word;
+  word-break:break-word;
+  max-width:100%;
+}
+.baby-card{overflow:hidden;}
+
+/* ── 23. FAG-ITEMS в стиле стекла ── */
+.faq-item{
+  border-radius:var(--r-sm)!important;
+  overflow:hidden;
+  border:var(--glass-border-inner)!important;
+  backdrop-filter:blur(12px)!important;
+}
+.faq-q{
+  border-radius:0!important;
+  background:rgba(255,255,255,0.22)!important;
+}
+.dark .faq-q{background:rgba(255,255,255,0.04)!important;}
+
+/* ── 24. SC-ITEM: стекло + overflow ── */
+.sc-item{
+  border-radius:var(--r-sm)!important;
+  overflow:hidden;
+  backdrop-filter:blur(20px)!important;
+  border:var(--glass-border-inner)!important;
+}
+
+/* ── 25. SCROLL-TO-TOP: согласован ── */
+.scroll-top{border-radius:50%!important;}
+
+/* ── 26. TOGGLE-ROWS В НАСТРОЙКАХ: согласованы ── */
+.tog-w{
+  border-radius:var(--r-sm)!important;
+  backdrop-filter:blur(10px)!important;
+  border:var(--glass-border-inner)!important;
+}
+
+/* ── 27. NAV: нижняя панель ── */
+#nav{
+  border-radius:24px 24px 0 0!important;
+  backdrop-filter:blur(48px) saturate(2)!important;
+  -webkit-backdrop-filter:blur(48px) saturate(2)!important;
+}
+
+/* ── 28. PAGE HEADERS: отступы ── */
+.page-h1{
+  padding-top:16px!important;
+  margin-bottom:4px!important;
+  overflow-wrap:break-word;
+  word-break:break-word;
+}
+
+/* ── 29. SETUP CARD: скругление ── */
+.setup-card{border-radius:var(--r-lg)!important;}
+
+/* ── 30. MODAL SHEET: согласован ── */
+.ms{border-radius:28px 28px 0 0!important;}
+
+/* ── 31. ANNIVERSARY BANNER: согласован ── */
+.anniv{border-radius:var(--r)!important;overflow:hidden;}
+
+/* ══════════════════════════════════════════════════════════
+   HERO ZONE: единый блок баннера + героя
+   ══════════════════════════════════════════════════════════ */
+
+/* Wrapper — edge-to-edge, отменяем отступы таба */
+.hero-zone{
+  position:relative;
+  margin:0 -15px 16px!important;
+  overflow:hidden;
+}
+/* Таб не добавляет свои margins к hero-zone */
+#tab-home > .hero-zone{
+  margin-left:0!important;
+  margin-right:0!important;
+}
+
+/* Герой внутри зоны не нужно тянуть отрицательными отступами */
+.hero-zone .hero{
+  margin:0!important;
+  border-radius:0 0 var(--r-lg) var(--r-lg)!important;
+}
+
+/* ── GENDER REVEAL BANNER ── */
+#genderBanner{
+  position:relative;
+  overflow:hidden;
+  /* Inline display/background задаётся JS, остальное — здесь */
+  padding:calc(env(safe-area-inset-top,0px) + 28px) 24px 32px!important;
+  text-align:center;
+  border-radius:0!important;
+  margin:0!important;
+  /* Плавное появление */
+  animation:gbReveal .6s cubic-bezier(.34,1.44,.64,1) both;
+}
+@keyframes gbReveal{
+  from{opacity:0;transform:translateY(-24px) scale(.97)}
+  to{opacity:1;transform:none}
+}
+
+/* Shimmer-полоса поверх градиента */
+.gb-shimmer{
+  position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:linear-gradient(110deg,
+    transparent 20%,
+    rgba(255,255,255,0.18) 45%,
+    rgba(255,255,255,0.32) 50%,
+    rgba(255,255,255,0.18) 55%,
+    transparent 80%);
+  background-size:200% 100%;
+  animation:gbShimmer 3.5s ease-in-out infinite;
+}
+@keyframes gbShimmer{
+  0%{background-position:200% 0}
+  100%{background-position:-200% 0}
+}
+
+/* Блестящие частицы */
+.gb-sparkles{
+  position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;
+}
+.gb-spark{
+  position:absolute;border-radius:50%;
+  background:rgba(255,255,255,0.85);
+  box-shadow:0 0 6px 2px rgba(255,255,255,0.5);
+  animation:gbSparkPulse linear infinite;
+}
+@keyframes gbSparkPulse{
+  0%,100%{transform:scale(0.6);opacity:0.2}
+  50%{transform:scale(1.4);opacity:0.9}
+}
+
+/* Контент баннера */
+.gb-content{position:relative;z-index:5;}
+
+.gb-emoji{
+  font-size:56px;
+  margin-bottom:10px;
+  display:block;
+  filter:drop-shadow(0 4px 20px rgba(255,255,255,0.5));
+  animation:gbEmojiFloat 3s ease-in-out infinite;
+}
+@keyframes gbEmojiFloat{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-8px) scale(1.08)}
+}
+
+.gb-title{
+  font-family:'Playfair Display',serif!important;
+  font-size:34px!important;
+  font-style:italic;
+  font-weight:900!important;
+  color:#fff!important;
+  text-shadow:0 2px 20px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.3)!important;
+  line-height:1.18;
+  margin-bottom:8px;
+  overflow-wrap:break-word;
+  word-break:break-word;
+}
+
+.gb-sub{
+  font-size:15px!important;
+  font-weight:800!important;
+  color:rgba(255,255,255,0.92)!important;
+  text-shadow:0 1px 8px rgba(0,0,0,0.2)!important;
+  letter-spacing:0.2px;
+}
+
+/* Низ баннера — «волна» перехода в героя */
+#genderBanner::after{
+  content:'';
+  position:absolute;
+  bottom:-2px;left:0;right:0;height:36px;
+  background:inherit;
+  filter:blur(20px);
+  opacity:0.55;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Герой плавно продолжает цветовую гамму баннера */
+.hero-zone .hero::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;
+  height:calc(env(safe-area-inset-top,0px) + 36px);
+  background:linear-gradient(180deg,rgba(0,0,0,0.18) 0%,transparent 100%);
+  pointer-events:none;z-index:0;
+}
+
+/* Когда баннер скрыт — герой занимает всё сверху */
+#heroZone:not(:has(#genderBanner[style*="block"])) .hero{
+  border-radius:0 0 var(--r-lg) var(--r-lg)!important;
+}
+
+/* ── ANNIVERSARY BANNER внутри hero-zone если появится ── */
+.hero-zone .anniv{border-radius:0!important;margin:0!important;}
+
+/* ── 32. GENDER BANNER старый selector — убираем ── */
+#genderBanner{border-radius:0!important;overflow:hidden!important;}
+
+/* ── 33. WRAPPERS ── */
+.med-form-inp:focus,.med-form-ta:focus{
+  border-color:var(--rose)!important;
+  box-shadow:0 0 0 4px rgba(232,64,92,0.13)!important;
+  outline:none!important;
+}
+.med-form-inp,.med-form-ta{
+  border-radius:var(--r-sm)!important;
+  background:rgba(255,255,255,0.55)!important;
+  backdrop-filter:blur(10px)!important;
+  border:var(--glass-border-inner)!important;
+  color:var(--t1)!important;
+}
+.dark .med-form-inp,.dark .med-form-ta{
+  background:rgba(255,255,255,0.07)!important;
+}
+
+/* ── 34. BAG ITEMS: согласованы ── */
+.bag-item{
+  border-radius:var(--r-sm)!important;
+  padding:13px 15px!important;
+  backdrop-filter:blur(10px)!important;
+  border:var(--glass-border-inner)!important;
+  margin-bottom:6px!important;
+}
+.bag-cat{
+  overflow-wrap:break-word;
+  word-break:break-word;
+}
+
+/* ── 35. REPORT AREA ── */
+.report-area{
+  border-radius:var(--r-sm)!important;
+  border:var(--glass-border-inner)!important;
+}
+
+/* ── 36. MOOD BUTTONS: выравнивание ── */
+.mb{
+  width:52px!important;
+  height:52px!important;
+  border-radius:50%!important;
+  font-size:26px!important;
+  flex-shrink:0;
+}
+.mood-row{gap:4px!important;}
+
+/* ── 37. TOAST ── */
+#toast{border-radius:50px!important;}
+
+/* ── 38. MH-DOT: настроение история ── */
+.mh-dot{border-radius:12px!important;}
+
+/* ── 39. WTF CHART ── */
+.wt-bar{border-radius:6px 6px 0 0!important;}
+
+/* ── 40. LETTER GRID — зазоры ── */
+.lg{gap:10px!important;}
+
+/* ── 41. КНОПКА ДОБАВИТЬ ПРЕПАРАТ ── */
+.med-add-btn{border-radius:var(--r-sm)!important;}
+.med-next-pill{border-radius:var(--r-sm)!important;overflow:hidden;}
+
+/* ── 42. РЕЖИМ ДЫХАНИЯ ── */
+.br-wrap{margin:12px 0!important;}
+#brTxt{overflow-wrap:break-word;word-break:break-word;}
+
+/* ══ END PREMIUM GLASS SYSTEM ══ */
+
 </style>
 </head>
 <body>
@@ -892,12 +1458,17 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <div style="font-size:14px;font-weight:800;color:rgba(255,255,255,.9);margin-top:8px;position:relative;z-index:1">Я люблю тебя и нашего малыша бесконечно ❤️</div>
       </div>
 
-      <!-- GENDER REVEAL BANNER — появляется когда узнали пол -->
-      <div id="genderBanner" style="display:none;border-radius:var(--r);padding:22px 20px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden;animation:cIn .7s ease">
-        <div id="genderBannerContent"></div>
-      </div>
+      <!-- ── HERO ZONE: баннер пола + герой — единый блок ── -->
+      <div class="hero-zone" id="heroZone">
 
-      <div class="hero" id="heroBg">
+        <!-- GENDER REVEAL BANNER — появляется когда узнали пол -->
+        <div id="genderBanner" style="display:none">
+          <div class="gb-shimmer"></div>
+          <div class="gb-sparkles" id="gbSparkles"></div>
+          <div id="genderBannerContent" class="gb-content"></div>
+        </div>
+
+        <div class="hero" id="heroBg">
         <div class="hero-orb hero-orb1"></div><div class="hero-orb hero-orb2"></div>
         <div class="hero-shine"></div>
         <div class="hero-streak">🔥 <span id="streakNum">0</span></div>
@@ -919,6 +1490,8 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         </div>
         <div class="hero-progress-bar"><div class="hero-progress-fill" id="heroProgressFill" style="width:0%"></div></div>
       </div>
+
+      </div><!-- /hero-zone -->
 
       <div id="smartTips" style="margin-top:4px"></div>
 
@@ -1042,12 +1615,12 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <div class="cb">
           <div class="sh">✨ Как ты себя чувствуешь?</div>
           <div class="ssub">Отметь настроение — я хочу знать 💕</div>
-          <div class="mood-row">
-            <button class="mb" onclick="saveMood('😊',this)">😊</button>
-            <button class="mb" onclick="saveMood('🥰',this)">🥰</button>
-            <button class="mb" onclick="saveMood('🥱',this)">🥱</button>
-            <button class="mb" onclick="saveMood('🤢',this)">🤢</button>
-            <button class="mb" onclick="saveMood('✨',this)">✨</button>
+          <div class="mood-row" role="group" aria-label="Выбери настроение">
+            <button class="mb" onclick="saveMood('😊',this)" aria-label="Хорошее настроение" aria-pressed="false">😊</button>
+            <button class="mb" onclick="saveMood('🥰',this)" aria-label="Влюблённое настроение" aria-pressed="false">🥰</button>
+            <button class="mb" onclick="saveMood('🥱',this)" aria-label="Устала" aria-pressed="false">🥱</button>
+            <button class="mb" onclick="saveMood('🤢',this)" aria-label="Тошнит" aria-pressed="false">🤢</button>
+            <button class="mb" onclick="saveMood('✨',this)" aria-label="Сияю" aria-pressed="false">✨</button>
           </div>
           <div class="mood-resp" id="moodR"></div>
         </div>
@@ -1131,7 +1704,11 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
     <div id="tab-meds" class="tab-c">
       <div style="padding-top:16px">
         <div class="page-h1">План заботы</div>
-        <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:18px">Отмечай кружочки когда выпьешь витаминку 💊</p>
+        <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:18px">Отмечай приём, добавляй и редактируй препараты — всё сохраняется на телефоне 💊</p>
+        <div class="med-toolbar">
+          <button type="button" class="med-add-btn" onclick="openMedForm(null)">＋ Добавить препарат</button>
+          <div class="med-next-pill" id="medNextPill">Следующий приём: <b>—</b></div>
+        </div>
         <div class="card"><div class="cb">
           <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin-bottom:10px">
             <span>Выполнено сегодня</span><span id="pgT" style="color:var(--rose)">0%</span>
@@ -1255,7 +1832,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <div class="card"><div class="cb">
           <div class="tog-w"><span style="font-size:15px;font-weight:800">Тёмная тема 🌙</span><label class="tog"><input type="checkbox" id="thmTog" onchange="toggleTheme()"><span class="tog-sl"></span></label></div>
           <div class="tog-w"><span style="font-size:15px;font-weight:800">Уведомления 🔔</span><button onclick="reqNotifs()" style="background:linear-gradient(135deg,#1E9CB0,#30C0D8);color:#fff;border:none;border-radius:50px;padding:9px 20px;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(30,156,176,.3)">Включить</button></div>
-          <p style="font-size:12px;font-weight:700;color:var(--t3);padding:2px 4px 20px;line-height:1.65">Разреши уведомления — буду напоминать о витаминах в нужное время.</p>
+          <p style="font-size:12px;font-weight:700;color:var(--t3);padding:2px 4px 20px;line-height:1.65">Разреши уведомления — буду напоминать о препаратах из твоего расписания в нужное время.</p>
           
           <div style="font-size:15px;font-weight:800;margin-bottom:8px">Твой рост (для расчёта ИМТ):</div>
           <div style="display:flex;gap:8px;margin-bottom:22px;align-items:center">
@@ -1318,6 +1895,32 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
     <button onclick="document.getElementById('galIn').click()" style="width:100%;background:var(--rose);color:#fff;border:none;border-radius:18px;padding:16px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 8px 26px rgba(232,50,90,.32);margin-bottom:10px">Добавить фото 📷</button>
     <button id="galDel" onclick="deleteGalPhoto()" style="width:100%;background:none;border:2px solid #EF4444;color:#EF4444;border-radius:18px;padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;display:none">Удалить фото</button>
     <input type="file" id="galIn" accept="image/*" style="display:none" onchange="loadGalPhoto(event)">
+  </div>
+</div>
+
+<!-- MODAL: MEDICATION -->
+<div class="mo" id="medMo" onclick="if(event.target===this)closeMedForm()">
+  <div class="ms" style="position:relative">
+    <div class="ms-hdl"></div>
+    <button type="button" class="ms-close" onclick="closeMedForm()">✕</button>
+    <div style="font-family:'Playfair Display',serif;font-size:26px;font-style:italic;font-weight:900;color:var(--rose);text-align:center;margin-bottom:6px" id="medMoTitle">Новый препарат</div>
+    <p style="font-size:12px;font-weight:700;color:var(--t3);text-align:center;margin-bottom:8px;line-height:1.5">Время, доза и подсказки — как тебе удобно</p>
+    <label class="med-form-lbl">Название</label>
+    <input type="text" class="med-form-inp" id="medNameIn" placeholder="Например: Элевит 2" maxlength="80" autocomplete="off">
+    <label class="med-form-lbl">Доза</label>
+    <input type="text" class="med-form-inp" id="medDoseIn" placeholder="1 табл. / 1 капс." maxlength="40">
+    <label class="med-form-lbl">Время приёма</label>
+    <input type="time" class="med-form-inp" id="medTimeIn" style="text-align:center;font-weight:900">
+    <label class="med-form-lbl">Иконка</label>
+    <input type="text" class="med-form-inp" id="medIconIn" maxlength="4" placeholder="💊" style="text-align:center;font-size:28px">
+    <div class="med-emoji-row" id="medEmojiRow"></div>
+    <label class="med-form-lbl">Подсказка (необязательно)</label>
+    <textarea class="med-form-ta" id="medDetIn" placeholder="Как принимать, с чем запивать..."></textarea>
+    <label class="med-form-lbl">Конец курса (необязательно)</label>
+    <input type="date" class="med-form-inp" id="medEndIn">
+    <label class="med-form-tog"><input type="checkbox" id="medPauseIn"> <span style="font-size:14px;font-weight:800">Временно на паузе</span></label>
+    <button type="button" class="lq" style="margin-top:18px" onclick="saveMedForm()">Сохранить 💊</button>
+    <button type="button" class="med-del-btn" id="medDelBtn" style="display:none" onclick="deleteMed()">Удалить препарат</button>
   </div>
 </div>
 
@@ -1597,7 +2200,6 @@ const letters={
     "Моя бусинка, не бойся. Все тревоги — это гормоны, усталость и материнский инстинкт. Положи руку на животик — там бьётся маленькое сердечко, которое любит тебя так же сильно, как и я. Ты не одна. Мы трое справляемся вместе. Эмир рядом.",
     "Жаным, когда тебе тревожно — позвони мне. Прямо сейчас. Среди урока — ничего, я всё брошу. Твоё спокойствие важнее любого урока. Я учитель, я разберусь 😄 Но главное — ты и малыш. Дыши. Всё хорошо.",
     "Алтыным, тревога — это твоя любовь к малышу. Ты уже лучшая мама, потому что переживаешь. Но сейчас переживать не за что — малыш растёт, ты справляешься, Чока сторожит 😄🐱 Всё хорошо. Я рядом.",
-  ,
     "Жанымка, тревога при беременности — это нормально. Это любовь к малышу. Попробуй 4-7-8: вдох 4 сек, задержка 7, выдох 8. Три раза. Я делаю это вместе с тобой мысленно. 💕"]},
   tired:{title:'Я устала 😫',ls:[
     "Любимая, ты устала, и это совершенно нормально! Внутри тебя прямо сейчас строится целый человек — это колоссальная работа. Пожалуйста, брось всё. Ляг на диван, вытяни ножки, включи любимый сериал. Я всё уберу, всё приготовлю и принесу тебе всё что захочешь. Твоя единственная задача сейчас — отдыхать. Я так горжусь тобой, моя трудяжка.",
@@ -1617,7 +2219,6 @@ const letters={
   games:{title:'Поиграем вместе? 🎮',ls:[
     "Жаным, помнишь тот раз когда мы играли в It Takes Two? Мне так понравилось играть с тобой — смотреть как ты смеёшься, злишься на уровне, радуешься. Это был один из самых тёплых вечеров. После того как малыш появится на свет — обязательно найдём время снова. Обещаю! А пока я играю один и думаю о тебе. 🎮❤️",
     "Алтыным, я иногда сижу за компьютером работаю над игрой и думаю: вот бы ты сидела рядом. Тот вечер с джойстиками был особенным. Скоро снова так посидим — уже втроём, малыш будет смотреть на нас большими глазами и не понимать что происходит 😄 Берегу это время для нас.",
-  ,
     "Жанымка, я уже придумал первую игру для нашего малыша 😄 Но пока он подрастает — давай мы с тобой поиграем вечером? Это обещание от мужа! 🎮❤️"]}
 };
 
@@ -1653,22 +2254,198 @@ const coupons=[
 // WEEK DATA — 20+ научно достоверных фактов на каждую неделю
 // Источники: ACOG, ВОЗ, Moore "The Developing Human" 11th ed., Sadler "Langman's Medical Embryology" 14th ed.
 const wkData={
-  1:{e:"🔬",s:"Клеточка",w:"—",l:"—",f:["Гипофиз выбрасывает ФСГ — запускает созревание 5-20 фолликулов. Один станет доминантным.","Эстроген наращивает эндометрий до 8-12 мм — идеальная 'перина' для имплантации.","Фолиевая кислота снижает риск дефектов нервной трубки на 70% (Cochrane). Элевит — 800 мкг.","Слизь шеечного канала меняется с густой на тянущуюся — природный 'фильтр' для сперматозоидов.","Матка в покое весит 50-60 г. К концу беременности вырастет до 1000-1200 г!","ЛГ начинает расти с 6-7 дня цикла и вызовет овуляцию. Именно его меряют тесты на овуляцию."]},
-  2:{e:"⏳",s:"Песчинка",w:"—",l:"—",f:["Пик ЛГ запускает овуляцию: фолликул лопается за 10-15 минут — видно на УЗИ.","Яйцеклетка живёт максимум 12-24 часа. Сперматозоид в матке — до 5 суток.","После овуляции лопнувший фолликул становится жёлтым телом → производит прогестерон.","X-хромосома от папы → девочка, Y → мальчик. Пол определяется ещё до имплантации!","Фаза жёлтого тела всегда 14 дней ±1 — постоянная величина, независимо от длины цикла.","Базальная температура после овуляции поднимается на 0,3-0,5°C под действием прогестерона."]},
-  3:{e:"🌱",s:"Мак",w:"<0,001 г",l:"0,1 мм",f:["Оплодотворение: 23 хромосомы мамы + 23 папы = 46. Пол малыша определился прямо сейчас!","Зигота делится каждые 12 ч: 1→2→4→8 клеток. К 5-му дню — бластоциста (~100 клеток).","Клетки бластоцисты разделились: ЭМ (будущий малыш) и ТБ (будущая плацента).","50% оплодотворённых яйцеклеток не имплантируются — естественный отбор. Твоя прошла!","ДНК зиготы = 3 млрд пар нуклеотидов. Вся она умещается в ядре диаметром 6 мкм.","Митохондрии — только материнские! Митохондриальная ДНК передаётся исключительно по женской линии."]},
-  4:{e:"🫘",s:"Семечко",w:"<0,001 г",l:"0,4 мм",f:["Имплантация! Трофобласт растворяет эндометрий ферментами. Бластоциста внедряется в стенку матки.","ХГЧ начинает вырабатываться → 'спасает' жёлтое тело от гибели → прогестерон продолжает расти.","Желточный мешок — первый источник питания эмбриона до созревания плаценты.","Три зародышевых листка: эктодерма (кожа, нервы), мезодерма (мышцы, кости), энтодерма (органы).","ХГЧ удваивается каждые 48-72 ч. Тест на беременность положительный с 10-14 дня после зачатия.","Нидация может вызвать лёгкое кровомазание у 20-30% — это норма, не пугайся!"]},
-  5:{e:"🌾",s:"Кунжут",w:"<0,001 г",l:"1,5 мм",f:["Нервная трубка должна закрыться к 28 дню. Фолиевая кислота — именно для этого!","Незакрытие нервной трубки → spina bifida. 800 мкг B9 снижает риск на 70%.","Сердечная трубка начинает пульсировать ~40 уд/мин. Скоро это будет слышно на УЗИ!","Три первичных мозговых пузыря уже видны: будущий большой мозг, средний мозг, мозжечок.","Хорионические ворсины плаценты врастают в матку — первые кровеносные связи.","Сомиты формируются: из них вырастут позвонки, рёбра, мышцы спины. 3-4 сомита в день."]},
-  6:{e:"🧆",s:"Чечевица",w:"<0,001 г",l:"4-5 мм",f:["СЕРДЕЧКО БЬЁТСЯ! 100-110 уд/мин — слышно на трансвагинальном УЗИ.","Жаберные дуги: из I вырастут челюсти и среднее ухо, из II — мимические мышцы.","Плацента начинает замещать жёлтое тело в выработке прогестерона.","Зачатки рук появились! Через 2 дня появятся ноги. Пальцы разделятся к 8 неделе.","Глаза 'вырастают' из мозга: зрительный бокал тянется к эктодерме — хрусталиковый пузырь.","Уровень ХГЧ 6 нед: 1080-56500 мМЕ/мл. Тошнота — признак хорошего прогноза (риск потери ↓50%)!"]},
-  7:{e:"🫐",s:"Голубика",w:"0,8 г",l:"10 мм",f:["Нейрогенез на пике: мозг создаёт 250 000 нейронов в минуту! Мозг = 25% длины тела.","Физиологическая пупочная грыжа нормальна до 12 нед — кишечник временно вне брюшной полости.","Зачатки всех 20 молочных зубов заложены. Постоянные — тоже!","Надпочечники синтезируют кортизол и адреналин — гормональная система уже работает.","Ретина содержит первые фоторецепторы. Зрительный нерв соединяется с мозгом.","Веки срастаются к концу 7 недели — откроются только в 26 нед."]},
-  8:{e:"🍇",s:"Малина",w:"1 г",l:"16 мм",f:["Переход: эмбрион → плод (фетус). Органогенез завершён!","Хрящевой скелет замещается костной тканью (остеогенез). Полностью — к 20-25 годам.","Первые движения! На УЗИ видно — ты пока не чувствуешь.","Почки вырабатывают мочу → амниотическая жидкость → малыш заглатывает → круговорот.","Сердце четырёхкамерное. ЧСС 160-170 уд/мин — пик за всю беременность.","Риск выкидыша при подтверждённом сердцебиении: ~3-5%. Каждая неделя снижает риск."]},
-  9:{e:"🫒",s:"Оливка",w:"2 г",l:"23 мм",f:["Хвостик исчез! Перепонки между пальцами растворились апоптозом.","Половые органы: у мальчиков тестостерон запускает вирилизацию с 9-10 нед.","Ушные раковины: 6 холмиков слились в узнаваемую ушную раковину с завитком и мочкой.","Сердцебиение 170 уд/мин — абсолютный пик. Такое же только у спортсмена на пределе!","Скрининг на НИПТ возможен с 9-10 нед: ДНК плода в крови мамы. Точность >99%.","Токсикоз нарастает (ХГЧ на пике). Тяжёлая рвота с потерей >5% веса — к врачу!"]},
-  10:{e:"🍒",s:"Черешня",w:"4 г",l:"31 мм",f:["Официально плод! Все органы сформированы. Теперь только рост и созревание.","Кишечник вернулся в брюшную полость. Риск выкидыша <1-3%.","Сосательный рефлекс: плод сосёт палец с давлением ~100 мм рт.ст.","Уникальные отпечатки пальцев формируются под давлением амниотической жидкости.","Диафрагма завершила формирование. Плод 'дышит' амниотической жидкостью — тренируется.","Кровь плода: HbF (фетальный гемоглобин) связывает O₂ в 2,5 раза эффективнее взрослого!"]},
-  11:{e:"🍓",s:"Клубника",w:"7 г",l:"41 мм",f:["Первый скрининг (11-13 нед): ТВП норма <2,5 мм. Расширение → риск трисомии 21.","Плод различает вкус! Сладкое → заглатывает больше. Горькое → меньше. Питание мамы → вкусы малыша.","Плацента берёт на себя гормональную функцию от жёлтого тела — лютео-плацентарный сдвиг.","Кишечник: начинается перистальтика. Мозг создаёт синапсы — разговаривай, пой!","Щитовидная: тиреоксин (T4) регулирует рост нейронов. Дефицит йода → снижение IQ на 13-15 п.","Риск хромосомных аномалий: в 25 лет — 1:1000, в 35 — 1:385, в 40 — 1:106."]},
-  12:{e:"🍋",s:"Лайм",w:"14 г",l:"54 мм",f:["ХГЧ достигает пика и начинает снижаться → тошнота уйдёт к 12-14 неделям!","Отпечатки пальцев окончательно сформированы — уникальны абсолютно у каждого.","Тимус: производит Т-лимфоциты. У плода он относительно больше, чем у взрослого.","Нейромоторное развитие: плод зевает, сосёт, глотает, двигает языком — видно на 3D УЗИ!","Плацента ~170-200 г. Площадь ворсин ~5 м². К 40 нед вырастет до 500-600 г.","Риск выкидыша <1%. Конец самого напряжённого периода! 🎉"]},
-  13:{e:"🍑",s:"Персик",w:"23 г",l:"74 мм",f:["Первый триместр позади! Второй — 'золотой'.","Плацента производит 25-50 мг прогестерона в сутки — в 10 раз больше, чем яичник.","Слуховые косточки: молоточек, наковальня, стремечко — почти сформированы. Слух скоро!","Половые органы: у девочек яичники содержат ~2 млн ооцитов (к рождению останется 1-2 млн).","Мозг: синаптогенез набирает темп — тысячи новых синаптических связей каждую секунду!","Кровяное давление плода: систолическое ~55-60 мм рт.ст. — намного ниже взрослого."]},
-  14:{e:"🍋",s:"Лимон",w:"43 г",l:"87 мм",f:["Начало II триместра! Токсикоз у большинства уходит. Энергия вернулась.","Щитовидная: T3 и T4 регулируют метаболизм каждой клетки. Йодомарин критичен!","Мимические мышцы работают: малыш хмурится, улыбается, зевает на 4D УЗИ.","Лануго активно растёт: покрывает тело. Удерживает верникс — первородную смазку.","Нейронная пластичность: мозг плода в 10-15 раз пластичнее взрослого. Каждый опыт важен!","Кости: оссификация видна на рентгене. Ключица — первая кальцифицирующаяся кость (10-12 нед)."]},
-  15:{e:"🍏",s:"Яблоко",w:"70 г",l:"100 мм",f:["Слуховые косточки окостенели — малыш начинает слышать! Голос мамы — самый родной.","Сердце перекачивает ~25 л крови в сутки при массе 70 г — рекорд эффективности!","Вестибулярная система: полукружные каналы различают ускорение, наклоны, вращение с 15 нед.","Первые шевеления скоро! 'Порхание' или 'пузырьки' — ощутишь к 18-20 нед.","Плод сосёт палец с давлением 100 мм рт.ст. — тренирует грудное вскармливание.","Бурый жир: накапливается в межлопаточной зоне — встроенный обогреватель для рождения!"]},
-  16:{e:"🥑",s:"Авокадо",w:"100 г",l:"116 мм",f:["Миелинизация! Нервные волокна обматываются миелином → скорость импульса 0,5 → 70 м/с.","Омега-3 из Элевита идёт именно на миелин: 60% сухого веса мозга — жиры, половина — ДГК.","У девочек в яичниках уже 7 млн ооцитов — максимум за всю жизнь! Бабушкины 'внуки' здесь.","Бурый жир в межлопаточной зоне, почках, шее. UCP1-протеин даёт тепло без дрожи.","Глаза повернулись вперёд. Зрачок реагирует на свет через живот — отворачивается!","ГСД-скрининг (глюкозотолерантный тест) — в 24-28 нед. Дефицит железа проверь сейчас!"]},
+  1:{e:"🔬",s:"Клеточка",w:"—",l:"—",f:[
+    "Гипофиз выбрасывает ФСГ — запускает созревание 5–20 фолликулов. Один станет доминантным.",
+    "Эстроген наращивает эндометрий до 8–12 мм — идеальная «перина» для имплантации.",
+    "Фолиевая кислота снижает риск дефектов нервной трубки на 70% (Cochrane). Элевит — 800 мкг.",
+    "Слизь шеечного канала меняется с густой на тянущуюся — природный «фильтр» для сперматозоидов.",
+    "Матка в покое весит 50–60 г. К концу беременности вырастет до 1 000–1 200 г!",
+    "ЛГ начинает расти с 6–7 дня цикла и вызовет овуляцию. Именно его меряют тесты на овуляцию.",
+    "Доминантный фолликул достигает 18–25 мм перед овуляцией — его чётко видно на УЗИ.",
+    "Начинай принимать фолиевую кислоту (400–800 мкг/сут), если ещё не: идеально за 1–3 мес до зачатия.",
+    "Прогестерон во второй фазе цикла подготавливает слизистую матки (эндометрий) к имплантации.",
+    "Рекомендуемый прегравидарный чекап: анализ на ТТГ, железо, В12, фолаты, RW, ВИЧ — здоровье до беременности."
+  ]},
+  2:{e:"⏳",s:"Песчинка",w:"—",l:"—",f:[
+    "Пик ЛГ запускает овуляцию: фолликул лопается за 10–15 минут — видно на УЗИ.",
+    "Яйцеклетка живёт максимум 12–24 часа. Сперматозоид в матке — до 5 суток.",
+    "После овуляции лопнувший фолликул становится жёлтым телом → производит прогестерон.",
+    "X-хромосома от папы → девочка, Y → мальчик. Пол определяется ещё до имплантации!",
+    "Фаза жёлтого тела всегда 14 дней ±1 — постоянная величина, независимо от длины цикла.",
+    "Базальная температура после овуляции поднимается на 0,3–0,5°C под действием прогестерона.",
+    "Из 200–400 млн сперматозоидов только 10–100 достигают яйцеклетки. Победитель уже определился!",
+    "Оптимальное окно для зачатия: за 2 дня до и в день овуляции — самый высокий шанс.",
+    "Сперматозоид и яйцеклетка сливаются в ампулярном отделе маточной трубы. Путь оплодотворённой яйцеклетки до матки — 4–5 дней.",
+    "Именно сейчас, при оплодотворении, случайным образом формируется уникальный геном малыша — неповторимый и единственный во вселенной."
+  ]},
+  3:{e:"🌱",s:"Мак",w:"<0,001 г",l:"0,1 мм",f:[
+    "Оплодотворение: 23 хромосомы мамы + 23 папы = 46. Пол малыша определился прямо сейчас!",
+    "Зигота делится каждые 12 ч: 1→2→4→8 клеток. К 5-му дню — бластоциста (~100 клеток).",
+    "Клетки бластоцисты разделились: эмбриобласт (будущий малыш) и трофобласт (будущая плацента).",
+    "50% оплодотворённых яйцеклеток не имплантируются — естественный отбор. Твоя прошла!",
+    "ДНК зиготы = 3 млрд пар нуклеотидов. Вся она умещается в ядре диаметром 6 мкм.",
+    "Митохондрии — только материнские! Митохондриальная ДНК передаётся исключительно по женской линии.",
+    "Бластоциста путешествует по маточной трубе 4–5 дней: реснитчатый эпителий и перистальтика доставляют её в матку.",
+    "Zona pellucida (прозрачная оболочка) защищает зиготу от слипания со стенками трубы. Перед имплантацией она «растворяется».",
+    "Уже на стадии 8 клеток начинается компактизация — клетки сближаются и образуют морулу. Первый «командный» процесс жизни!",
+    "Ген SRY на Y-хромосоме папы — главный «переключатель» пола. Без него развитие идёт по женскому пути по умолчанию."
+  ]},
+  4:{e:"🫘",s:"Семечко",w:"<0,001 г",l:"0,4 мм",f:[
+    "Имплантация! Трофобласт растворяет эндометрий ферментами. Бластоциста внедряется в стенку матки.",
+    "ХГЧ начинает вырабатываться → «спасает» жёлтое тело от гибели → прогестерон продолжает расти.",
+    "Желточный мешок — первый источник питания эмбриона до созревания плаценты.",
+    "Три зародышевых листка: эктодерма (кожа, нервы), мезодерма (мышцы, кости), энтодерма (органы).",
+    "ХГЧ удваивается каждые 48–72 ч. Тест на беременность положительный с 10–14 дня после зачатия.",
+    "Нидация может вызвать лёгкое кровомазание у 20–30% — это норма, не пугайся!",
+    "Амниотический мешок формируется вокруг эмбриона — водный «скафандр» на ближайшие 36 недель.",
+    "Прогестерон расслабляет гладкую мускулатуру матки, предотвращая выкидыш. Именно поэтому ты можешь чувствовать тяжесть внизу живота.",
+    "Эмбрион ещё питается «секретом» эндометрия — через диффузию. Кровеносная связь с мамой установится к 10–12 нед.",
+    "Полость матки полностью стерильна благодаря иммуносупрессии прогестероном — тело «разрешает» чужеродный организм."
+  ]},
+  5:{e:"🌾",s:"Кунжут",w:"<0,001 г",l:"1,5 мм",f:[
+    "Нервная трубка должна закрыться к 28 дню. Фолиевая кислота — именно для этого!",
+    "Незакрытие нервной трубки → spina bifida. 800 мкг B9 снижает риск на 70%.",
+    "Сердечная трубка начинает пульсировать ~40 уд/мин. Скоро это будет слышно на УЗИ!",
+    "Три первичных мозговых пузыря уже видны: будущий большой мозг, средний мозг, мозжечок.",
+    "Хорионические ворсины плаценты врастают в матку — первые кровеносные связи.",
+    "Сомиты формируются: из них вырастут позвонки, рёбра, мышцы спины. 3–4 сомита в день.",
+    "Аллантоис — предшественник мочевого пузыря и пуповины. Закладывается именно сейчас.",
+    "Зачатки глаз появляются как два утолщения эктодермы — «оптические плакоды».",
+    "Первые клетки будущей печени уже мигрируют из энтодермы. Печень будет кроветворным органом до рождения.",
+    "Эмбрион изогнут в «позе С»: голова и хвост сближаются. Именно это видно на первом УЗИ как «запятая» с пульсом."
+  ]},
+  6:{e:"🧆",s:"Чечевица",w:"<0,001 г",l:"4-5 мм",f:[
+    "СЕРДЕЧКО БЬЁТСЯ! 100–110 уд/мин — слышно на трансвагинальном УЗИ.",
+    "Жаберные дуги: из I вырастут челюсти и среднее ухо, из II — мимические мышцы.",
+    "Плацента начинает замещать жёлтое тело в выработке прогестерона.",
+    "Зачатки рук появились! Через 2 дня появятся ноги. Пальцы разделятся к 8 неделе.",
+    "Глаза «вырастают» из мозга: зрительный бокал тянется к эктодерме — хрусталиковый пузырь.",
+    "Уровень ХГЧ 6 нед: 1 080–56 500 мМЕ/мл. Тошнота — признак хорошего прогноза (риск потери ↓50%)!",
+    "Нос, рот, ушные ямки — все закладываются на этой неделе из плакод — утолщений эктодермы.",
+    "Кишечник начинает выходить в пуповину (физиологическая пупочная грыжа) — брюшная полость пока мала.",
+    "Зачатки лёгких: трахея и два первичных бронхиальных почки — начало дыхательной системы.",
+    "Нейрогенез начинается: 250 000 нейронов в минуту! Эта скорость сохранится до 20 недель."
+  ]},
+  7:{e:"🫐",s:"Голубика",w:"0,8 г",l:"10 мм",f:[
+    "Нейрогенез на пике: мозг создаёт 250 000 нейронов в минуту! Мозг = 25% длины тела.",
+    "Физиологическая пупочная грыжа нормальна до 12 нед — кишечник временно вне брюшной полости.",
+    "Зачатки всех 20 молочных зубов заложены. Постоянные — тоже!",
+    "Надпочечники синтезируют кортизол и адреналин — гормональная система уже работает.",
+    "Ретина содержит первые фоторецепторы. Зрительный нерв соединяется с мозгом.",
+    "Веки срастаются к концу 7 недели — откроются только в 26 нед.",
+    "Пуповина сформирована: две артерии и вена в желатиновой оболочке (вартонов студень). Длина пока 1 см.",
+    "Ручки сгибаются в локтях! Первые суставы. Пальчики пока слиты перепонками.",
+    "Поджелудочная железа закладывается как два выроста кишки — вентральный и дорсальный. Сольются к 8 нед.",
+    "Тимус (вилочковая железа) — закладывается. Именно здесь созреют Т-лимфоциты — основа иммунитета."
+  ]},
+  8:{e:"🍒",s:"Вишенка",w:"1 г",l:"16 мм",f:[
+    "Переход: эмбрион → плод (фетус). Органогенез завершён!",
+    "Хрящевой скелет замещается костной тканью (остеогенез). Полностью — к 20–25 годам.",
+    "Первые движения! На УЗИ видно — ты пока не чувствуешь.",
+    "Почки вырабатывают мочу → амниотическая жидкость → малыш заглатывает → круговорот.",
+    "Сердце четырёхкамерное. ЧСС 160–170 уд/мин — пик за всю беременность.",
+    "Риск выкидыша при подтверждённом сердцебиении: ~3–5%. Каждая неделя снижает риск.",
+    "Перепонки между пальцами растворились апоптозом (запрограммированная гибель клеток) — теперь видны 10 отдельных пальчиков!",
+    "Обонятельные луковицы сформированы — малыш будет узнавать запах мамы с первого вдоха.",
+    "Лицо: нос, губы, подбородок сформированы. Ушные раковины на месте. Малыш узнаваем!",
+    "Хорионические ворсины плаценты: 30 котиледонов с ветвлениями. Площадь обмена уже ~1–2 м²."
+  ]},
+  9:{e:"🫒",s:"Оливка",w:"2 г",l:"23 мм",f:[
+    "Хвостик исчез! Перепонки между пальцами растворились апоптозом.",
+    "Половые органы: у мальчиков тестостерон запускает вирилизацию с 9–10 нед.",
+    "Ушные раковины: 6 холмиков слились в узнаваемую ушную раковину с завитком и мочкой.",
+    "Сердцебиение 170 уд/мин — абсолютный пик. Такое же только у спортсмена на пределе!",
+    "НИПТ-скрининг возможен с 9–10 нед: ДНК плода в крови мамы. Точность >99%.",
+    "Токсикоз нарастает (ХГЧ на пике). Тяжёлая рвота с потерей >5% веса — к врачу!",
+    "Мозг: мозолистое тело начинает закладываться. Оно свяжет два полушария ~200 млн аксонов.",
+    "Хрящи носа, ушей, межпозвонковых дисков формируются. Хрящи сохраняются дольше других тканей.",
+    "Поджелудочная железа начинает производить инсулин — гормональная регуляция сахара стартует.",
+    "Пупочная грыжа достигает максимума: кишечник займёт брюшную полость к 10–12 нед."
+  ]},
+  10:{e:"🍊",s:"Мандаринка",w:"4 г",l:"31 мм",f:[
+    "Официально плод! Все органы сформированы. Теперь только рост и созревание.",
+    "Кишечник вернулся в брюшную полость. Риск выкидыша <1–3%.",
+    "Сосательный рефлекс: плод сосёт палец с давлением ~100 мм рт.ст.",
+    "Уникальные отпечатки пальцев формируются под давлением амниотической жидкости.",
+    "Диафрагма завершила формирование. Плод «дышит» амниотической жидкостью — тренируется.",
+    "Кровь плода: HbF (фетальный гемоглобин) связывает O₂ в 2,5 раза эффективнее взрослого!",
+    "Ногтевые пластинки начали расти. К рождению выступят за кончики пальцев!",
+    "Зубные зачатки молочных зубов окружены зачатками постоянных. Всего 52 зуба закладывается!",
+    "Первые синапсы в коре головного мозга формируются — закладывается основа интеллекта.",
+    "Объём амниотической жидкости: ~25 мл. К 36 нед достигнет ~800–1000 мл."
+  ]},
+  11:{e:"🍓",s:"Клубника",w:"7 г",l:"41 мм",f:[
+    "Первый скрининг (11–13 нед): ТВП норма <2,5 мм. Расширение → риск трисомии 21.",
+    "Плод различает вкус! Сладкое → заглатывает больше. Горькое → меньше. Питание мамы → вкусы малыша.",
+    "Плацента берёт на себя гормональную функцию от жёлтого тела — лютео-плацентарный сдвиг.",
+    "Кишечник: начинается перистальтика. Мозг создаёт синапсы — разговаривай, пой!",
+    "Щитовидная: тиреоксин (T4) регулирует рост нейронов. Дефицит йода → снижение IQ на 13–15 п.",
+    "Риск хромосомных аномалий: в 25 лет — 1:1000, в 35 — 1:385, в 40 — 1:106.",
+    "Лицевые мышцы: малыш может делать выражения лица! Хмурится, открывает рот. Видно на УЗИ.",
+    "Желчный пузырь уже производит желчь. Печень занимает до 10% объёма тела плода на этом сроке.",
+    "Гениталии сформированы, но внешне ещё похожи у обоих полов. Пол на УЗИ определят к 16–20 нед.",
+    "Носовая кость видна на УЗИ с 11 нед — её отсутствие повышает риск трисомии 21. Важный маркер скрининга."
+  ]},
+  12:{e:"🍋",s:"Лайм",w:"14 г",l:"54 мм",f:[
+    "ХГЧ достигает пика и начинает снижаться → тошнота уйдёт к 12–14 неделям!",
+    "Отпечатки пальцев окончательно сформированы — уникальны абсолютно у каждого.",
+    "Тимус: производит Т-лимфоциты. У плода он относительно больше, чем у взрослого.",
+    "Нейромоторное развитие: плод зевает, сосёт, глотает, двигает языком — видно на 3D УЗИ!",
+    "Плацента ~170–200 г. Площадь ворсин ~5 м². К 40 нед вырастет до 500–600 г.",
+    "Риск выкидыша <1%. Конец самого напряжённого периода! 🎉",
+    "Почки полностью функциональны: моча поступает в амниотический мешок. Малыш «пьёт» воды и мочится.",
+    "Мышечная система: плод делает дыхательные движения грудной клеткой — тренируется к первому вдоху.",
+    "Щитовидная железа самостоятельно синтезирует тиреоидные гормоны — регуляция роста запущена.",
+    "Рефлекс Моро (испуг) уже присутствует: резкий звук → симметричное разведение рук. Будет до 4–6 мес жизни."
+  ]},
+  13:{e:"🍑",s:"Персик",w:"23 г",l:"74 мм",f:[
+    "Первый триместр позади! Второй — «золотой». Токсикоз обычно уходит, энергия возвращается.",
+    "Плацента производит 25–50 мг прогестерона в сутки — в 10 раз больше, чем яичник.",
+    "Слуховые косточки: молоточек, наковальня, стремечко — почти сформированы. Слух скоро!",
+    "Половые органы: у девочек яичники содержат ~2 млн ооцитов (к рождению останется 1–2 млн).",
+    "Мозг: синаптогенез набирает темп — тысячи новых синаптических связей каждую секунду!",
+    "Кровяное давление плода: систолическое ~55–60 мм рт.ст. — намного ниже взрослого.",
+    "Скелет: 206 костей будущего тела закладываются в виде хрящей или костных ядер.",
+    "Объём сердечного выброса плода: ~20 мл/мин. К рождению вырастет до 400 мл/мин.",
+    "Лануго — первый пушок — начинает расти на лице. Задача: удерживать верникс (первородную смазку).",
+    "Выделяется амниотическая жидкость ~100 мл. Полностью обновляется каждые 3 часа через глотание и мочеиспускание."
+  ]},
+  14:{e:"🍋",s:"Лимон",w:"43 г",l:"87 мм",f:[
+    "Начало II триместра! Токсикоз у большинства уходит. Энергия вернулась.",
+    "Щитовидная: T3 и T4 регулируют метаболизм каждой клетки. Йодомарин критичен!",
+    "Мимические мышцы работают: малыш хмурится, улыбается, зевает на 4D УЗИ.",
+    "Лануго активно растёт: покрывает тело. Удерживает верникс — первородную смазку.",
+    "Нейронная пластичность: мозг плода в 10–15 раз пластичнее взрослого. Каждый опыт важен!",
+    "Кости: оссификация видна на рентгене. Ключица — первая кальцифицирующаяся кость (10–12 нед).",
+    "Почки производят 5–7 мл мочи в час — амниотическая жидкость состоит из мочи плода с 16 нед.",
+    "Поджелудочная железа синтезирует инсулин и глюкагон — регуляция сахара крови функционирует.",
+    "Сетчатка глаза: светочувствительные клетки (палочки и колбочки) активно формируются.",
+    "Плацента: кровоток мамы и малыша разделён барьером — они никогда не смешиваются напрямую."
+  ]},
+  15:{e:"🍏",s:"Яблоко",w:"70 г",l:"100 мм",f:[
+    "Слуховые косточки окостенели — малыш начинает слышать! Голос мамы — самый родной.",
+    "Сердце перекачивает ~25 л крови в сутки при массе 70 г — рекорд эффективности!",
+    "Вестибулярная система: полукружные каналы различают ускорение, наклоны, вращение с 15 нед.",
+    "Первые шевеления скоро! «Порхание» или «пузырьки» — ощутишь к 18–20 нед.",
+    "Плод сосёт палец с давлением 100 мм рт.ст. — тренирует грудное вскармливание.",
+    "Бурый жир: накапливается в межлопаточной зоне — встроенный обогреватель для рождения!",
+    "Волосы на голове: фолликулы заложены. К рождению может вырасти от 1 до 5 см — это норма.",
+    "Мышечная масса: плод активно двигается 50+ раз в час — но ты ещё не чувствуешь.",
+    "Кожа пока прозрачна: сосуды просвечивают. Белый подкожный жир начнёт накапливаться с 20 нед.",
+    "Дыхательный центр в стволе мозга уже функционирует: плод делает 30–70 «вдохов» в минуту жидкости."
+  ]},
+  16:{e:"🥑",s:"Авокадо",w:"100 г",l:"116 мм",f:[
+    "Миелинизация! Нервные волокна обматываются миелином → скорость импульса 0,5 → 70 м/с.",
+    "Омега-3 из Элевита идёт именно на миелин: 60% сухого веса мозга — жиры, половина — ДГК.",
+    "У девочек в яичниках уже 7 млн ооцитов — максимум за всю жизнь! Бабушкины «внуки» здесь.",
+    "Бурый жир в межлопаточной зоне, почках, шее. UCP1-протеин даёт тепло без дрожи.",
+    "Глаза повернулись вперёд. Зрачок реагирует на свет через живот — отворачивается!",
+    "Следующий ГСД-скрининг (глюкозотолерантный тест) — в 24–28 нед. Сейчас проверь железо!",
+    "Слуховые косточки полностью окостенели: малыш слышит 250–5000 Гц — диапазон разговорной речи!",
+    "Плацента весит ~100 г — почти столько же, сколько малыш. К 40 нед будет 500–600 г.",
+    "Мочеиспускание 5–10 мл/ч. С этой недели вся амниотическая жидкость — фактически моча плода.",
+    "Поджелудочная: β-клетки выделяют инсулин в ответ на глюкозу. Сахарная кривая малыша запущена."
+  ]},
   17:{e:"🍐",s:"Груша",w:"140 г",l:"130 мм",f:[
     "Ушная улитка сформировалась окончательно: 2,5 витка — как у взрослого. Малыш слышит твой голос, сердце, кишечник. Разговаривай с ним! (Moore, 11ed)",
     "Плод глотает 200–500 мл амниотических вод в сутки — тренирует почки, ЖКТ и навык сосания. Воды полностью обновляются каждые 3 часа.",
@@ -1676,7 +2453,9 @@ const wkData={
     "Скелет: оссификация (окостенение) видна на рентгене. Ключица — первая кость, начавшая кальцифицироваться ещё в 10 нед. Элевит даёт нужный кальций!",
     "Рефлекс хватания: давление 50 г. Эволюционный — детёныш держится за шерсть матери. Этот рефлекс Индира ощутит в первые минуты после родов.",
     "ВДМ (высота дна матки) ≈ 17 см — акушеры используют формулу: ВДМ в см = срок в неделях ±2 см. Это простой и надёжный маркер роста.",
-    "Нервная система: скорость проведения импульса по миелинизированным волокнам выросла до 5–10 м/с (у взрослого — 70 м/с). Миелинизация продолжается до 25 лет."
+    "Нервная система: скорость проведения импульса по миелинизированным волокнам выросла до 5–10 м/с (у взрослого — 70 м/с). Миелинизация продолжается до 25 лет.",
+    "Объём амниотической жидкости ~150 мл. Малыш заглатывает ~200–500 мл/сут — почки фильтруют всё обратно.",
+    "Первородный кал (меконий) начинает накапливаться: желчь + слущенные клетки + лануго. Выйдет в первые 24–48 ч жизни."
   ]},
   18:{e:"🍠",s:"Батат",w:"190 г",l:"142 мм",f:[
     "Слух полностью функционален! Мозг малыша обрабатывает звуки — и мамин голос уже хранится в памяти. DeCasper & Fifer (1980): новорождённые узнают голос мамы в первые секунды.",
@@ -1685,7 +2464,9 @@ const wkData={
     "Языковая асимметрия: ЭЭГ-исследования (Mento et al., 2010) показывают — левое полушарие плода уже реагирует на речь иначе, чем правое. Языковой потенциал заложен сейчас.",
     "Нейромоторное развитие: плод зевает, глотает, гримасничает — всё видно на 4D УЗИ. Это не рефлексы, а первые осознанные движения.",
     "Мочеиспускание плода: 5–10 мл/час. С 16-й недели вся амниотическая жидкость — это фактически моча плода. Круговорот: глотает → выделяет → глотает снова.",
-    "Сетчатка глаза: фоторецепторы (палочки и колбочки) сформированы. Яркий свет через живот плод воспринимает как рассеянное красноватое свечение."
+    "Сетчатка глаза: фоторецепторы (палочки и колбочки) сформированы. Яркий свет через живот плод воспринимает как рассеянное красноватое свечение.",
+    "Белый подкожный жир начинает откладываться: пока <1% от массы тела. К рождению вырастет до 14–16%.",
+    "Маточные трубы, матка и влагалище у девочек полностью сформированы к 18 нед."
   ]},
   19:{e:"🥭",s:"Манго",w:"240 г",l:"152 мм",f:[
     "Верникс казеоза (vernix caseosa): белая сырообразная смазка — 80% вода, 10% белки, 10% жиры. Антибактериальная, антиоксидантная защита кожи. ВОЗ рекомендует не смывать верникс 24 ч после рождения.",
@@ -1707,7 +2488,10 @@ const wkData={
     "2-й скрининг (18–21 нед): оценивают 4 камеры сердца, мозг, почки, позвоночник, губу, носовую кость. И, возможно, определят пол! Точность в 20 нед — 99%+.",
     "Меконий: тёмно-зелёная масса из желчи, слизи, лануго и верникса — накапливается в кишечнике. Выйдет в первые 24–48 ч жизни. Это норма.",
     "Позиция для сна: левый бок улучшает кровоток к плаценте на 28% (Warland, 2017). Подушка между коленями снимает нагрузку на поясницу. С 20 нед сон на спине нежелателен.",
-    "Нейронный синаптогенез: ~40 000 новых синапсов каждую секунду. Разговоры, музыка, чтение вслух — прямая инвестиция в мозг малыша прямо сейчас."
+    "Нейронный синаптогенез: ~40 000 новых синапсов каждую секунду. Разговоры, музыка, чтение вслух — прямая инвестиция в мозг малыша прямо сейчас.",
+    "Волосы на голове видны на УЗИ. У одних малышей их много, у других почти нет — и то и другое абсолютная норма.",
+    "Белый подкожный жир: 1–2% от массы тела. Малыш постепенно теряет «прозрачность» кожи и становится розовее.",
+    "ВДМ ≈ 20 см = сроку беременности в неделях ±2 см. Простой маркер, который акушер проверяет каждый раз."
   ]},
   21:{e:"🍎",s:"Гранат",w:"360 г",l:"270 мм",f:[
     "Вкусовые рецепторы: ~10 000 вкусовых почек — как у взрослого. Малыш различает сладкое, горькое, кислое, солёное, умами через воды. Ешь рыбу, овощи, зелень!",
@@ -1716,7 +2500,9 @@ const wkData={
     "NK-клетки (натуральные киллеры) составляют 40% лимфоцитов плода (у взрослого — 10–15%). Врождённый иммунитет уже в полную силу.",
     "Гиппокамп: нейроны CA1, CA3, зубчатая извилина сформированы. Это центр памяти и пространственной навигации — он уже работает.",
     "Эпигенетика: твои эмоции, питание, уровень стресса меняют экспрессию генов малыша через кортизол и метилирование ДНК. Счастливая мама = здоровый малыш (Gluckman, 2008).",
-    "ДГК (омега-3): 300 мг/сутки идёт на построение миелина. 60% сухого веса мозга — жиры, половина из них — ДГК. Элевит 2 содержит нужную дозу."
+    "ДГК (омега-3): 300 мг/сутки идёт на построение миелина. 60% сухого веса мозга — жиры, половина из них — ДГК. Элевит 2 содержит нужную дозу.",
+    "Слух: плод различает не только голоса, но и музыку, шумы улицы. Классическая музыка 20–50 мин/день связана с лучшим нейрокогнитивным развитием.",
+    "Пуповина к 21 нед: ~25–30 см, имеет 1–3 витка. Обвитие у 25% плодов — обычно безопасно."
   ]},
   22:{e:"🥥",s:"Кокос",w:"430 г",l:"280 мм",f:[
     "Слух: плод узнаёт голос мамы с первых секунд после рождения и поворачивает голову (DeCasper & Fifer, 1980). Голос папы Эмира малыш тоже уже запомнил!",
@@ -1725,7 +2511,9 @@ const wkData={
     "Тактильная чувствительность: рецепторы Мейснера, Меркеля, Пачини полностью развиты. Погладь живот — 75% плодов реагируют движениями через 20–30 секунд.",
     "Преэклампсия: АД ≥140/90 мм рт.ст. + протеинурия после 20 нед = опасный симптом. КардиоМагнил (аспирин 75 мг) снижает риск ПЭ на 24% (ASPRE trial, 2017).",
     "Двигательная активность мамы: 30 мин умеренной нагрузки 4–5 раз/нед снижает риск гестационного диабета на 27% (ACOG, 2020). Прогулки по Бишкеку — идеально!",
-    "Мелатонин мамы = биологические часы малыша. Нарушение режима сна матери нарушает суточный ритм плода (Torres-Farfan, 2011)."
+    "Мелатонин мамы = биологические часы малыша. Нарушение режима сна матери нарушает суточный ритм плода (Torres-Farfan, 2011).",
+    "Иммунные антитела IgG от мамы начинают передаваться через плаценту — первый иммунный дар малышу.",
+    "Верникс казеоза (первородная смазка) начинает формироваться: слой жирового защитного покрытия кожи."
   ]},
   23:{e:"🍊",s:"Грейпфрут",w:"500 г",l:"290 мм",f:[
     "500 г — первый порог жизнеспособности по критериям ВОЗ. В специализированном НИКУ при максимальной интенсивной терапии выживаемость ~20–35%.",
@@ -1734,7 +2522,9 @@ const wkData={
     "ГАМК (тормозной нейромедиатор) переключается с возбуждающего на тормозящий эффект к 22–24 нед — признак созревания ЦНС.",
     "Паузы движений до 75–90 минут во время сна — абсолютная норма. Считать нужно в период бодрствования: 10 движений за 2 часа активности.",
     "Изжога у 30–50% беременных во II триместре. Прогестерон расслабил нижний пищеводный сфинктер. Малые порции, не лежать 1 ч после еды — работает.",
-    "Растяжки: у 50–90% беременных. Главный фактор — генетика (структура кожи), не масло. Масло от зуда помогает, но не от самих полос."
+    "Растяжки: у 50–90% беременных. Главный фактор — генетика (структура кожи), не масло. Масло от зуда помогает, но не от самих полос.",
+    "Мозг: амигдала и гиппокамп (центры эмоций и памяти) функционально активны с 22–23 нед.",
+    "Кровообращение: сердечный выброс мамы вырос на 30–40%. Это объясняет учащённое сердцебиение и одышку."
   ]},
   24:{e:"🌽",s:"Кукуруза",w:"600 г",l:"300 мм",f:[
     "Жизнеспособность по ВОЗ: выживаемость в НИКУ при 24 нед ~40–50% в развитых странах при максимальной терапии. Каждая неделя в утробе = +3–4% шансов.",
@@ -1743,7 +2533,9 @@ const wkData={
     "Гестационный сахарный диабет (ГСД): скрининг в 24–28 нед (ОГТТ). Нормы: натощак <5,1, ч/з 1 ч <10,0, ч/з 2 ч <8,5 ммоль/л (ACOG 2023).",
     "Белый подкожный жир: 3–4% от массы тела. К рождению вырастет до 14–16%. Малыш постепенно округляется и теряет 'морщинистый' вид.",
     "Плацента, степень зрелости 0: ещё 'молодая'. Кальцинаты появятся к 34–36 нед — это норма, не патология.",
-    "КардиоМагнил (аспирин 75 мг): помимо снижения риска ПЭ, предотвращает тромбоз в плацентарных сосудах, улучшая кровоток к малышу. Именно вечером — пик активности тромбоцитов."
+    "КардиоМагнил (аспирин 75 мг): помимо снижения риска ПЭ, предотвращает тромбоз в плацентарных сосудах, улучшая кровоток к малышу. Именно вечером — пик активности тромбоцитов.",
+    "Сурфактант: пневмоциты II типа начинают синтез. К 28 нед — достаточно для выживания при рождении.",
+    "Ногти на руках достигли кончиков пальцев. Первые антицарапки понадобятся сразу после рождения."
   ]},
   25:{e:"🥦",s:"Цветная капуста",w:"660 г",l:"345 мм",f:[
     "Ноздри открылись: плод активно 'дышит' амниотическими водами, тренируя диафрагму и межрёберные мышцы для первого вдоха.",
@@ -1752,7 +2544,9 @@ const wkData={
     "Хронический стресс матери изменяет дендритную структуру гиппокампа плода — это доказано (Weinstock, 2008). Дыши глубоко, Индира, ты справляешься! 💪",
     "Физическая нагрузка мамы улучшает плацентарный кровоток и снижает риск ГСД на 27%. Прогулки 30 мин в день — достаточно (ACOG, 2020).",
     "Мышечные судороги (крампи): дефицит Mg + Ca + Na. КардиоМагнил содержит аспирин, а не магний — дополнительно можно обсудить с врачом Mg-препарат.",
-    "Грудное молоко: молозиво начинает вырабатываться с 16–20 нед. К 25 нед при надавливании могут появляться капли — это норма, признак готовности."
+    "Грудное молоко: молозиво начинает вырабатываться с 16–20 нед. К 25 нед при надавливании могут появляться капли — это норма, признак готовности.",
+    "Вкусовые рецепторы: >10 000 вкусовых почек — как у взрослого. Малыш пробует всё, что ты ешь. Разнообразное питание формирует разнообразные вкусовые предпочтения ребёнка!",
+    "Длина пуповины к 25 нед: ~35–40 см. Витки пуповины образуются от движений малыша — природа предусмотрела запас длины."
   ]},
   26:{e:"🥬",s:"Большой салат",w:"760 г",l:"360 мм",f:["Глаза ОТКРЫЛИСЬ! Зрачок реагирует на свет. Настоящий цвет радужки — к 6-12 месяцам.","Мозг: автономная терморегуляция — первый шаг к независимости от плаценты!","ЭЭГ: 'веретёна сна' — паттерны идентичны здоровому доношенному. Мозг нейрологически зрел.","У мальчиков яички начинают опускаться. Завершится к 32-35 нед — гормон INSL3 управляет.","Зрительные вызванные потенциалы (VEP): кора мозга реагирует на световую вспышку.","Ikota (икота): диафрагма резко сокращается — ритмичные толчки 1-2 раза/сек. Тренировка!","Нейроны Пуркинье: 300 000 синапсов на клетку. Мозжечок строит систему координации.","Нейромедиаторы серотонин и дофамин: системы удовольствия и настроения — активны.","Антитела IgG: к 26 нед — ~35-40% итогового запаса передано. Нарастает активно.","Длина пуповины к 26 нед: ~35-40 см. Движения плода буквально вытягивают её!","Плацента: степень зрелости I по Grannum — видны первые эхогенные включения.","Маточные сокращения (Брэкстон-Хикс): нерегулярные, проходят от отдыха. Норма с 20 нед.","Кровоток: объём циркулирующей крови мамы вырос на 40-50%. Сердце работает на 30% больше!","ГСД: скрининг назначают 24-28 нед. Если ещё не сдавала — спроси врача на следующем визите.","Шейка матки к 26 нед ≥30 мм на УЗИ — норма. Укорочение → прогестерон вагинально.","Маме: поздравляю — до III триместра осталось 2 недели! Самое время записаться на курсы.","Обсуди с врачом: партнёрские роды (требования к Эмиру — справки флюорография, ВИЧ, RW).","Витамин D: 1000-2000 МЕ/сутки. Дефицит → аплазия эмали у ребёнка, рахит.","Сон: U-образная подушка изменит качество сна. Стоит каждого потраченного сома!","Нейронная активность: DMN (сеть пассивного режима) закладывается — самоосознание ребёнка."]},
   27:{e:"🥦",s:"Брокколи",w:"875 г",l:"370 мм",f:["ЭЭГ плода 27 нед: идентична ЭЭГ новорождённого 27 нед. Мозг — как у реального ребёнка!","Выживаемость 27 нед: ~90% в квалифицированном НИКУ. Медицина творит чудеса.","Лёгкие: L/S ratio ~1,5-2,0. Кортикостероиды мамы ускоряют созревание за 24-48 ч.","Икота: ритмичные толчки по 10-30 мин. Чувствуешь — значит малыш тренирует диафрагму!","Кожа розовеет: подкожный жир нарастает. Меньше морщинок — всё больше похож на младенца.","Слух: прагматические аспекты языка (ритм, интонация) различаются плодом 27 нед.","Мозжечок: удвоился за 4 недели — управляет координацией, балансом, речью.","Хранение в памяти: новорождённые узнают колыбельные, которые слышали в утробе (Hepper,1991)!","Суточный ритм: мелатонин синхронизирован. Стабильный режим сна мамы = лучший ритм малыша.","Сон плода: NREM 35%, REM 25%, активное бодрствование 20%, тихое бодрствование 20%.","КТГ нормы (с 28 нед): базальная ЧСС 110-160, вариабельность 5-25, 2+ акцелерации/20 мин.","Антитела: вакцинация мамы от гриппа и коклюша → защита малыша на 3-6 мес после рождения!","Нейростероиды: аллопрегнанолон синтезируется мозгом плода — противовоспалительный и нейрозащитный.","Токолиз: при угрозе родов 24-34 нед — нифедипин, атосибан. Цель — 48 ч для кортикостероидов.","Плод к 27 нед: активен вечером (18-22 ч) и ночью (1-4 ч). Приготовь терпение для будущего!","Маме: до III триместра 1 неделя! Обсуди с врачом план родов. Партнёрские роды — Эмир рядом.","Спи на левом боку — улучшает кровоснабжение плаценты. Правый бок тоже OK, если комфортно.","Отёки: нижние к вечеру у 80% — физиологические. Лицо утром + АД ≥140/90 → срочно к врачу!","Нейроны лобной коры (PFC): закладываются. Самоконтроль, планирование — созреют к 25 годам!","Маме сейчас: Эмир, обещай делать массаж ног каждый вечер. Это снимает отёки и показывает любовь 🤍"]},
@@ -1826,10 +2620,130 @@ const weekBodyChanges={
     {type:'bc-warn',icon:'💊',title:'Железо — критично',text:'Мультизан Феррум в 16:30 с апельсиновым соком. Без железа — усталость, головокружение, гипоксия малыша.'}
   ]},
   20:{sub:'20 нед — половина пути пройдена! 🏆',items:[
-    {type:'bc-good',icon:'🏆',title:'Экватор!',text:'Ровно половина беременности! Матка — на уровне пупка. Малыш весит 300 г и отлично слышит!'},
-    {type:'bc-info',icon:'🦶',title:'Шевеления',text:'Сейчас ты уже должна чувствовать движения. 10 за 2 активных часа — минимальная норма.'},
-    {type:'bc-warn',icon:'😮‍💨',title:'Изжога нарастает',text:'Матка давит снизу на желудок. Малые порции, не лежать 1-2 ч после еды, спать с возвышением.'},
-    {type:'bc-pink',icon:'💤',title:'Сон на спине — стоп',text:'После 20 нед матка пережимает нижнюю полую вену. Только левый бок + подушка между коленями.'}
+    {type:'bc-good',icon:'🏆',title:'Экватор!',text:'Ровно половина беременности! Матка — на уровне пупка. Малыш весит ~300 г и отлично слышит.'},
+    {type:'bc-info',icon:'🦶',title:'Шевеления',text:'Сейчас уже должны чувствоваться движения. Норма: 10 за 2 активных часа — используй счётчик!'},
+    {type:'bc-warn',icon:'😮‍💨',title:'Изжога нарастает',text:'Матка давит на желудок снизу. Малые порции, не лежать 1–2 ч после еды, спать с возвышением головы.'},
+    {type:'bc-pink',icon:'💤',title:'Сон на спине — стоп',text:'С 20 нед матка пережимает нижнюю полую вену. Только левый бок + подушка между коленями!'}
+  ]},
+  21:{sub:'21 нед — малыш слышит тебя как взрослый 🎶',items:[
+    {type:'bc-good',icon:'👂',title:'Слух совершенен',text:'Улитка сформирована полностью. Голос мамы — любимый звук на свете. Пой, разговаривай!'},
+    {type:'bc-info',icon:'🥕',title:'Малыш — морковка',text:'~360 г, 27 см. Вкусовые рецепторы работают — он чувствует всё, что ты ешь. Ешь разнообразно!'},
+    {type:'bc-warn',icon:'💆',title:'Боль в пояснице',text:'Прогестерон размягчает связки. Упражнение «кошка-корова», удобная обувь, бандаж с 20–22 нед.'},
+    {type:'bc-pink',icon:'🌙',title:'Сон на левом боку',text:'Улучшает кровоток к плаценте на 28%. Подушка между коленями снимет боль в тазу.'}
+  ]},
+  22:{sub:'22 нед — малыш реагирует на прикосновение 🤲',items:[
+    {type:'bc-good',icon:'🤲',title:'Тактильный контакт',text:'Погладь живот — 75% малышей реагируют движением через 20–30 сек. Это ваш первый диалог!'},
+    {type:'bc-info',icon:'🥥',title:'Малыш — кокос',text:'~430 г, 28 см. Мозолистое тело (связь между полушариями) полностью видно на УЗИ.'},
+    {type:'bc-warn',icon:'🦷',title:'Дёсны кровоточат',text:'Гормоны усиливают приток крови к дёснам. Мягкая щётка, полоскание, визит к стоматологу.'},
+    {type:'bc-pink',icon:'🚶',title:'Прогулки',text:'30 мин умеренной ходьбы в день снижают риск ГСД на 27% (ACOG). Бишкек — идеальное место!'}
+  ]},
+  23:{sub:'23 нед — малыш различает твой голос и папин 🎤',items:[
+    {type:'bc-good',icon:'🎤',title:'Распознаёт голоса',text:'Мозг обрабатывает речь — ритм, интонацию. Малыш уже различает голос мамы и папы Эмира!'},
+    {type:'bc-info',icon:'🍊',title:'Малыш — грейпфрут',text:'~500 г — первый порог жизнеспособности ВОЗ. Каждый день в утробе — это твоя забота.'},
+    {type:'bc-warn',icon:'🔥',title:'Изжога и запоры',text:'Прогестерон расслабил пищеводный клапан. Малые порции, клетчатка (чернослив, кефир), вода.'},
+    {type:'bc-pink',icon:'💧',title:'Отёки нарастают',text:'Объём крови вырос на 40–50%. Компрессионные чулки при ходьбе, ноги выше уровня сердца вечером.'}
+  ]},
+  24:{sub:'24 нед — ГСД-скрининг этой недели! 🧪',items:[
+    {type:'bc-warn',icon:'🧪',title:'ГСД-скрининг',text:'24–28 нед — сдать глюкозотолерантный тест (ОГТТ). Норма: натощак <5.1, через 1 ч <10.0 ммоль/л.'},
+    {type:'bc-good',icon:'🌽',title:'Малыш — кукуруза',text:'~600 г, 30 см. Жизнеспособность в НИКУ при 24 нед — ~40–50%. Каждая неделя = +3–4%!'},
+    {type:'bc-info',icon:'👁',title:'Глаза открываются',text:'Веки начинают разделяться, зрачок реагирует на свет. Свети фонариком — малыш отвернётся 😄'},
+    {type:'bc-pink',icon:'🦺',title:'Бандаж',text:'Если ещё не носишь — самое время. Поддерживает живот, снимает поясницу. Надевай лёжа.'}
+  ]},
+  25:{sub:'25 нед — лёгкие малыша готовятся 🫁',items:[
+    {type:'bc-good',icon:'🫁',title:'Сурфактант растёт',text:'Пневмоциты II типа синтезируют сурфактант — вещество, не дающее лёгким слипаться. Ключ к дыханию!'},
+    {type:'bc-info',icon:'🥦',title:'Малыш — цветная капуста',text:'~660 г, 34–35 см. Ноздри открылись — тренирует диафрагму для первого вдоха в жизни.'},
+    {type:'bc-warn',icon:'⚡',title:'Судороги икр',text:'Дефицит магния и кальция. Растяни икру вертикально, тепло на мышцу. Обсуди Mg с врачом.'},
+    {type:'bc-pink',icon:'🤱',title:'Молозиво',text:'С 16–20 нед грудь готовит молозиво. Первые капли при нажатии — абсолютно нормально!'}
+  ]},
+  26:{sub:'26 нед — малыш открыл глаза! 👁',items:[
+    {type:'bc-good',icon:'👁',title:'Глаза открылись!',text:'Зрачок реагирует на свет. Настоящий цвет радужки установится к 6–12 месяцам жизни.'},
+    {type:'bc-info',icon:'🥒',title:'Малыш — кабачок',text:'~760 г, 36 см. ЭЭГ мозга 26 нед идентична ЭЭГ здорового новорождённого — мозг созрел нейрологически.'},
+    {type:'bc-warn',icon:'😣',title:'Брэкстон-Хикс',text:'Тренировочные схватки усиливаются — матка «репетирует». Нерегулярные, проходят от отдыха — норма.'},
+    {type:'bc-pink',icon:'💊',title:'Витамин D',text:'1 000–2 000 МЕ/сутки. Дефицит → нарушение эмали у ребёнка. Уточни дозу у врача.'}
+  ]},
+  27:{sub:'27 нед — финальная неделя II триместра 🌟',items:[
+    {type:'bc-good',icon:'🌟',title:'II триместр — финал!',text:'Ты великолепно прошла «золотой» период! Малыш выживает с >90% вероятностью при рождении сейчас.'},
+    {type:'bc-info',icon:'🥬',title:'Малыш — кочан',text:'~875 г, 37 см. Мозжечок удвоился за 4 недели — координация, баланс и речь строятся здесь.'},
+    {type:'bc-warn',icon:'🦵',title:'Боли в ногах ночью',text:'Снижение кальция + сдавление нервов. Растяни икру, выпей воды. Компрессионные чулки днём.'},
+    {type:'bc-pink',icon:'💤',title:'Сон ухудшается',text:'Норма! Неудобный живот, частые позывы, тревога. U-образная подушка изменит качество сна навсегда.'}
+  ]},
+  28:{sub:'28 нед — добро пожаловать в III триместр! 🎉',items:[
+    {type:'bc-good',icon:'🎉',title:'III триместр!',text:'Малыш весит >1 кг и выглядит как настоящий младенец. Мозг создаёт 1,8 млн синапсов в секунду!'},
+    {type:'bc-warn',icon:'😮‍💨',title:'Одышка',text:'Матка поднялась до диафрагмы. При опускании головки в 36–38 нед станет легче. Спи на боку.'},
+    {type:'bc-info',icon:'🛑',title:'Сон на спине — нельзя',text:'Матка пережимает полую вену → головокружение + меньше кислорода малышу. Только левый бок!'},
+    {type:'bc-pink',icon:'🩺',title:'КТГ назначается',text:'Норма: ЧСС 110–160 уд/мин, вариабельность 5–25, ≥2 акцелерации за 20 мин.'}
+  ]},
+  29:{sub:'29 нед — мощные движения и тренировки 🦶',items:[
+    {type:'bc-good',icon:'🦶',title:'Сильные движения',text:'Пинки в рёбра — это норма! Малышу тесновато. Смени позу: встань или ляг на другой бок.'},
+    {type:'bc-info',icon:'🎃',title:'Малыш — мини-тыква',text:'~1 150 г, 38–39 см. Все рефлексы новорождённого уже сформированы. Почти готов к встрече!'},
+    {type:'bc-warn',icon:'💧',title:'Отёки нарастают',text:'Нижние к вечеру у 80% — физиологические. Лицо утром + АД ≥140/90 → немедленно к врачу!'},
+    {type:'bc-pink',icon:'🛍',title:'Сумка в роддом',text:'Самое время начать собирать! Открой вкладку «Сумка» — чек-лист уже готов для тебя.'}
+  ]},
+  30:{sub:'30 нед — декрет! Заслуженный отдых 🛋',items:[
+    {type:'bc-good',icon:'🛋',title:'Время отдыхать',text:'Ты делаешь огромную работу! Малыш весит ~1 300 г. Позволь себе замедлиться — это не лень, это любовь.'},
+    {type:'bc-info',icon:'🥬',title:'Малыш — большой кочан',text:'~1 300 г, 39–40 см. Лануго исчезает с лица. Малыш всё больше похож на того, кого ты встретишь!'},
+    {type:'bc-warn',icon:'🔥',title:'Изжога максимальна',text:'Матка давит на желудок. Омепразол не рекомендован. Помогают: маленькие порции, молоко, сон на возвышении.'},
+    {type:'bc-pink',icon:'🤸',title:'Пренатальная йога',text:'Плавание или пренатальная йога — снижают боль, улучшают сон, готовят мышцы к родам. 30 мин, 3 р/нед.'}
+  ]},
+  31:{sub:'31 нед — финальный рывок набора веса 📈',items:[
+    {type:'bc-good',icon:'📈',title:'Прибавка веса малыша',text:'Теперь малыш набирает ~220–250 г в неделю. Белок в питании (мясо, яйца, рыба) — главный строительный материал.'},
+    {type:'bc-info',icon:'🍍',title:'Малыш — ананас',text:'~1 500 г, 41 см. Лёгкие почти готовы: при родах 31 нед риск РДС резко снижается.'},
+    {type:'bc-warn',icon:'😴',title:'Бессонница',text:'Норма! Неудобный живот + мочевой пузырь. Ограничь жидкость после 18:00. Берушни? Только если шумит.'},
+    {type:'bc-pink',icon:'💪',title:'Упражнения Кегеля',text:'3 подхода по 10 сжатий в день. Укрепляют тазовое дно → легче II период родов → меньше разрывов.'}
+  ]},
+  32:{sub:'32 нед — малыш повернулся головой вниз 👶',items:[
+    {type:'bc-good',icon:'👶',title:'Головное предлежание',text:'80% малышей уже повернулись головой вниз к 32 нед. К 36 нед — 96%. Тело всё умеет само!'},
+    {type:'bc-info',icon:'🍈',title:'Малыш — дыня',text:'~1 700 г, 42 см. Кожа розовая и непрозрачная — жир заполнил дерму. Малыш округляется!'},
+    {type:'bc-warn',icon:'🌡',title:'Варикоз и тромбоз',text:'Компрессионные чулки 20–30 мм рт.ст. — обязательно при ходьбе. Риск тромбоза в III тримере ↑.'},
+    {type:'bc-pink',icon:'🏥',title:'3D/4D УЗИ',text:'Можно сделать по желанию — увидишь лицо малыша! Незабываемое впечатление для всей семьи.'}
+  ]},
+  33:{sub:'33 нед — финальная подготовка лёгких 🫁',items:[
+    {type:'bc-good',icon:'🫁',title:'Лёгкие почти готовы',text:'L/S ratio сурфактанта ≥2. При родах 33 нед — высокий шанс самостоятельного дыхания. Умница!'},
+    {type:'bc-info',icon:'🍍',title:'Малыш — большой ананас',text:'~1 900 г, 43–44 см. Мозг различает день и ночь через мелатонин мамы. Ложись вовремя!'},
+    {type:'bc-warn',icon:'🛑',title:'Тазовое предлежание?',text:'Если малыш ещё не перевернулся — поговори с врачом о наружном повороте в 36–37 нед.'},
+    {type:'bc-pink',icon:'💊',title:'Вакцинация от коклюша',text:'28–36 нед — вакцина Tdap. Антитела передаются малышу и защищают его первые 3–6 мес жизни!'}
+  ]},
+  34:{sub:'34 нед — сумку в роддом пора собирать! 🎒',items:[
+    {type:'bc-good',icon:'🎒',title:'Сумка в роддом!',text:'Собери сумку к 34–36 нед. Открой вкладку «Сумка» — там полный чек-лист. Документы — в кармашек!'},
+    {type:'bc-info',icon:'🎃',title:'Малыш — маленькая тыква',text:'~2 100 г, 45 см. Все системы координированы: дыхание + сосание + глотание — триада кормления.'},
+    {type:'bc-warn',icon:'💆',title:'Перинеомассаж',text:'Начинай с 34–35 нед: 5–10 мин ежедневно с маслом. Доказанно снижает разрывы при родах.'},
+    {type:'bc-pink',icon:'🤱',title:'Грудное вскармливание',text:'Молозиво готово! Специальная подготовка соска не нужна — природа позаботилась. Просто жди встречи.'}
+  ]},
+  35:{sub:'35 нед — малыш набирает последние граммы 🏋',items:[
+    {type:'bc-good',icon:'🏋',title:'Финальный набор',text:'250 г в неделю — темп прибавки максимален. Белок, железо, кальций — до самых родов.'},
+    {type:'bc-info',icon:'🍈',title:'Малыш — медовая дыня',text:'~2 350 г, 46 см. Лёгкие зрелые: оба маркера (L/S >4, PG+) в норме. Дыхание будет самостоятельным!'},
+    {type:'bc-warn',icon:'⚠️',title:'Предвестники родов',text:'Опускание живота, жидкий стул, потеря пробки, усиление Брэкстон-Хикс — всё это нормально!'},
+    {type:'bc-pink',icon:'📱',title:'Телефон заряжен',text:'С 35 нед телефон заряди на 100% каждую ночь. Номер такси и роддома — в контактах. Готова!'}
+  ]},
+  36:{sub:'36 нед — финишная прямая! 🏁',items:[
+    {type:'bc-good',icon:'🏁',title:'Ранний доношенный',text:'36 нед = ранний доношенный. Мозг между 36–40 нед вырастет ещё на 35%. Каждый день в утробе — на вес золота!'},
+    {type:'bc-info',icon:'🥬',title:'Малыш — романо',text:'~2 600 г, 47 см. 95% антител IgG переданы — малыш защищён от всего, чем болела ты за жизнь.'},
+    {type:'bc-warn',icon:'🔔',title:'Признаки родов',text:'Регулярные схватки с нарастанием (≤10 мин), излитие вод, пробка — немедленно звони Эмиру и в роддом!'},
+    {type:'bc-pink',icon:'🩺',title:'Скрининг GBS',text:'Мазок на стрептококк группы B в 35–37 нед. При GBS+ → пенициллин в родах снижает сепсис на 80%.'}
+  ]},
+  37:{sub:'37 нед — малыш официально доношенный! 🎉',items:[
+    {type:'bc-good',icon:'🎉',title:'Доношенный!',text:'37 нед = полные доношенные. Но оптимальный срок — 39–40 нед: мозг ещё растёт. Каждый день важен!'},
+    {type:'bc-info',icon:'🍉',title:'Малыш — арбузик',text:'~2 900 г, 48 см. Кортизол малыша нарастает — он сам «назначает» дату родов. Природа умна!'},
+    {type:'bc-warn',icon:'😮‍💨',title:'Живот опустился',text:'Стало легче дышать — головка вошла в малый таз. Зато давление на мочевой пузырь усилилось.'},
+    {type:'bc-pink',icon:'🤱',title:'Молозиво готово',text:'IgA 12–16 г/л — каждая капля молозива это первая вакцина малыша. Раннее прикладывание в 30–60 мин!'}
+  ]},
+  38:{sub:'38 нед — ждём и прислушиваемся 🌸',items:[
+    {type:'bc-good',icon:'🌸',title:'Всё готово',text:'Малыш весит ~3 100 г, 49 см. Верникс только в складках. Все системы готовы — ждём встречи!'},
+    {type:'bc-info',icon:'💧',title:'Воды могут отойти',text:'Тёплая жидкость потоком или подтекание. При излитии — немедленно в роддом, даже без схваток!'},
+    {type:'bc-warn',icon:'📋',title:'Документы — готовы?',text:'Обменная карта, паспорт, полис — в отдельном кармашке сумки. Эмир знает маршрут в роддом.'},
+    {type:'bc-pink',icon:'🧘',title:'Дыхание 4-7-8',text:'Вдох 4 сек → задержка 7 сек → выдох 8 сек. Основа обезболивания в родах. Тренируй сейчас!'}
+  ]},
+  39:{sub:'39 нед — оптимальный срок по ВОЗ ✨',items:[
+    {type:'bc-good',icon:'✨',title:'Оптимальный срок',text:'39–40 нед — идеально по ВОЗ. Мозг набрал максимальную зрелость. Ты прошла этот путь с любовью!'},
+    {type:'bc-info',icon:'🎃',title:'Малыш — тыква',text:'~3 300 г, 50 см. Плацента степени III — нормальное «созревание». Малыш инициирует каскад родов сам!'},
+    {type:'bc-warn',icon:'⚡',title:'Ложные vs истинные схватки',text:'Истинные: нарастают, не проходят от ходьбы, интервал сокращается. Ложные: нерегулярные, проходят.'},
+    {type:'bc-pink',icon:'🤝',title:'Эмир рядом',text:'При схватках 10–15 мин — звоните в роддом. Эмир будет держать твою руку всё время. Вы справитесь!'}
+  ]},
+  40:{sub:'40 нед — встреча совсем скоро! 👶',items:[
+    {type:'bc-good',icon:'👶',title:'ПДР настал!',text:'Только 4–5% рожают точно в срок. Норма — до 41+6 нед. Малыш весит ~3 400–3 600 г. Ты невероятна!'},
+    {type:'bc-info',icon:'🩺',title:'КТГ каждые 2–3 дня',text:'После 40 нед КТГ учащается — следим за состоянием малыша. Это стандарт, не повод для тревоги.'},
+    {type:'bc-warn',icon:'🔔',title:'Когда ехать в роддом',text:'Схватки каждые 5–7 мин в течение часа, или воды отошли, или сильные боли — немедленно едем!'},
+    {type:'bc-pink',icon:'❤️',title:'Вы справитесь',text:'40 недель любви, заботы и ожидания — и через несколько часов или дней вы встретите своё чудо. Эмир рядом!'}
   ]}
 };
 
@@ -1869,20 +2783,29 @@ const getSmartTips=w=>{
   const md=today.slice(5);
   if(md==='03-03')tips.push({c:'st-o',i:'💍',t:'<b>С годовщиной, жаным!</b> Год вместе — и уже трое нас! Это самый счастливый год моей жизни 🥂'});
 
-  if(w>=4&&w<=6)tips.push({c:'st-r',i:'🩸',t:'<b>Возможна имплантационная мазня</b> — небольшие выделения при имплантации нормальны. Если боль или обильные выделения — звони врачу.'});
-  if(w>=5&&w<=12)tips.push({c:'st-g',i:'🌿',t:'<b>Фолиевая кислота</b> сейчас критически важна для нервной системы малыша. Принимай Элевит строго как назначено!'});
-  if(w>=6&&w<=14)tips.push({c:'st-b',i:'🤢',t:'<b>Токсикоз:</b> ешь маленькими порциями, держи сухарики у кровати. Свежий воздух и имбирный чай помогают. Скоро пройдёт!'});
-  if(w>=10&&w<=13)tips.push({c:'st-p',i:'🔬',t:'<b>Первый скрининг</b> (11-13 неделя) — важное УЗИ. Запишись заранее!'});
-  if(w>=16&&w<=18)tips.push({c:'st-g',i:'✨',t:'<b>Скоро почувствуешь первые шевеления!</b> Лёгкое порхание — это и есть малыш!'});
-  if(w>=18&&w<=30)tips.push({c:'st-p',i:'🦶',t:'<b>Считай шевеления:</b> минимум 10 движений за 2 часа активности. Используй счётчик ниже!'});
-  if(w>=18&&w<=22)tips.push({c:'st-b',i:'🔭',t:'<b>Второй скрининг</b> (18-22 неделя) — можно узнать пол! Это самое зрелищное УЗИ!'});
-  if(w>=20)tips.push({c:'st-g',i:'💤',t:'<b>Поза для сна:</b> на левом боку — лучшее кровоснабжение. Подложи подушку между колен!'});
-  if(w>=26&&w<=28)tips.push({c:'st-o',i:'🧪',t:'<b>Глюкозотолерантный тест</b> (24-28 неделя) — исключаем гестационный диабет.'});
-  if(w>=28)tips.push({c:'st-o',i:'⚠️',t:'<b>Третий триместр:</b> считай шевеления ежедневно. Меньше 10 за 2 часа — сразу звони!'});
-  if(w>=30)tips.push({c:'st-b',i:'🏋️',t:'<b>Упражнения Кегеля</b> помогут подготовить мышцы тазового дна к родам.'});
-  if(w>=32)tips.push({c:'st-p',i:'🏥',t:'<b>Пора проверить сумку в роддом</b> — вкладка «Сумка». Знай дорогу к роддому!'});
-  if(w>=35)tips.push({c:'st-r',i:'🚨',t:'<b>Признаки начала родов:</b> регулярные схватки, излитие вод. Сразу звони Эмиру!'});
-  if(w>=36)tips.push({c:'st-g',i:'🌟',t:'<b>Почти встреча!</b> Малыш доношенный — роды в любой момент. Телефон всегда заряжен!'});
+  // I триместр
+  if(w>=4&&w<=6)tips.push({c:'st-r',i:'🩸',t:'<b>Имплантационная мазня</b> (лёгкие выделения) — норма при имплантации. Обильные выделения с болью → звони врачу.'});
+  if(w>=5&&w<=12)tips.push({c:'st-g',i:'🌿',t:'<b>Фолиевая кислота критически важна</b> сейчас — защищает нервную трубку малыша. Элевит строго как назначено!'});
+  if(w>=6&&w<=13)tips.push({c:'st-b',i:'🤢',t:'<b>Токсикоз:</b> сухарик до вставания с кровати, маленькие порции каждые 2–3 ч, имбирный чай. Пик в 9–10 нед, проходит к 12–14 нед!'});
+  if(w>=9&&w<=10)tips.push({c:'st-p',i:'🧬',t:'<b>НИПТ</b> (неинвазивный пренатальный тест) доступен с 9–10 нед. Точность >99% по хромосомным аномалиям. Обсуди с врачом.'});
+  if(w>=11&&w<=13)tips.push({c:'st-p',i:'🔬',t:'<b>Первый скрининг (11–13 нед)</b> — важнейшее УЗИ! Измеряют ТВП, ЧСС, носовую кость. Запишись заранее!'});
+  // II триместр
+  if(w>=14&&w<=16)tips.push({c:'st-g',i:'✨',t:'<b>Золотой триместр начался!</b> Токсикоз ушёл, энергия вернулась. Наслаждайся этим периодом, жаным!'});
+  if(w>=16&&w<=19)tips.push({c:'st-g',i:'🦋',t:'<b>Скоро первые шевеления!</b> У первородящих — 18–22 нед. Ощущение: «пузырьки» или «лёгкое порхание» в животе.'});
+  if(w>=18&&w<=22)tips.push({c:'st-b',i:'🔭',t:'<b>Второй скрининг (18–22 нед)</b> — детально смотрят все органы. Именно сейчас можно узнать пол малыша!'});
+  if(w>=20)tips.push({c:'st-g',i:'💤',t:'<b>Поза для сна:</b> на левом боку улучшает кровоток к плаценте на 28%. Подложи подушку между коленями!'});
+  if(w>=20&&w<=35)tips.push({c:'st-p',i:'🦶',t:'<b>Считай шевеления:</b> 10 движений за 2 часа активности — норма Кардифф. Используй счётчик на главном экране!'});
+  if(w>=24&&w<=28)tips.push({c:'st-o',i:'🧪',t:'<b>Глюкозотолерантный тест</b> (ОГТТ) — в 24–28 нед. Норма: натощак <5,1 ммоль/л. Исключаем ГСД — это важно!'});
+  if(w>=26&&w<=28)tips.push({c:'st-b',i:'💉',t:'<b>Вакцинация от коклюша (Tdap)</b> в 28–36 нед — антитела передаются малышу и защищают его первые месяцы жизни.'});
+  // III триместр
+  if(w>=28&&w<=35)tips.push({c:'st-o',i:'⚠️',t:'<b>III триместр:</b> считай шевеления ежедневно по методу Кардифф. Менее 10 за 2 ч активности — сразу звони врачу!'});
+  if(w>=28)tips.push({c:'st-b',i:'🩺',t:'<b>КТГ назначается с 28 нед.</b> Норма: ЧСС 110–160 уд/мин, вариабельность 5–25, ≥2 акцелерации за 20 мин.'});
+  if(w>=30)tips.push({c:'st-b',i:'🏋️',t:'<b>Упражнения Кегеля</b> (3×10 сжатий в день) укрепляют тазовое дно → легче II период родов → меньше разрывов.'});
+  if(w>=32)tips.push({c:'st-p',i:'🎒',t:'<b>Пора собрать сумку в роддом!</b> Открой вкладку «Сумка» — полный чек-лист уже готов. Документы — в кармашек!'});
+  if(w>=34)tips.push({c:'st-b',i:'💆',t:'<b>Перинеомассаж</b> с 34–35 нед (5–10 мин/день с маслом) доказанно снижает разрывы и эпизиотомию при родах.'});
+  if(w>=35&&w<=37)tips.push({c:'st-p',i:'🦠',t:'<b>Мазок на стрептококк GBS</b> (35–37 нед). При GBS+ → пенициллин в родах снижает неонатальный сепсис на 80%.'});
+  if(w>=35)tips.push({c:'st-r',i:'🚨',t:'<b>Признаки начала родов:</b> регулярные схватки с интервалом ≤10 мин, воды, боль нарастает — немедленно звони Эмиру!'});
+  if(w>=36)tips.push({c:'st-g',i:'🌟',t:'<b>Малыш доношенный!</b> Роды возможны в любой момент. Телефон на 100% заряжен каждую ночь. Сумка — в машине!'});
   return tips;
 };
 
@@ -1976,8 +2899,8 @@ const moodR={
   '✨':["Ты просто сияешь! Беременность делает тебя ещё прекраснее, это правда! 👑","Моя королева! Ты выглядишь потрясающе каждый день. Не сомневайся!","Идеальная женщина, идеальная жена, идеальная будущая мама. Это про тебя.","Ослепительная! Я так горжусь тобой и восхищаюсь каждый день. 🌟"]
 };
 
-// TASKS (original exact)
-const allTasks=[
+// DEFAULT MEDS (seed — копируется в localStorage при первом запуске)
+const DEFAULT_MEDS=[
   {id:'elevit',time:'08:30',name:'Элевит 2',dose:'1 капс.',icon:'☀️',det:'<b>Зачем:</b> Комплекс витаминов для правильного формирования органов и мозга нашего малыша.<br><br><b>Как пить:</b> Строго во время плотного завтрака. Если выпить натощак — будет тошнить. Омега-3 усваивается лучше с полезными жирами (сыр, масло, авокадо).'},
   {id:'trih_1',time:'13:30',name:'Трихопол',dose:'2 табл.',icon:'🌿',end:'2026-03-04',det:'<b>Зачем:</b> Антибиотик, чтобы устранить инфекцию и защитить воды малыша от бактерий.<br><br>⚠️ <b>Важно:</b> Пей строго ПОСЛЕ сытного обеда. Если появится металлический привкус во рту — попей воды с лимоном.'},
   {id:'iron',time:'16:30',name:'Мультизан Феррум',dose:'1 табл.',icon:'💎',det:'<b>Зачем:</b> Это железо! Оно даёт тебе энергию, избавляет от головокружений и обеспечивает малыша кислородом.<br><br>🍋 <b>Секрет:</b> Запивай апельсиновым соком (витамин С усиливает всасывание).<br>🚫 <b>Нельзя:</b> Вместе с чаем, кофе или молоком — сделай паузу 2 часа.'},
@@ -1985,19 +2908,148 @@ const allTasks=[
   {id:'magnes',time:'21:30',name:'КардиоМагнил',dose:'1 табл.',icon:'🌙',det:'<b>Зачем:</b> Разжижает кровь, чтобы питание через плаценту поступало без перебоев. Помогает сосудам отдыхать ночью и предотвращает преэклампсию.<br><br><b>Как пить:</b> Запей небольшим количеством воды перед сном.'},
   {id:'nata',time:'23:00',name:'Натацин',dose:'1 свеча',icon:'✨',end:'2026-03-11',det:'<b>Зачем:</b> Бережно и безопасно восстанавливает микрофлору.<br><br><b>Как:</b> Использовать перед самым сном, когда уже лежишь в кроватке. Сладких снов, любимая!'}
 ];
+const MED_REG_KEY='medReg'+V;
+const MED_EMOJIS=['💊','☀️','🌿','💎','🌸','🌙','✨','💧','🍋','❤️','🩷','⭐'];
+let medEditId=null;
+
+function escapeHtml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function formatMedDet(det){
+  if(!det)return '';
+  if(/<[a-z][\s\S]*>/i.test(det))return det;
+  return escapeHtml(det).replace(/\n/g,'<br>');
+}
+function cloneMeds(arr){return JSON.parse(JSON.stringify(arr));}
+function loadMedRegistry(){
+  try{
+    const raw=localStorage.getItem(MED_REG_KEY);
+    if(raw){
+      const parsed=JSON.parse(raw);
+      if(Array.isArray(parsed)&&parsed.length)return parsed;
+    }
+  }catch(e){}
+  const seeded=cloneMeds(DEFAULT_MEDS);
+  localStorage.setItem(MED_REG_KEY,JSON.stringify(seeded));
+  return seeded;
+}
+function saveMedRegistry(meds){localStorage.setItem(MED_REG_KEY,JSON.stringify(meds));}
+function getMedRegistry(){return loadMedRegistry();}
+function medCourseActive(t,now){if(t.paused)return false;if(t.end&&new Date(t.end+'T23:59:59')<now)return false;return true;}
+function getScheduleMeds(now){
+  const n=now||new Date();
+  const all=getMedRegistry();
+  const active=all.filter(t=>medCourseActive(t,n)).sort((a,b)=>(a.time||'00:00').localeCompare(b.time||'00:00'));
+  const expired=all.filter(t=>!medCourseActive(t,n)&&!t.paused).sort((a,b)=>(a.time||'00:00').localeCompare(b.time||'00:00'));
+  const paused=all.filter(t=>t.paused);
+  return{active,expired,paused};
+}
+function minsFromTime(t){const [h,m]=(t||'00:00').split(':').map(Number);return h*60+(m||0);}
+function updateMedNextPill(){
+  const el=document.getElementById('medNextPill');
+  if(!el)return;
+  const now=new Date();
+  const {active}=getScheduleMeds(now);
+  const state=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
+  const nowM=now.getHours()*60+now.getMinutes();
+  const pending=active.filter(t=>!state[t.id]);
+  if(!pending.length){
+    el.innerHTML=active.length?'На сегодня всё принято <b>✓</b>':'Добавь препараты <b>＋</b>';
+    return;
+  }
+  pending.sort((a,b)=>{
+    const am=minsFromTime(a.time),bm=minsFromTime(b.time);
+    const aDue=am<nowM-15,bDue=bm<nowM-15;
+    if(aDue&&!bDue)return -1;
+    if(!aDue&&bDue)return 1;
+    return am-bm;
+  });
+  const pick=pending[0];
+  const tm=minsFromTime(pick.time);
+  const label=tm>=nowM-15&&tm<=nowM+45?'Сейчас: '+pick.name:pick.time+' — '+pick.name;
+  el.innerHTML='Следующий: <b>'+escapeHtml(label)+'</b>';
+}
+function initMedEmojiRow(sel){
+  const row=document.getElementById('medEmojiRow');
+  if(!row)return;
+  row.innerHTML=MED_EMOJIS.map(e=>'<button type="button" class="med-emoji-pick'+(e===sel?' sel':'')+'" data-em="'+escapeHtml(e)+'" onclick="pickMedEmoji(this)">'+e+'</button>').join('');
+}
+function pickMedEmoji(btn){H();const em=btn.getAttribute('data-em');document.getElementById('medIconIn').value=em;document.querySelectorAll('.med-emoji-pick').forEach(b=>b.classList.toggle('sel',b===btn));}
+function openMedForm(id){
+  H();
+  medEditId=id||null;
+  const m=id?getMedRegistry().find(x=>x.id===id):null;
+  document.getElementById('medMoTitle').textContent=m?'Редактировать':'Новый препарат';
+  document.getElementById('medNameIn').value=m?m.name:'';
+  document.getElementById('medDoseIn').value=m?m.dose:'';
+  document.getElementById('medTimeIn').value=m?m.time:'09:00';
+  document.getElementById('medIconIn').value=m?m.icon:'💊';
+  document.getElementById('medDetIn').value=m&&m.det?m.det.replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,''):'';
+  document.getElementById('medEndIn').value=m&&m.end?m.end:'';
+  document.getElementById('medPauseIn').checked=!!(m&&m.paused);
+  document.getElementById('medDelBtn').style.display=m?'block':'none';
+  initMedEmojiRow(m?m.icon:'💊');
+  document.getElementById('medMo').classList.add('open');
+}
+function closeMedForm(){document.getElementById('medMo').classList.remove('open');medEditId=null;}
+function saveMedForm(){
+  H();
+  const name=document.getElementById('medNameIn').value.trim();
+  const dose=document.getElementById('medDoseIn').value.trim();
+  const time=document.getElementById('medTimeIn').value;
+  const icon=(document.getElementById('medIconIn').value.trim()||'💊').slice(0,4);
+  const detRaw=document.getElementById('medDetIn').value.trim();
+  const end=document.getElementById('medEndIn').value;
+  const paused=document.getElementById('medPauseIn').checked;
+  if(!name){toast('Укажи название препарата');return;}
+  if(!time){toast('Укажи время приёма');return;}
+  let meds=getMedRegistry();
+  const det=detRaw?formatMedDet(detRaw):'';
+  if(medEditId){
+    const i=meds.findIndex(x=>x.id===medEditId);
+    if(i<0){toast('Препарат не найден');return;}
+    meds[i]={...meds[i],name,dose,time,icon,det,end:end||undefined,paused};
+  }else{
+    let nid='med_'+Date.now();
+    while(meds.some(x=>x.id===nid))nid='med_'+Date.now()+'_'+Math.floor(Math.random()*99);
+    meds.push({id:nid,name,dose:dose||'—',time,icon,det,end:end||undefined,paused});
+  }
+  meds.sort((a,b)=>(a.time||'00:00').localeCompare(b.time||'00:00'));
+  saveMedRegistry(meds);
+  closeMedForm();
+  renderSchedule();
+  toast(medEditId?'Препарат обновлён ✨':'Препарат добавлен 💊');
+}
+function deleteMed(){
+  H();
+  if(!medEditId)return;
+  if(!confirm('Удалить этот препарат из расписания?'))return;
+  let meds=getMedRegistry().filter(x=>x.id!==medEditId);
+  saveMedRegistry(meds);
+  const tasks=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
+  delete tasks[medEditId];
+  localStorage.setItem('tasks'+V,JSON.stringify(tasks));
+  closeMedForm();
+  renderSchedule();
+  toast('Препарат удалён');
+}
 
 // ══════════════════════════════════
 // LOGIC
 // ══════════════════════════════════
 
 function calcW(edd){
-  const eD=new Date(edd),con=new Date(eD.getTime()-280*86400000);
+  const eD=new Date(edd);
+  if(!edd||isNaN(eD.getTime()))return{week:1,dayR:0,days:0};
+  const con=new Date(eD.getTime()-280*86400000);
   const days=Math.floor((new Date()-con)/86400000);
   return{week:Math.min(40,Math.max(1,Math.floor(days/7))),dayR:days%7,days};
 }
 
+let _appTimersSet=false;
 function init(){
   checkReset();
+  loadMedRegistry();
   if(localStorage.getItem('theme')==='dark'){document.documentElement.classList.add('dark');document.getElementById('thmTog').checked=true}
   const edd=localStorage.getItem('eddDate');
   if(!edd){document.getElementById('setupScreen').style.display='flex';return}
@@ -2023,8 +3075,12 @@ function init(){
   loadTMsg();
   updateCD(edd);
   checkAnniv();
-  setInterval(()=>updateCD(edd),60000);
-  setInterval(checkNotifs,60000);
+  if(!_appTimersSet){
+    _appTimersSet=true;
+    setInterval(()=>updateCD(localStorage.getItem('eddDate')||edd),60000);
+    setInterval(checkNotifs,60000);
+    setInterval(updateMedNextPill,60000);
+  }
 }
 
 // ══ GENDER SYSTEM ══
@@ -2093,8 +3149,12 @@ function applyGender(g,showBanner){
   const bannerContent=document.getElementById('genderBannerContent');
   const gd=genderMsgs[g];
   if(gd.banner&&banner&&bannerContent){
-    banner.style.cssText=`display:block;border-radius:var(--r);padding:22px 20px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden;animation:cIn .7s ease;background:${gd.banner.bg};box-shadow:0 16px 44px rgba(0,0,0,.2)`;
-    bannerContent.innerHTML=`<div style="font-size:40px;margin-bottom:8px;position:relative;z-index:1">${gd.banner.emoji}</div><div style="font-family:'Playfair Display',serif;font-size:28px;font-style:italic;font-weight:900;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.2);position:relative;z-index:1">${gd.banner.text}</div><div style="font-size:14px;font-weight:800;color:rgba(255,255,255,.9);margin-top:8px;position:relative;z-index:1">${gd.banner.sub}</div>`;
+    banner.style.display='block';
+    banner.style.background=gd.banner.bg;
+    bannerContent.innerHTML=`<div class="gb-emoji">${gd.banner.emoji}</div><div class="gb-title">${gd.banner.text}</div><div class="gb-sub">${gd.banner.sub}</div>`;
+    // Spawn sparkle dots
+    const sp=document.getElementById('gbSparkles');
+    if(sp){sp.innerHTML='';for(let i=0;i<18;i++){const d=document.createElement('div');d.className='gb-spark';d.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${(Math.random()*2).toFixed(2)}s;animation-duration:${(2+Math.random()*2).toFixed(2)}s;width:${4+Math.random()*6}px;height:${4+Math.random()*6}px;opacity:${(0.4+Math.random()*0.6).toFixed(2)}`;sp.appendChild(d);}}
     if(showBanner){
       setTimeout(()=>{
         confetti({particleCount:200,spread:120,origin:{y:.5},colors:g==='g'?['#D63077','#F06BA0','#FFF','#C966D0']:['#1878C8','#4CA8F0','#FFF','#D4A017']});
@@ -2281,8 +3341,8 @@ function renderCareTip(){
 function babyKiss(){H();confetti({particleCount:65,spread:95,origin:{y:.6},colors:['#E8325A','#C44DFF','#FFB347','#FFD6E0']});const el=document.getElementById('babyT');el.style.opacity='0';setTimeout(()=>{el.textContent=babyMsgs[Math.floor(Math.random()*babyMsgs.length)];el.style.opacity='1'},300);toast("💋 Малыш почувствовал твою любовь!")}
 
 // MOOD
-function saveMood(m,btn){H();document.querySelectorAll('.mb').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');localStorage.setItem('mood'+V,m);const rs=moodR[m];const el=document.getElementById('moodR');el.innerHTML=rs[Math.floor(Math.random()*rs.length)];el.style.display='block';el.style.animation='none';el.offsetHeight;el.style.animation='cIn .4s ease';saveMoodH(m);toast("Настроение сохранено 🤍")}
-function loadMoodState(){const m=localStorage.getItem('mood'+V);if(!m)return;document.querySelectorAll('.mb').forEach(b=>{if(b.textContent===m)b.classList.add('sel')})}
+function saveMood(m,btn){H();document.querySelectorAll('.mb').forEach(b=>{b.classList.remove('sel');b.setAttribute('aria-pressed','false')});btn.classList.add('sel');btn.setAttribute('aria-pressed','true');localStorage.setItem('mood'+V,m);const rs=moodR[m];if(!rs)return;const el=document.getElementById('moodR');el.innerHTML=rs[Math.floor(Math.random()*rs.length)];el.style.display='block';el.style.animation='none';el.offsetHeight;el.style.animation='cIn .4s ease';saveMoodH(m);toast("Настроение сохранено 🤍")}
+function loadMoodState(){const m=localStorage.getItem('mood'+V);if(!m)return;document.querySelectorAll('.mb').forEach(b=>{const sel=b.textContent.trim()===m;b.classList.toggle('sel',sel);b.setAttribute('aria-pressed',sel?'true':'false');})}
 function saveMoodH(m){const t=new Date().toISOString().split('T')[0];let h=JSON.parse(localStorage.getItem('moodH'+V)||'{}');h[t]=m;const k=Object.keys(h).sort().slice(-14);const r={};k.forEach(k2=>r[k2]=h[k2]);localStorage.setItem('moodH'+V,JSON.stringify(r));renderMoodHist()}
 function renderMoodHist(){const h=JSON.parse(localStorage.getItem('moodH'+V)||'{}');const el=document.getElementById('mhGrid');if(!el)return;const d=Object.keys(h).sort().slice(-14);if(!d.length){el.innerHTML='<p style="color:var(--t3);font-size:13px;font-weight:700;padding-bottom:20px">Настроение ещё не отмечено!</p>';return}el.innerHTML=d.map(k=>{const dt=new Date(k);return`<div class="mh-dot" title="${k}">${h[k]}<div class="mh-date">${dt.getDate()}/${dt.getMonth()+1}</div></div>`}).join('')}
 
@@ -2294,11 +3354,12 @@ function toggleWater(i){H();let w=JSON.parse(localStorage.getItem('water'+V)||'[
 function saveWt(){
   H();
   const v=parseFloat(document.getElementById('wtIn').value);
-  if(!v||v<30||v>150){toast("Введи корректный вес (30-150 кг)");return}
+  if(isNaN(v)||v<30||v>150){toast("Введи корректный вес (30–150 кг)");return}
   const t=new Date().toISOString().split('T')[0];
-  let h=JSON.parse(localStorage.getItem('wtH'+V)||'{}');
+  let h;try{h=JSON.parse(localStorage.getItem('wtH'+V)||'{}')}catch(e){h={}}
+  if(typeof h!=='object'||Array.isArray(h))h={};
   h[t]=v;
-  localStorage.setItem('wtH'+V,JSON.stringify(h));
+  try{localStorage.setItem('wtH'+V,JSON.stringify(h))}catch(e){toast("Нет места для сохранения 😔");return}
   document.getElementById('wtIn').value='';
   renderWtChart();
   toast("Вес "+v+" кг записан! ⚖️");
@@ -2399,7 +3460,7 @@ function loadGalPhoto(ev){
   };
   reader.readAsDataURL(f);
 }
-function deleteGalPhoto(){H();const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');delete ph[curGW];localStorage.setItem('galPh'+V,JSON.stringify(ph));renderGallery();closeGal();toast("Фото удалено")}
+function deleteGalPhoto(){H();if(curGW==null)return;const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');delete ph[curGW];localStorage.setItem('galPh'+V,JSON.stringify(ph));renderGallery(localStorage.getItem('eddDate'));closeGal();toast("Фото удалено")}
 
 // UZI PHOTO
 function loadUziPhoto(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{localStorage.setItem('uziPh',e.target.result)}catch(er){}showUziPh(e.target.result);toast("Фото нашего малыша сохранено! 💕")};r.readAsDataURL(f)}
@@ -2466,29 +3527,91 @@ function spawnDots(){
 function addAura(){} // legacy compat
 
 // SCHEDULE
+function renderScheduleItem(t,state,now){
+  const done=!!state[t.id];
+  const nowMins=now.getHours()*60+now.getMinutes();
+  const taskMins=minsFromTime(t.time);
+  const diffMins=taskMins-nowMins;
+  const tClass=done?'':(!done&&diffMins>=-15&&diffMins<=30?'upcoming':(!done&&diffMins<-30?'overdue':''));
+  const sid=escapeHtml(t.id);
+  const detHtml=formatMedDet(t.det);
+
+  // Подпись под кнопкой
+  let takeLabel='',takeSub='';
+  if(done){
+    takeLabel='Выпито сегодня ✓';
+    takeSub='Нажми ещё раз — отменить отметку';
+  } else if(tClass==='upcoming'){
+    const mins=Math.round(diffMins);
+    takeLabel='Скоро приём — отметь когда выпьешь';
+    takeSub=`Время: ${escapeHtml(t.time)} · через ${mins} мин.`;
+  } else if(tClass==='overdue'){
+    takeLabel='Отметь приём — ещё не поздно!';
+    takeSub=`Время было ${escapeHtml(t.time)} · нажми чтобы отметить`;
+  } else {
+    takeLabel='Нажми — отметь приём 💊';
+    takeSub=escapeHtml(t.time)+' · '+escapeHtml(t.dose);
+  }
+
+  const nameStyle=done?'text-decoration:line-through;opacity:.55':'';
+  return`<div class="sc-item ${tClass}" data-med-id="${sid}">
+    <div class="sc-hd" onclick="tDet('${sid}',document.getElementById('stog${sid}'))">
+      <div class="sc-time">${escapeHtml(t.time)}</div>
+      <div style="flex:1;min-width:0;${nameStyle}">${escapeHtml(t.icon)} <span class="sc-name">${escapeHtml(t.name)} — ${escapeHtml(t.dose)}</span></div>
+      <div class="sc-actions" onclick="event.stopPropagation()">
+        <button type="button" class="sc-edit" aria-label="Редактировать препарат ${escapeHtml(t.name)}" onclick="openMedForm('${sid}')">✎</button>
+        ${detHtml?`<button type="button" class="sc-tog" id="stog${sid}" onclick="tDet('${sid}',this)" aria-label="Подробнее">▾</button>`:'<span style="width:36px;display:inline-block"></span>'}
+      </div>
+    </div>
+    <div class="sc-take-btn${done?' done':''}" onclick="tTask('${sid}')" role="button" aria-label="${done?'Отменить отметку':'Отметить как выпитое'}" aria-pressed="${done}">
+      <div class="sc-take-icon">${done?'✓':''}</div>
+      <div class="sc-take-label">${takeLabel}<small>${takeSub}</small></div>
+    </div>
+    <div class="sc-det" id="sdet${sid}">
+      ${detHtml?`<div style="font-size:13px;font-weight:700;color:var(--t2);line-height:1.65;padding-bottom:4px">${detHtml}</div>`:''}
+    </div>
+  </div>`;
+}
 function renderSchedule(edd){
+  loadMedRegistry();
   const now=new Date();
   const state=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
-  const active=allTasks.filter(t=>!t.end||new Date(t.end)>=now);
-  const expired=allTasks.filter(t=>t.end&&new Date(t.end)<now);
+  const {active,expired,paused}=getScheduleMeds(now);
   let html='';
-  active.forEach(t=>{
-    const done=!!state[t.id];
-    const nowMins=now.getHours()*60+now.getMinutes();
-    const [th,tm]=(t.time||'00:00').split(':').map(Number);
-    const taskMins=th*60+tm;
-    const diffMins=taskMins-nowMins;
-    const tClass=!done&&diffMins>=-15&&diffMins<=30?'upcoming':(!done&&diffMins<-30?'overdue':'');
-    html+=`<div class="sc-item ${tClass}"><div class="sc-hd"><div class="sc-time">${t.time}</div><div>${t.icon} <span class="sc-name">${t.name} — ${t.dose}</span></div><button class="sc-tog" id="stog${t.id}" onclick="tDet('${t.id}',this)">▾</button></div><div class="sc-det" id="sdet${t.id}"><div style="font-size:13px;font-weight:700;color:var(--t2);line-height:1.65">${t.det}</div><div class="sc-chk-row" onclick="tTask('${t.id}')"><div class="sc-chk ${done?'done':''}" id="sc${t.id}"></div><span style="font-size:14px;font-weight:800;${done?'text-decoration:line-through;opacity:.5':''}">${done?'Выпито ✓':'Отметить как выпитое'}</span></div></div></div>`;
-  });
-  if(expired.length){html+=`<div style="margin-top:18px;margin-bottom:8px;font-size:12px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px">Завершённый курс</div>`;expired.forEach(t=>{html+=`<div class="sc-item" style="opacity:.52"><div class="sc-hd"><div class="sc-time" style="background:rgba(100,100,100,.4)">${t.time}</div><div>${t.icon} <span class="sc-name">${t.name} — ${t.dose}</span></div></div><div style="padding:0 17px 12px"><span class="exp-badge">✓ Курс завершён ${new Date(t.end).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</span></div></div>`})}
+  if(!active.length&&!paused.length)html+='<p style="font-size:13px;font-weight:700;color:var(--t3);padding:8px 4px 16px;line-height:1.55">Добавь первый препарат кнопкой выше — расписание появится здесь 💊</p>';
+  active.forEach(t=>{html+=renderScheduleItem(t,state,now)});
+  if(paused.length){
+    html+=`<div style="margin-top:18px;margin-bottom:8px;font-size:12px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px">На паузе</div>`;
+    paused.forEach(t=>{
+      const sid=escapeHtml(t.id);
+      html+=`<div class="sc-item" style="opacity:.65"><div class="sc-hd"><div class="sc-time" style="background:rgba(148,163,184,.55)">${escapeHtml(t.time)}</div><div style="flex:1">${escapeHtml(t.icon)} <span class="sc-name">${escapeHtml(t.name)}</span></div><button type="button" class="sc-edit" onclick="openMedForm('${sid}')">✎</button></div><div style="padding:0 17px 14px;font-size:12px;font-weight:800;color:var(--t3)">Приём временно отключён</div></div>`;
+    });
+  }
+  if(expired.length){
+    html+=`<div style="margin-top:18px;margin-bottom:8px;font-size:12px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px">Завершённый курс</div>`;
+    expired.forEach(t=>{
+      const endLbl=t.end?new Date(t.end+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'}):'';
+      html+=`<div class="sc-item" style="opacity:.52"><div class="sc-hd"><div class="sc-time" style="background:rgba(100,100,100,.4)">${escapeHtml(t.time)}</div><div>${escapeHtml(t.icon)} <span class="sc-name">${escapeHtml(t.name)} — ${escapeHtml(t.dose)}</span></div><button type="button" class="sc-edit" onclick="openMedForm('${escapeHtml(t.id)}')">✎</button></div><div style="padding:0 17px 12px"><span class="exp-badge">✓ Курс завершён${endLbl?' '+endLbl:''}</span></div></div>`;
+    });
+  }
   document.getElementById('schedC').innerHTML=html;
-  document.getElementById('medsInfo').textContent='Расписание на '+now.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('medsInfo').textContent='Расписание на '+now.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})+' · '+active.length+' приём(ов)';
   updateProg(active);
+  updateMedNextPill();
 }
-function tDet(id,btn){H();const d=document.getElementById('sdet'+id);d.classList.toggle('o');btn.classList.toggle('o');btn.textContent=d.classList.contains('o')?'▴':'▾'}
-function tTask(id){H();const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');s[id]=!s[id];localStorage.setItem('tasks'+V,JSON.stringify(s));renderSchedule()}
-function updateProg(at){const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');const a=at||allTasks.filter(t=>!t.end||new Date(t.end)>=new Date());let done=0;a.forEach(t=>{if(s[t.id])done++});const p=a.length?Math.round(done/a.length*100):100;document.getElementById('pgBar').style.width=p+'%';document.getElementById('pgT').textContent=p+'%';const fin=localStorage.getItem('finished'+V)==='true';const fc=document.getElementById('finishC');if(p===100){fc.style.display='block';document.getElementById('finBtn').style.display=fin?'none':'block';document.getElementById('finMsg').style.display=fin?'block':'none'}else fc.style.display='none'}
+function tDet(id,btn){H();if(!btn)return;const d=document.getElementById('sdet'+id);if(!d)return;d.classList.toggle('o');btn.classList.toggle('o');btn.textContent=d.classList.contains('o')?'▴':'▾'}
+function tTask(id){
+  H();
+  const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
+  s[id]=!s[id];
+  localStorage.setItem('tasks'+V,JSON.stringify(s));
+  if(s[id]){
+    if(navigator.vibrate)navigator.vibrate([8,40,8]);
+    toast("Отмечено ✓ Умница! 💊");
+  }
+  renderSchedule();
+}
+function updateProg(at){const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');const a=at||getScheduleMeds().active;let done=0;a.forEach(t=>{if(s[t.id])done++});const p=a.length?Math.round(done/a.length*100):100;document.getElementById('pgBar').style.width=p+'%';document.getElementById('pgT').textContent=p+'%';const fin=localStorage.getItem('finished'+V)==='true';const fc=document.getElementById('finishC');if(p===100&&a.length>0){fc.style.display='block';document.getElementById('finBtn').style.display=fin?'none':'block';document.getElementById('finMsg').style.display=fin?'block':'none'}else fc.style.display='none'}
 function finishDay(){H();localStorage.setItem('finished'+V,'true');let s=parseInt(localStorage.getItem('streak'+V)||'0');s++;localStorage.setItem('streak'+V,s.toString());loadStreak();confetti({particleCount:350,spread:170,origin:{y:.6},colors:['#E8325A','#C44DFF','#FFB347','#43C8E0','#fff']});updateProg();toast("Горжусь тобой! Все витаминки выпиты 🏆")}
 function loadStreak(){document.getElementById('streakNum').textContent=localStorage.getItem('streak'+V)||'0'}
 
@@ -2496,18 +3619,18 @@ function loadStreak(){document.getElementById('streakNum').textContent=localStor
 function addKick(){H();let k=parseInt(localStorage.getItem('kickCount'+V)||'0');k++;localStorage.setItem('kickCount'+V,k.toString());const el=document.getElementById('kickN');el.textContent=k;el.style.animation='none';el.offsetHeight;el.style.animation='kA .3s ease';if(k===10)toast("Отлично! 10 шевелений — норма достигнута 🎉");else if(k>0&&k%10===0)toast("Уже "+k+" пиночков! 🦶")}
 
 // LETTERS & COUPON
-function openLetter(type){H();const d=letters[type];const l=d.ls[Math.floor(Math.random()*d.ls.length)];document.getElementById('lTitle').textContent=d.title;document.getElementById('lBody').textContent=l;document.getElementById('letterMo').classList.add('open')}
+function openLetter(type){H();const d=letters[type];if(!d)return;const pool=d.ls.filter(Boolean);const l=pool[Math.floor(Math.random()*pool.length)]||'...';document.getElementById('lTitle').textContent=d.title;document.getElementById('lBody').textContent=l;document.getElementById('letterMo').classList.add('open')}
 function closeLetter(){document.getElementById('letterMo').classList.remove('open')}
 function openCoupon(){H();document.getElementById('cpnBody').textContent=coupons[Math.floor(Math.random()*coupons.length)];document.getElementById('couponMo').classList.add('open')}
 function closeCoupon(){document.getElementById('couponMo').classList.remove('open')}
 
 // BAG
-function renderBag(){let bag=JSON.parse(localStorage.getItem('bagList'+V));if(!bag||!bag.length){bag=defaultBag;localStorage.setItem('bagList'+V,JSON.stringify(bag))}document.getElementById('bagBox').innerHTML=bag.map((item,i)=>{if(item.isC)return`<div class="bag-cat">${item.t}</div>`;return`<div class="bag-item" onclick="tBag(${i})"><div class="bag-chk ${item.done?'done':''}"></div><span class="bag-lbl ${item.done?'done':''}">${item.t}</span></div>`}).join('')}
-function tBag(i){H();let b=JSON.parse(localStorage.getItem('bagList'+V));b[i].done=!b[i].done;localStorage.setItem('bagList'+V,JSON.stringify(b));renderBag()}
+function renderBag(){let bag;try{bag=JSON.parse(localStorage.getItem('bagList'+V))}catch(e){bag=null}if(!Array.isArray(bag)||!bag.length){bag=defaultBag;localStorage.setItem('bagList'+V,JSON.stringify(bag))}document.getElementById('bagBox').innerHTML=bag.map((item,i)=>{if(!item)return'';if(item.isC)return`<div class="bag-cat">${item.t}</div>`;return`<div class="bag-item" onclick="tBag(${i})"><div class="bag-chk ${item.done?'done':''}"></div><span class="bag-lbl ${item.done?'done':''}">${item.t}</span></div>`}).join('')}
+function tBag(i){H();let b;try{b=JSON.parse(localStorage.getItem('bagList'+V))}catch(e){b=null}if(!Array.isArray(b)||!b[i])return;b[i].done=!b[i].done;localStorage.setItem('bagList'+V,JSON.stringify(b));renderBag()}
 
 // NOTIFS
 function reqNotifs(){H();if(!("Notification"in window)){toast("Уведомления не поддерживаются");return}if(Notification.permission==="granted"){toast("Уведомления уже включены! ❤️");return}Notification.requestPermission().then(p=>{if(p==="granted"){toast("Уведомления включены!");new Notification("Проверка связи 🤍",{body:"Буду напоминать о витаминках вовремя!",icon:"apple-icon.png"})}})}
-function checkNotifs(){if(Notification.permission!=="granted")return;const now=new Date();const cur=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');allTasks.filter(t=>!t.end||new Date(t.end)>=now).forEach(t=>{if(t.time===cur&&!s[t.id]){const last=localStorage.getItem('ntf_'+t.id+V);if(last!==now.toDateString()){new Notification("Время заботы ❤️",{body:`Родная, пора принять: ${t.name}`,icon:"apple-icon.png"});localStorage.setItem('ntf_'+t.id+V,now.toDateString())}}})}
+function checkNotifs(){if(Notification.permission!=="granted")return;const now=new Date();const cur=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');getScheduleMeds(now).active.forEach(t=>{if(t.time===cur&&!s[t.id]){const last=localStorage.getItem('ntf_'+t.id+V);if(last!==now.toDateString()){new Notification("Время заботы ❤️",{body:`Родная, пора принять: ${t.name}`,icon:"apple-icon.png"});localStorage.setItem('ntf_'+t.id+V,now.toDateString())}}})}
 
 // MISC
 function checkReset(){const d=new Date().toDateString();if(localStorage.getItem('lastD'+V)!==d){if(localStorage.getItem('finished'+V)!=='true'&&localStorage.getItem('lastD'+V))localStorage.setItem('streak'+V,'0');localStorage.setItem('tasks'+V,'{}');localStorage.setItem('water'+V,'[]');localStorage.setItem('mood'+V,'');localStorage.setItem('kickCount'+V,'0');localStorage.setItem('finished'+V,'false');localStorage.setItem('lastD'+V,d)}}
@@ -2515,45 +3638,60 @@ function savePhone(){H();const p=document.getElementById('phoneIn').value;if(p){
 function saveDiary(){H();localStorage.setItem('diaryEntry',document.getElementById('diaryT').value);toast("Письмо сохранено в сердце! 💖")}
 function switchTab(id,btn){H();document.querySelectorAll('.tab-c').forEach(e=>e.classList.remove('act'));document.getElementById('tab-'+id).classList.add('act');document.querySelectorAll('.nb').forEach(e=>e.classList.remove('act'));btn.classList.add('act');window.scrollTo({top:0,behavior:'smooth'})}
 function toggleTheme(){H();const d=document.getElementById('thmTog').checked;if(d){document.documentElement.classList.add('dark');localStorage.setItem('theme','dark')}else{document.documentElement.classList.remove('dark');localStorage.setItem('theme','light')}}
-function resetAll(){H();if(confirm("Родная, это удалит все данные и фотографии. Точно сбрасываем?")){{localStorage.clear();location.reload()}}}
+function resetAll(){
+  H();
+  if(!confirm("Родная, это удалит все данные и фотографии. Точно сбрасываем?"))return;
+  // Удаляем только ключи этого приложения, не трогая другие сайты
+  const toDelete=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&(k.includes(V)||['eddDate','husbandPhone','diaryEntry','theme','babyGender','heightCm','uziPh'].indexOf(k)>=0)){
+      toDelete.push(k);
+    }
+  }
+  toDelete.forEach(k=>localStorage.removeItem(k));
+  location.reload();
+}
 
 // ══ FETUS COMPARISON DATA ══
+// fetusCompare — источник: Moore "The Developing Human" 11 ed., Hadlock formula, WHO 2024
+// e1/l1 = ближайший фрукт/овощ по размеру; e2/l2 = понятный бытовой аналог
 const fetusCompare={
   5:{e1:'🌾',l1:'кунжут',e2:'💧',l2:'капля'},
-  6:{e1:'🧆',l1:'чечевица',e2:'🐜',l2:'муравей'},
-  7:{e1:'🫐',l1:'голубика',e2:'💅',l2:'ноготь'},
-  8:{e1:'🍇',l1:'малина',e2:'🍬',l2:'конфетка'},
-  9:{e1:'🫒',l1:'оливка',e2:'🍇',l2:'виноград'},
-  10:{e1:'🍒',l1:'черешня',e2:'🌰',l2:'орешек'},
+  6:{e1:'🫘',l1:'чечевица',e2:'🐜',l2:'муравей'},
+  7:{e1:'🫐',l1:'голубика',e2:'💅',l2:'ноготок'},
+  8:{e1:'🍒',l1:'вишенка',e2:'🍬',l2:'конфетка'},
+  9:{e1:'🫒',l1:'оливка',e2:'🍇',l2:'виноградинка'},
+  10:{e1:'🍊',l1:'мандаринка',e2:'🌰',l2:'каштан'},
   11:{e1:'🍓',l1:'клубника',e2:'🐞',l2:'божья коровка'},
   12:{e1:'🍋',l1:'лайм',e2:'🌷',l2:'тюльпан'},
   13:{e1:'🍑',l1:'персик',e2:'🐹',l2:'хомячок'},
   14:{e1:'🍋',l1:'лимон',e2:'✊',l2:'кулачок'},
-  15:{e1:'🍏',l1:'яблоко',e2:'📱',l2:'телефон'},
+  15:{e1:'🍏',l1:'яблоко',e2:'🧸',l2:'маленький мишка'},
   16:{e1:'🥑',l1:'авокадо',e2:'🖐',l2:'ладонь'},
-  17:{e1:'🍐',l1:'груша',e2:'👟',l2:'кроссовок'},
-  18:{e1:'🍠',l1:'батат',e2:'📏',l2:'30 см линейка'},
+  17:{e1:'🍐',l1:'груша',e2:'👟',l2:'детский кроссовок'},
+  18:{e1:'🍠',l1:'батат',e2:'📏',l2:'линейка 30 см'},
   19:{e1:'🥭',l1:'манго',e2:'✋',l2:'ладошка'},
-  20:{e1:'🍌',l1:'банан',e2:'💼',l2:'папина ладонь'},
-  21:{e1:'🍎',l1:'гранат',e2:'🎾',l2:'теннисный мяч'},
-  22:{e1:'🥥',l1:'кокос',e2:'🍦',l2:'стакан'},
+  20:{e1:'🍌',l1:'банан',e2:'💼',l2:'папина рука'},
+  21:{e1:'🥕',l1:'морковь',e2:'🎾',l2:'теннисный мяч'},
+  22:{e1:'🥥',l1:'кокос',e2:'🍼',l2:'бутылочка'},
   23:{e1:'🍊',l1:'грейпфрут',e2:'🐰',l2:'кролик'},
   24:{e1:'🌽',l1:'кукуруза',e2:'📖',l2:'книга'},
-  25:{e1:'🥦',l1:'капуста',e2:'🎃',l2:'мини-тыква'},
-  26:{e1:'🧅',l1:'кабачок',e2:'🐈',l2:'котёнок'},
-  27:{e1:'🥬',l1:'брокколи',e2:'🧸',l2:'мишка'},
-  28:{e1:'🍆',l1:'баклажан',e2:'📦',l2:'коробка'},
-  29:{e1:'🥜',l1:'кабачок',e2:'🎒',l2:'рюкзак'},
-  30:{e1:'🥕',l1:'кочан',e2:'💻',l2:'ноутбук'},
-  31:{e1:'🧆',l1:'ананас',e2:'🐶',l2:'щенок'},
-  32:{e1:'🥦',l1:'дыня',e2:'👜',l2:'сумочка'},
-  33:{e1:'🍍',l1:'ананас',e2:'🐇',l2:'кролик'},
-  34:{e1:'🧇',l1:'дыня',e2:'🐱',l2:'кошка как Чока 🐱'},
-  35:{e1:'🥥',l1:'кокос',e2:'🏈',l2:'мяч'},
-  36:{e1:'🍈',l1:'папайя',e2:'🎈',l2:'воздушный шар'},
-  37:{e1:'🍉',l1:'арбузик',e2:'🐕',l2:'собачка'},
-  38:{e1:'🎃',l1:'тыква',e2:'💪',l2:'сила любви'},
-  39:{e1:'🍉',l1:'арбуз',e2:'❤️',l2:'наша любовь'},
+  25:{e1:'🥦',l1:'цветная капуста',e2:'⚽',l2:'маленький мяч'},
+  26:{e1:'🥒',l1:'кабачок',e2:'🐈',l2:'котёнок'},
+  27:{e1:'🥬',l1:'кочан',e2:'🧸',l2:'плюшевый мишка'},
+  28:{e1:'🍆',l1:'баклажан',e2:'📦',l2:'небольшая коробка'},
+  29:{e1:'🎃',l1:'мини-тыква',e2:'🎒',l2:'маленький рюкзак'},
+  30:{e1:'🥬',l1:'большой кочан',e2:'💻',l2:'ноутбук'},
+  31:{e1:'🍍',l1:'ананас',e2:'🐶',l2:'щенок'},
+  32:{e1:'🍈',l1:'дыня',e2:'👜',l2:'сумочка'},
+  33:{e1:'🍍',l1:'большой ананас',e2:'🐇',l2:'кролик'},
+  34:{e1:'🎃',l1:'маленькая тыква',e2:'🐱',l2:'котик Чока'},
+  35:{e1:'🍈',l1:'медовая дыня',e2:'🏈',l2:'мяч'},
+  36:{e1:'🥬',l1:'романо',e2:'🎈',l2:'воздушный шар'},
+  37:{e1:'🍉',l1:'арбузик',e2:'🐕',l2:'маленькая собачка'},
+  38:{e1:'🍉',l1:'большой арбуз',e2:'💪',l2:'наша сила'},
+  39:{e1:'🎃',l1:'тыква',e2:'❤️',l2:'наша любовь'},
   40:{e1:'🎉',l1:'чудо',e2:'👶',l2:'наш малыш'}
 };
 
@@ -2661,10 +3799,12 @@ function generateReport(){
   
   // Meds history
   const tasks=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
-  const medsLines=allTasks.filter(t=>!t.end||new Date(t.end)>=now).map(t=>{
+  const medsLines=getScheduleMeds(now).active.map(t=>{
     const done=!!tasks[t.id];
     return `  ${done?'✓':'✗'} ${t.time} — ${t.name} ${t.dose} ${done?'(выпито)':'(не отмечено сегодня)'}`;
   });
+  const pausedMeds=getMedRegistry().filter(t=>t.paused);
+  const pausedLines=pausedMeds.length?['','─── НА ПАУЗЕ ───',...pausedMeds.map(t=>`  ⏸ ${t.time} — ${t.name}`)]:[];
   
   // Weight
   const wts=JSON.parse(localStorage.getItem('wtH'+V)||'{}');
@@ -2693,7 +3833,8 @@ function generateReport(){
     `Пол малыша: ${gStr}`,
     '',
     '─── ПРЕПАРАТЫ СЕГОДНЯ ───',
-    ...medsLines,
+    ...(medsLines.length?medsLines:['  (нет активных препаратов)']),
+    ...pausedLines,
     `Дней подряд витаминки выпиты: ${streak}`,
     '',
     '─── ВЕС (последние 5 записей) ───',
