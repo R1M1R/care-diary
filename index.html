@@ -353,8 +353,15 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opa
 /* Номер текущей недели — выделен */
 .gal-item.current-week{border-color:rgba(212,160,23,.7);box-shadow:0 0 0 2px rgba(212,160,23,.3),0 8px 24px rgba(212,160,23,.2)}
 .gal-item.current-week .gal-wk{background:linear-gradient(transparent,rgba(100,60,0,.8))}
-.gal-section-head{display:flex;justify-content:flex-end;margin-bottom:12px}
+.gal-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px;flex-wrap:wrap}
 .gal-count{font-size:11px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:var(--t3);background:var(--bg2);border:1px solid rgba(232,50,90,.12);padding:8px 12px;border-radius:999px}
+.gal-howto{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;padding:12px 14px;border-radius:16px;background:linear-gradient(135deg,rgba(30,156,176,.08),rgba(232,50,90,.04));border:1px solid rgba(30,156,176,.18)}
+.gal-howto-step{display:flex;align-items:flex-start;gap:10px;font-size:12px;font-weight:800;color:var(--t2);line-height:1.45}
+.gal-howto-step span{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.gal-add-primary{width:100%;padding:14px 16px;margin-bottom:14px;border:none;border-radius:18px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 8px 24px rgba(232,50,90,.3);transition:transform .15s}
+.gal-add-primary:active{transform:scale(.98)}
+.gal-compare-btn:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.2)}
+.compare-empty-btn{margin-top:14px;padding:12px 18px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;cursor:pointer;width:100%;box-shadow:0 6px 20px rgba(232,50,90,.25)}
 .gal-item:not(.hp){background:linear-gradient(145deg,rgba(255,255,255,.55),rgba(232,50,90,.04));box-shadow:inset 0 0 0 1px rgba(232,50,90,.08)}
 .gal-item:not(.hp)::after{content:'';position:absolute;inset:8px;border-radius:14px;border:1px dashed rgba(232,50,90,.14);pointer-events:none}
 #galMo.is-compressing .gal-btn,#galMo.is-compressing .gal-btn-danger{opacity:.55;pointer-events:none;filter:grayscale(.15)}
@@ -2333,16 +2340,24 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         </div>
         <div class="card"><div class="cb">
           <div class="sh">📷 Животик по неделям</div>
-          <div class="ssub">Тапни на ячейку — выбери из галереи или сними. Превью сохранится в приложении, оригинал останется в iPhone.</div>
-          <div class="gal-toolbar">
-            <button type="button" class="gal-compare-btn" onclick="openCompareModal()">↔ Сравнить недели</button>
+          <div class="ssub">Фото с 19 по 40 неделю — одно на каждую неделю беременности</div>
+          <div class="gal-howto" id="galHowto">
+            <div class="gal-howto-step"><span>1</span> Нажми на квадрат с номером недели ниже</div>
+            <div class="gal-howto-step"><span>2</span> Выбери «Снять животик» или «Выбрать из галереи»</div>
           </div>
+          <button type="button" class="gal-add-primary" onclick="openGalCurrentWeek()">📷 Добавить фото · <span id="galCurWkLbl">текущая неделя</span></button>
+          <div class="gal-section-head">
+            <span style="font-size:11px;font-weight:800;color:var(--t3)">Сетка недель 19–40</span>
+            <span class="gal-count" id="galCount">0 / 22</span>
+          </div>
+          <div class="gal-grid" id="galGrid" role="list" aria-label="Фото животика по неделям"></div>
           <div class="gal-timeline-wrap" id="galTimelineWrap" style="display:none">
             <div class="gal-timeline-head">🎞️ Путь животика</div>
             <div class="gal-timeline" id="galTimeline" role="list" aria-label="Фото по неделям"></div>
           </div>
-          <div class="gal-section-head"><span class="gal-count" id="galCount">0 / 22</span></div>
-          <div class="gal-grid" id="galGrid"></div>
+          <div class="gal-toolbar">
+            <button type="button" class="gal-compare-btn" id="galCompareBtn" onclick="openCompareModal()">↔ Сравнить недели</button>
+          </div>
         </div></div>
       </div>
     </div>
@@ -2463,7 +2478,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v16</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v17</div>
         </div></div>
       </div>
     </div>
@@ -2554,7 +2569,11 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
       </div>
       <div class="compare-labels"><span id="cmpLbl1">—</span><span id="cmpLbl2">—</span></div>
     </div>
-    <div class="compare-empty" id="compareEmpty" style="display:none">Нужно минимум 2 фото в разных неделях — добавь в галерею животика 📷</div>
+    <div class="compare-empty" id="compareEmpty" style="display:none">
+      <p style="margin:0 0 8px;line-height:1.55">Нужно минимум <b>2 фото</b> в разных неделях — тогда можно сравнить «до и после».</p>
+      <p style="margin:0 0 14px;font-size:12px;opacity:.85">Сначала добавь снимки в сетку недель в дневнике.</p>
+      <button type="button" class="compare-empty-btn" onclick="closeCompareModal();openGalCurrentWeek();">📷 Добавить фото</button>
+    </div>
   </div>
 </div>
 
@@ -2600,7 +2619,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
 <script>
 const V="_v16";
-const APP_DATA_VER='v16';
+const APP_DATA_VER='v17';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -2991,15 +3010,16 @@ async function initPhotoStorage(edd){
     await migrateStoredPhotos();
     const v10=await migratePhotosV10();
     await loadUziPh();
-    await renderGallery(edd||localStorage.getItem('eddDate'));
-    updatePhotoStorageUI();
-    updatePhotoModeUI();
-    updatePWAStatusUI();
     if(migrated)toast('Старые фото перенесены — теперь места для снимков больше ✨');
     else if(v10)toast('Фото оптимизированы — теперь влезет гораздо больше недель 📷');
   }catch(e){
     console.error('initPhotoStorage',e);
     if(e&&e.message==='NO_IDB')toast('Браузер не поддерживает хранилище фото — обнови iOS или открой через Safari');
+  }finally{
+    await renderGallery(edd||localStorage.getItem('eddDate'));
+    updatePhotoStorageUI();
+    updatePhotoModeUI();
+    updatePWAStatusUI();
   }
 }
 async function migrateStoredPhotos(){
@@ -4455,6 +4475,7 @@ function init(){
   renderContrUI();
   renderVisitPrep();
   initPhotoStorage(edd);
+  renderGallery(edd);
   loadKickSession();
   updateTodayDash();
   updateNotifUI();
@@ -4868,7 +4889,30 @@ async function loadGalleryThumbsLazy(gen,curWeek){
   }
   const cntEl=document.getElementById('galCount');
   if(cntEl&&gen===galLoadGen)cntEl.textContent=galCount+' / 22';
-  if(gen===galLoadGen){updateTodayDash();renderGalTimeline(curWeek);}
+  if(gen===galLoadGen){updateGalToolbar(galCount,curWeek);updateTodayDash();renderGalTimeline(curWeek);}
+}
+function updateGalToolbar(galCount,curWeek){
+  const btn=document.getElementById('galCompareBtn');
+  if(btn){
+    btn.disabled=galCount<2;
+    btn.title=galCount<2?'Добавь минимум 2 фото в разных неделях':'Сравнить две недели';
+  }
+  const lbl=document.getElementById('galCurWkLbl');
+  const howto=document.getElementById('galHowto');
+  const wk=curWeek??calcW(localStorage.getItem('eddDate')).week;
+  const galW=Math.min(40,Math.max(19,wk));
+  if(lbl)lbl.textContent='неделя '+galW+(wk===galW?' ✨':'');
+  if(howto)howto.style.display=galCount>=1?'none':'flex';
+}
+function openGalCurrentWeek(){
+  H();
+  const{week}=calcW(localStorage.getItem('eddDate'));
+  const w=Math.min(40,Math.max(19,week));
+  switchTabById('journal');
+  setTimeout(()=>{
+    document.getElementById('galGrid')?.scrollIntoView({behavior:'smooth',block:'start'});
+    setTimeout(()=>openGal(w),400);
+  },200);
 }
 async function openGal(w){
   H();
@@ -6664,7 +6708,7 @@ function switchTab(id,btn){
   btn.setAttribute('aria-selected','true');
   btn.setAttribute('aria-current','page');
   if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();updateDataStatusUI();updateBackupReminder();updatePhotoModeUI();}
-  if(id==='journal'){renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();}
+  if(id==='journal'){renderGallery(localStorage.getItem('eddDate'));renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();}
   if(id==='bag')renderBag();
   if(id==='meds')renderMedWeekChart();
   if(id==='home'){updateTodayDash();renderWeekWellness();}
