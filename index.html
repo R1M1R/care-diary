@@ -2186,7 +2186,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         </div>
         <div class="card"><div class="cb">
           <div class="sh">📷 Животик по неделям</div>
-          <div class="ssub">Тапни на ячейку — сними животик или выбери из галереи. Фото сжимаются автоматически ✨</div>
+          <div class="ssub">Тапни на ячейку — выбери из галереи или сними. Превью сохранится в приложении, оригинал останется в iPhone.</div>
           <div class="gal-section-head"><span class="gal-count" id="galCount">0 / 22</span></div>
           <div class="gal-grid" id="galGrid"></div>
         </div></div>
@@ -2240,7 +2240,12 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <div class="card"><div class="cb">
           <div class="photo-storage-card">
             <div class="photo-storage-title">📸 Память для фото</div>
-            <p class="photo-storage-sub">Фото сохраняются в хранилище браузера для этого приложения — не в галерею и не «забивают» память телефона. Места здесь намного больше, чем раньше.</p>
+            <p class="photo-storage-sub">По умолчанию храним только лёгкие превью (~100 КБ) — оригиналы остаются в галерее iPhone. Так все 22 недели животика помещаются без проблем.</p>
+            <div class="tog-w" style="margin-bottom:14px;padding:12px 14px;border-radius:14px;background:var(--bg2);border:1px solid var(--cb)">
+              <span style="font-size:14px;font-weight:800">Полные копии в приложении</span>
+              <label class="tog"><input type="checkbox" id="photoModeTog" onchange="togglePhotoMode()"><span class="tog-sl"></span></label>
+            </div>
+            <p class="photo-storage-sub" id="photoModeHint" style="margin-top:-6px">Рекомендуется: превью в приложении, оригинал в галерее.</p>
             <div class="photo-storage-meta" id="photoStorageInfo">Загрузка…</div>
             <div class="photo-storage-sub" id="photoStorageQuota" style="margin-top:-6px;margin-bottom:10px;min-height:18px"></div>
             <div class="photo-storage-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Заполнение памяти фото">
@@ -2352,6 +2357,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
       <button type="button" class="gal-btn gal-btn-primary" onclick="if(imgProcessing)return;document.getElementById('galInCam').click()">Снять животик 📷</button>
       <button type="button" class="gal-btn gal-btn-secondary" onclick="if(imgProcessing)return;document.getElementById('galInLib').click()">Выбрать из галереи 🖼️</button>
     </div>
+    <p class="photo-storage-sub" id="galModeHint" style="text-align:center;margin:10px 0 0">Превью в приложении · оригинал остаётся в галерее телефона 📱</p>
     <button type="button" id="galDel" class="gal-btn-danger" onclick="deleteGalPhoto()">Удалить фото</button>
     <input type="file" id="galInCam" accept="image/jpeg,image/png,image/heic,image/heif,image/webp,.heic,.heif" capture="environment" style="display:none" onchange="loadGalPhoto(event)">
     <input type="file" id="galInLib" accept="image/jpeg,image/png,image/heic,image/heif,image/webp,.heic,.heif" style="display:none" onchange="loadGalPhoto(event)">
@@ -2400,7 +2406,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
 <script>
 const V="_v16";
-const APP_DATA_VER='v9';
+const APP_DATA_VER='v10';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -2444,9 +2450,14 @@ function runToastUndo(){H();if(toastUndoFn){const fn=toastUndoFn;toastUndoFn=nul
 // ══ IMAGE COMPRESSION (Canvas — без тяжёлого FileReader/base64 до сжатия) ══
 // Альтернатива с npm: npm install browser-image-compression
 const IMG_COMPRESS_PRESETS={
-  uzi:{maxDim:1920,maxBytes:1.5*1024*1024,startQuality:.86,minQuality:.5},
-  gallery:{maxDim:1400,maxBytes:700*1024,startQuality:.82,minQuality:.45}
+  uzi:{maxDim:1600,maxBytes:900*1024,startQuality:.84,minQuality:.48},
+  uziThumb:{maxDim:960,maxBytes:180*1024,startQuality:.8,minQuality:.42},
+  gallery:{maxDim:1280,maxBytes:480*1024,startQuality:.8,minQuality:.42},
+  galleryThumb:{maxDim:640,maxBytes:110*1024,startQuality:.76,minQuality:.38}
 };
+const PHOTO_MODE_KEY='photoMode'+V;
+function getPhotoMode(){return localStorage.getItem(PHOTO_MODE_KEY)||'compact';}
+function photoFullKey(key){return key+'_full';}
 let imgCompressCount=0;
 let imgProcessing=false;
 let uziPreviewBlobUrl=null;
@@ -2650,23 +2661,115 @@ async function photoDBKeys(){
   });
 }
 function revokePhotoUrl(key){
-  if(photoUrlCache.has(key)){URL.revokeObjectURL(photoUrlCache.get(key));photoUrlCache.delete(key);}
+  [key,key+':t',photoFullKey(key),photoFullKey(key)+':f'].forEach(k=>{
+    if(photoUrlCache.has(k)){URL.revokeObjectURL(photoUrlCache.get(k));photoUrlCache.delete(k);}
+  });
 }
 function revokeAllPhotoUrls(){
   photoUrlCache.forEach(u=>URL.revokeObjectURL(u));
   photoUrlCache.clear();
 }
-async function getPhotoUrl(key){
-  if(photoUrlCache.has(key))return photoUrlCache.get(key);
-  const blob=await photoDBGet(key);
+async function getPhotoUrl(key,preferFull){
+  const cacheKey=preferFull?photoFullKey(key)+':f':key+':t';
+  if(photoUrlCache.has(cacheKey))return photoUrlCache.get(cacheKey);
+  let blob=null;
+  if(preferFull&&getPhotoMode()==='full')blob=await photoDBGet(photoFullKey(key));
+  if(!blob)blob=await photoDBGet(key);
   if(!blob)return null;
   const url=URL.createObjectURL(blob);
-  photoUrlCache.set(key,url);
+  photoUrlCache.set(cacheKey,url);
   return url;
 }
-async function savePhoto(key,dataUrl){
-  await photoDBPut(key,dataUrlToBlob(dataUrl));
+async function savePhoto(key,dataUrl,presetKey){
+  const isUzi=key==='uzi';
+  const thumbPreset=isUzi?'uziThumb':'galleryThumb';
+  const thumbData=await recompressDataUrl(dataUrl,thumbPreset);
+  await photoDBPut(key,dataUrlToBlob(thumbData));
+  if(getPhotoMode()==='full'){
+    const fullPreset=presetKey||(isUzi?'uzi':'gallery');
+    const fullData=await recompressDataUrl(dataUrl,fullPreset);
+    await photoDBPut(photoFullKey(key),dataUrlToBlob(fullData));
+  }else{
+    try{await photoDBDelete(photoFullKey(key));}catch(e){}
+  }
   revokePhotoUrl(key);
+}
+async function savePhotoFromFile(key,file,presetKey){
+  const isUzi=key==='uzi';
+  const thumbPreset=isUzi?'uziThumb':'galleryThumb';
+  const thumbData=await compressImageFile(file,thumbPreset);
+  await photoDBPut(key,dataUrlToBlob(thumbData));
+  if(getPhotoMode()==='full'){
+    const fullPreset=presetKey||(isUzi?'uzi':'gallery');
+    const fullData=await compressImageFile(file,fullPreset);
+    await photoDBPut(photoFullKey(key),dataUrlToBlob(fullData));
+  }else{
+    try{await photoDBDelete(photoFullKey(key));}catch(e){}
+  }
+  revokePhotoUrl(key);
+}
+async function migratePhotosV10(){
+  if(localStorage.getItem('photosMigrated_v10')==='1')return false;
+  let changed=false;
+  const keys=await photoDBKeys();
+  for(const k of keys){
+    if(k.endsWith('_full'))continue;
+    const blob=await photoDBGet(k);
+    if(!blob||!(blob instanceof Blob))continue;
+    const thumbMax=(k==='uzi'?IMG_COMPRESS_PRESETS.uziThumb:IMG_COMPRESS_PRESETS.galleryThumb).maxBytes;
+    if(blob.size<=thumbMax*1.15)continue;
+    try{
+      const url=URL.createObjectURL(blob);
+      const thumbPreset=k==='uzi'?'uziThumb':'galleryThumb';
+      const thumbData=await recompressDataUrl(url,thumbPreset);
+      URL.revokeObjectURL(url);
+      if(getPhotoMode()==='full')await photoDBPut(photoFullKey(k),blob);
+      else try{await photoDBDelete(photoFullKey(k));}catch(e){}
+      await photoDBPut(k,dataUrlToBlob(thumbData));
+      revokePhotoUrl(k);
+      changed=true;
+    }catch(e){}
+  }
+  localStorage.setItem('photosMigrated_v10','1');
+  return changed;
+}
+async function purgeFullPhotoCopies(){
+  const keys=await photoDBKeys();
+  let freed=0;
+  for(const k of keys){
+    if(!k.endsWith('_full'))continue;
+    const blob=await photoDBGet(k);
+    if(blob)freed+=blob.size;
+    await photoDBDelete(k);
+    revokePhotoUrl(k.replace('_full',''));
+  }
+  return freed;
+}
+function togglePhotoMode(){
+  H();
+  const full=document.getElementById('photoModeTog').checked;
+  localStorage.setItem(PHOTO_MODE_KEY,full?'full':'compact');
+  if(!full){
+    purgeFullPhotoCopies().then(freed=>{
+      if(freed>0){
+        updatePhotoStorageUI();
+        toast('Освобождено '+formatPhotoBytes(freed)+' — остались превью, оригиналы в галерее 📱');
+      }else toast('Режим «из галереи» — храним только лёгкие превью ✨');
+    });
+  }else toast('Будем хранить и полные копии в приложении');
+  updatePhotoModeUI();
+}
+function updatePhotoModeUI(){
+  const tog=document.getElementById('photoModeTog');
+  const hint=document.getElementById('photoModeHint');
+  if(tog)tog.checked=getPhotoMode()==='full';
+  if(hint){
+    hint.textContent=getPhotoMode()==='full'
+      ?'Полные копии сохраняются в приложении — занимает больше места.'
+      :'Рекомендуется: в приложении только превью (~100 КБ). Оригиналы остаются в галерее iPhone — выбирай «Из галереи» 🖼️';
+  }
+  const galHint=document.getElementById('galModeHint');
+  if(galHint)galHint.textContent=getPhotoMode()==='full'?'Полная копия сохранится в приложении.':'Превью в приложении · оригинал остаётся в галерее телефона 📱';
 }
 async function migratePhotosToIndexedDB(){
   if(localStorage.getItem('photosInIDB_v1')==='1')return false;
@@ -2692,11 +2795,14 @@ async function initPhotoStorage(edd){
     const migrated=await migratePhotosToIndexedDB();
     if(navigator.storage&&navigator.storage.persist){try{await navigator.storage.persist();}catch(e){}}
     await migrateStoredPhotos();
+    const v10=await migratePhotosV10();
     await loadUziPh();
     await renderGallery(edd||localStorage.getItem('eddDate'));
     updatePhotoStorageUI();
+    updatePhotoModeUI();
     updatePWAStatusUI();
     if(migrated)toast('Старые фото перенесены — теперь места для снимков больше ✨');
+    else if(v10)toast('Фото оптимизированы — теперь влезет гораздо больше недель 📷');
   }catch(e){
     console.error('initPhotoStorage',e);
     if(e&&e.message==='NO_IDB')toast('Браузер не поддерживает хранилище фото — обнови iOS или открой через Safari');
@@ -2706,10 +2812,10 @@ async function migrateStoredPhotos(){
   if(localStorage.getItem('imgMigrated_v3')==='1')return;
   let changed=false;
   const uziBlob=await photoDBGet('uzi');
-  if(uziBlob&&uziBlob.size>IMG_COMPRESS_PRESETS.uzi.maxBytes){
+  if(uziBlob&&uziBlob.size>IMG_COMPRESS_PRESETS.uziThumb.maxBytes){
     try{
       const url=URL.createObjectURL(uziBlob);
-      const dataUrl=await recompressDataUrl(url,'uzi');
+      const dataUrl=await recompressDataUrl(url,'uziThumb');
       URL.revokeObjectURL(url);
       await photoDBPut('uzi',dataUrlToBlob(dataUrl));
       changed=true;
@@ -2719,10 +2825,10 @@ async function migrateStoredPhotos(){
   for(const k of keys){
     if(!k.startsWith('gal_'))continue;
     const blob=await photoDBGet(k);
-    if(!blob||blob.size<=IMG_COMPRESS_PRESETS.gallery.maxBytes)continue;
+    if(!blob||blob.size<=IMG_COMPRESS_PRESETS.galleryThumb.maxBytes)continue;
     try{
       const url=URL.createObjectURL(blob);
-      const dataUrl=await recompressDataUrl(url,'gallery');
+      const dataUrl=await recompressDataUrl(url,'galleryThumb');
       URL.revokeObjectURL(url);
       await photoDBPut(k,dataUrlToBlob(dataUrl));
       changed=true;
@@ -2743,17 +2849,23 @@ function formatPhotoBytes(bytes){
   return (bytes/(1024*1024)).toFixed(1)+' MB';
 }
 async function getPhotoStorageStats(){
-  let uziBytes=0,galBytes=0,galCount=0,hasUzi=false;
+  let uziBytes=0,galBytes=0,galCount=0,hasUzi=false,fullBytes=0;
   try{
     const keys=await photoDBKeys();
+    const galWeeks=new Set();
     for(const k of keys){
       const blob=await photoDBGet(k);
       if(!blob)continue;
-      if(k==='uzi'){uziBytes=blob.size;hasUzi=true;}
-      else if(k.startsWith('gal_')){galBytes+=blob.size;galCount++;}
+      if(k==='uzi'){uziBytes+=blob.size;hasUzi=true;}
+      else if(k==='uzi_full')fullBytes+=blob.size;
+      else if(k.startsWith('gal_')&&!k.endsWith('_full')){
+        galBytes+=blob.size;
+        galWeeks.add(k.replace('gal_',''));
+      }else if(k.endsWith('_full'))fullBytes+=blob.size;
     }
+    galCount=galWeeks.size;
   }catch(e){}
-  return{uziBytes,galBytes,totalBytes:uziBytes+galBytes,galCount,hasUzi};
+  return{uziBytes,galBytes,fullBytes,totalBytes:uziBytes+galBytes+fullBytes,galCount,hasUzi,mode:getPhotoMode()};
 }
 async function updatePhotoStorageUI(){
   const info=document.getElementById('photoStorageInfo');
@@ -2775,9 +2887,10 @@ async function updatePhotoStorageUI(){
     }catch(e){if(quotaEl)quotaEl.textContent='';}
   }else if(quotaEl){quotaEl.textContent='';}
   const pct=s.totalBytes?Math.min(100,Math.round(s.totalBytes/limit*100)):0;
+  const modeLbl=s.mode==='full'?'полные копии':'превью · оригинал в галерее';
   info.textContent=s.totalBytes
-    ?`${formatPhotoBytes(s.totalBytes)} · УЗИ: ${s.hasUzi?1:0} · животик: ${s.galCount}/22`
-    :'Фото пока нет — можно добавить на главной и в дневнике';
+    ?`${formatPhotoBytes(s.totalBytes)} · ${modeLbl} · УЗИ: ${s.hasUzi?1:0} · животик: ${s.galCount}/22`+(s.fullBytes?` (+${formatPhotoBytes(s.fullBytes)} полн.)`:'')
+    :'Фото пока нет — выбирай из галереи или снимай камерой';
   if(bar){
     bar.style.width=pct+'%';
     bar.classList.toggle('warn',pct>=75);
@@ -2833,24 +2946,18 @@ function resetUziPhotoUI(){
 }
 async function recompressAllPhotosForce(){
   let changed=false;
-  const uziBlob=await photoDBGet('uzi');
-  if(uziBlob){
-    try{
-      const url=URL.createObjectURL(uziBlob);
-      const dataUrl=await recompressDataUrl(url,'uzi');
-      URL.revokeObjectURL(url);
-      await photoDBPut('uzi',dataUrlToBlob(dataUrl));
-      changed=true;
-    }catch(e){}
-  }
-  const keys=await photoDBKeys();
-  for(const k of keys){
-    if(!k.startsWith('gal_'))continue;
+  for(const k of await photoDBKeys()){
     const blob=await photoDBGet(k);
     if(!blob)continue;
+    let preset='galleryThumb';
+    if(k==='uzi')preset='uziThumb';
+    else if(k==='uzi_full')preset='uzi';
+    else if(k.startsWith('gal_')&&k.endsWith('_full'))preset='gallery';
+    else if(k.startsWith('gal_'))preset='galleryThumb';
+    else continue;
     try{
       const url=URL.createObjectURL(blob);
-      const dataUrl=await recompressDataUrl(url,'gallery');
+      const dataUrl=await recompressDataUrl(url,preset);
       URL.revokeObjectURL(url);
       await photoDBPut(k,dataUrlToBlob(dataUrl));
       changed=true;
@@ -4516,42 +4623,63 @@ function renderWtChart(){
   }
 }
 
-// GALLERY — с 19 по 40 неделю
+// GALLERY — с 19 по 40 неделю (ленивая подгрузка превью)
+let galLoadGen=0;
 async function renderGallery(edd){
-  const{week}=calcW(edd||localStorage.getItem('eddDate'));
   const gr=document.getElementById('galGrid');if(!gr)return;
-  showGalSkeleton();
-  revokeAllPhotoUrls();
-  let galCount=0;
+  const{week}=calcW(edd||localStorage.getItem('eddDate'));
+  const gen=++galLoadGen;
   let html='';
   for(let w=19;w<=40;w++){
-    const url=await getPhotoUrl('gal_'+w);
-    if(url)galCount++;
     const isCur=w===week;
-    const inner=url
-      ?`<div class="gal-img-wrap"><img src="${url}" alt="Неделя ${w}" loading="lazy" decoding="async"></div>`
-      :`<div class="gal-plus">+</div>`;
-    html+=`<div class="gal-item ${url?'hp':''} ${isCur?'current-week':''}" onclick="openGal(${w})">${inner}<div class="gal-wk">${w} нед.${isCur?' ✨':''}</div></div>`;
+    html+=`<div class="gal-item ${isCur?'current-week':''}" data-gw="${w}" onclick="openGal(${w})"><div class="gal-plus" id="galPlus${w}">+</div><div class="gal-wk">${w} нед.${isCur?' ✨':''}</div></div>`;
   }
   gr.innerHTML=html;
   const cntEl=document.getElementById('galCount');
-  if(cntEl)cntEl.textContent=galCount+' / 22';
-  updateTodayDash();
+  if(cntEl)cntEl.textContent='… / 22';
+  loadGalleryThumbsLazy(gen,week);
+}
+async function loadGalleryThumbsLazy(gen,curWeek){
+  let galCount=0;
+  for(let w=19;w<=40;w++){
+    if(gen!==galLoadGen)return;
+    const url=await getPhotoUrl('gal_'+w,false);
+    if(gen!==galLoadGen)return;
+    const cell=document.querySelector('.gal-item[data-gw="'+w+'"]');
+    if(!cell)continue;
+    if(url){
+      galCount++;
+      cell.classList.add('hp');
+      const plus=document.getElementById('galPlus'+w);
+      if(plus){
+        const wrap=document.createElement('div');
+        wrap.className='gal-img-wrap';
+        wrap.innerHTML='<img src="'+url+'" alt="Неделя '+w+'" loading="lazy" decoding="async">';
+        plus.replaceWith(wrap);
+      }
+    }
+    if(w%3===0)await new Promise(r=>setTimeout(r,0));
+  }
+  const cntEl=document.getElementById('galCount');
+  if(cntEl&&gen===galLoadGen)cntEl.textContent=galCount+' / 22';
+  if(gen===galLoadGen)updateTodayDash();
 }
 async function openGal(w){
   H();
   curGW=w;
   document.getElementById('galMoT').textContent='📷 Неделя '+w;
+  updatePhotoModeUI();
   const imgEl=document.getElementById('galPrevImg');
   const emptyEl=document.getElementById('galPrevEmpty');
   const badgeEl=document.getElementById('galPrevBadge');
   const delBtn=document.getElementById('galDel');
-  const url=await getPhotoUrl('gal_'+w);
+  const url=await getPhotoUrl('gal_'+w,true)||await getPhotoUrl('gal_'+w,false);
   if(url){
     imgEl.src=url;
     imgEl.style.display='block';
     emptyEl.style.display='none';
     badgeEl.style.display='inline-flex';
+    badgeEl.textContent=getPhotoMode()==='full'?'Неделя сохранена ✨':'Превью сохранено · оригинал в галерее';
     delBtn.classList.add('show');
   }else{
     imgEl.removeAttribute('src');
@@ -4574,11 +4702,11 @@ async function loadGalPhoto(ev){
   showImgCompressOverlay('Сжимаем фото…');
   try{
     const compressed=await compressImageFile(f,'gallery');
-    await savePhoto('gal_'+curGW,compressed);
-    updateGalPreview(compressed);
+    await savePhotoFromFile('gal_'+curGW,f,'gallery');
+    updateGalPreview(await getPhotoUrl('gal_'+curGW,true)||await getPhotoUrl('gal_'+curGW,false));
     await renderGallery(localStorage.getItem('eddDate'));
     updatePhotoStorageUI();
-    toast('Фото недели '+curGW+' сохранено! 📷');
+    toast(getPhotoMode()==='full'?'Фото недели '+curGW+' сохранено! 📷':'Превью сохранено — оригинал остаётся в галерее 📱');
   }catch(err){
     console.error('loadGalPhoto',err);
     if(err&&err.message==='IDB_PUT')toast('Не удалось сохранить фото — попробуй «Оптимизировать все фото» в настройках');
@@ -4592,15 +4720,18 @@ async function loadGalPhoto(ev){
 }
 async function deleteGalPhoto(){
   H();if(curGW==null)return;
-  const blob=await photoDBGet('gal_'+curGW);
   const w=curGW;
-  await photoDBDelete('gal_'+curGW);
-  revokePhotoUrl('gal_'+curGW);
+  const thumb=await photoDBGet('gal_'+w);
+  const full=await photoDBGet(photoFullKey('gal_'+w));
+  await photoDBDelete('gal_'+w);
+  try{await photoDBDelete(photoFullKey('gal_'+w));}catch(e){}
+  revokePhotoUrl('gal_'+w);
   await renderGallery(localStorage.getItem('eddDate'));
   updatePhotoStorageUI();
   closeGal();
-  toast('Фото удалено',blob?()=>{
-    photoDBPut('gal_'+w,blob).then(()=>{
+  toast('Фото удалено',thumb?()=>{
+    photoDBPut('gal_'+w,thumb).then(()=>{
+      if(full)photoDBPut(photoFullKey('gal_'+w),full);
       revokePhotoUrl('gal_'+w);
       renderGallery(localStorage.getItem('eddDate'));
       updatePhotoStorageUI();
@@ -4619,8 +4750,9 @@ async function loadUziPhoto(ev){
   showImgCompressOverlay('Сжимаем фото УЗИ…');
   try{
     const compressed=await compressImageFile(f,'uzi');
-    await savePhoto('uzi',compressed);
-    showUziPh(compressed);
+    await savePhotoFromFile('uzi',f,'uzi');
+    const prev=await getPhotoUrl('uzi',true)||await getPhotoUrl('uzi',false);
+    showUziPh(prev||compressed);
     updatePhotoStorageUI();
     toast('Фото нашего малыша сохранено! 💕');
   }catch(err){
@@ -4635,7 +4767,7 @@ async function loadUziPhoto(ev){
   }
 }
 async function loadUziPh(){
-  const url=await getPhotoUrl('uzi');
+  const url=await getPhotoUrl('uzi',true)||await getPhotoUrl('uzi',false);
   if(url)showUziPh(url);
 }
 function showUziPh(src){
@@ -5917,7 +6049,7 @@ function switchTab(id,btn){
   btn.classList.add('act');
   btn.setAttribute('aria-selected','true');
   btn.setAttribute('aria-current','page');
-  if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();updateDataStatusUI();updateBackupReminder();}
+  if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();updateDataStatusUI();updateBackupReminder();updatePhotoModeUI();}
   if(id==='journal'){renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();}
   if(id==='bag')renderBag();
   if(id==='meds')renderMedWeekChart();
