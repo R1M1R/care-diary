@@ -1596,17 +1596,20 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .perfect-day-badge.show{display:block}
 .trend-block{margin-top:16px;padding-top:14px;border-top:1px solid var(--cb)}
 .trend-label{font-size:10px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-.symptom-trend{display:grid;grid-template-columns:32px repeat(7,1fr);gap:4px;align-items:center}
-.symptom-trend-lbl{font-size:9px;font-weight:800;color:var(--t3);line-height:1.2;padding-right:4px}
-.symptom-trend-day{font-size:8px;font-weight:900;color:var(--t3);text-align:center;margin-bottom:2px}
-.symptom-trend-cell{width:100%;aspect-ratio:1;border-radius:6px;background:var(--bg2);border:1px solid var(--cb);transition:background .2s}
-.symptom-trend-cell.on{background:linear-gradient(135deg,rgba(232,50,90,.35),rgba(232,50,90,.15));border-color:rgba(232,50,90,.35)}
-.bp-trend{display:flex;align-items:flex-end;gap:6px;height:72px;padding:0 2px}
+.symptom-trend{display:grid;grid-template-columns:36px repeat(7,1fr);gap:5px;align-items:center;margin-top:4px}
+.symptom-trend-lbl{font-size:10px;font-weight:800;color:var(--t3);line-height:1.2;padding-right:2px;text-align:center}
+.symptom-trend-day{font-size:9px;font-weight:900;color:var(--t3);text-align:center;margin-bottom:2px}
+.symptom-trend-corner{min-height:1px}
+.symptom-trend-cell{width:100%;max-width:34px;aspect-ratio:1;border-radius:7px;background:var(--bg2);border:1px solid var(--cb);transition:background .2s;justify-self:center}
+.symptom-trend-cell.on{background:linear-gradient(135deg,rgba(232,50,90,.4),rgba(232,50,90,.18));border-color:rgba(232,50,90,.4);box-shadow:0 2px 8px rgba(232,50,90,.15)}
+.symptom-trend-legend{font-size:10px;font-weight:700;color:var(--t3);margin-top:8px;line-height:1.45;text-align:center}
+.bp-trend{display:flex;align-items:flex-end;gap:6px;min-height:72px;padding:4px 2px 0}
 .bp-trend-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
 .bp-trend-bar{width:100%;max-width:28px;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,var(--teal2),var(--teal));min-height:8px;transition:height .4s}
 .bp-trend-bar.warn{background:linear-gradient(180deg,#FF8FA3,var(--rose))}
 .bp-trend-lbl{font-size:8px;font-weight:900;color:var(--t3)}
 .bp-trend-val{font-size:9px;font-weight:900;color:var(--t2);line-height:1}
+.bp-trend-empty{font-size:11px;font-weight:800;color:var(--t3);opacity:.35;padding-bottom:6px;line-height:1}
 .contr-card .contr-big{font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:var(--rose);text-align:center;line-height:1.1;margin:8px 0}
 .contr-meta{display:flex;justify-content:space-around;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .contr-stat{text-align:center;padding:10px 12px;border-radius:14px;background:var(--bg2);border:1px solid var(--cb);flex:1;min-width:88px}
@@ -2263,7 +2266,8 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           <div class="bp-log" id="bpLogEl">Давление ещё не записывали сегодня</div>
           <div class="trend-block">
             <div class="trend-label">Симптомы · 7 дней</div>
-            <div id="symptomTrend"></div>
+            <div id="symptomTrend" class="symptom-trend" role="img" aria-label="Таблица симптомов за неделю"></div>
+            <div class="symptom-trend-legend" id="symptomTrendLegend"></div>
           </div>
           <div class="trend-block">
             <div class="trend-label">Давление · 7 дней</div>
@@ -2459,7 +2463,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v15</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v16</div>
         </div></div>
       </div>
     </div>
@@ -2596,7 +2600,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
 <script>
 const V="_v16";
-const APP_DATA_VER='v15';
+const APP_DATA_VER='v16';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -6086,22 +6090,33 @@ function renderSymptomsUI(){
 }
 function renderSymptomTrend(){
   const el=document.getElementById('symptomTrend');
+  const legend=document.getElementById('symptomTrendLegend');
   if(!el)return;
+  el.className='symptom-trend';
   const log=loadSymptomsLog();
   const keys=getLast7DayKeys();
-  let html='<div></div>';
+  const hasAny=keys.some(k=>(log[k]||[]).length);
+  let html='<div class="symptom-trend-corner" aria-hidden="true"></div>';
   keys.forEach(k=>{
     const dt=new Date(k+'T12:00:00');
     html+='<div class="symptom-trend-day">'+dt.getDate()+'</div>';
   });
   SYMPTOM_TYPES.forEach(s=>{
-    html+='<div class="symptom-trend-lbl">'+s.emoji+'</div>';
+    html+='<div class="symptom-trend-lbl" title="'+s.label+'">'+s.emoji+'</div>';
     keys.forEach(k=>{
       const on=(log[k]||[]).includes(s.id);
-      html+='<div class="symptom-trend-cell'+(on?' on':'')+'" title="'+k+': '+s.label+'"></div>';
+      html+='<div class="symptom-trend-cell'+(on?' on':'')+'" title="'+dtRu(k)+': '+(on?'был':'не было')+' · '+s.label+'"></div>';
     });
   });
   el.innerHTML=html;
+  if(legend){
+    legend.textContent=hasAny
+      ? 'Розовый квадрат — симптом был в этот день · серый — не отмечен'
+      : 'Отметь симптомы кнопками выше — здесь появится таблица за неделю';
+  }
+}
+function dtRu(iso){
+  return new Date(iso+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'});
 }
 function renderBPTrend(){
   const el=document.getElementById('bpTrend');
@@ -6110,16 +6125,17 @@ function renderBPTrend(){
   const keys=getLast7DayKeys();
   const vals=keys.map(k=>log[k]).filter(Boolean);
   if(!vals.length){
-    el.innerHTML='<div class="empty-sub" style="width:100%;text-align:center;padding:8px 0">Записывай давление — появится график</div>';
+    el.innerHTML='<div class="symptom-trend-legend" style="width:100%;padding:12px 0">Записывай давление кнопкой «Записать» — появится график за неделю</div>';
     return;
   }
   const maxSys=Math.max(...vals.map(v=>v.sys),140);
   el.innerHTML=keys.map(k=>{
     const b=log[k];
-    if(!b)return '<div class="bp-trend-col"><div class="bp-trend-bar" style="height:8px;opacity:.2"></div><div class="bp-trend-lbl">'+new Date(k+'T12:00:00').getDate()+'</div></div>';
+    const day=new Date(k+'T12:00:00').getDate();
+    if(!b)return '<div class="bp-trend-col"><div class="bp-trend-empty">—</div><div class="bp-trend-lbl">'+day+'</div></div>';
     const warn=b.sys>=140||b.dia>=90;
     const h=Math.max(12,Math.round(b.sys/maxSys*56));
-    return '<div class="bp-trend-col"><div class="bp-trend-val">'+b.sys+'</div><div class="bp-trend-bar'+(warn?' warn':'')+'" style="height:'+h+'px"></div><div class="bp-trend-lbl">'+new Date(k+'T12:00:00').getDate()+'</div></div>';
+    return '<div class="bp-trend-col"><div class="bp-trend-val">'+b.sys+'/'+b.dia+'</div><div class="bp-trend-bar'+(warn?' warn':'')+'" style="height:'+h+'px"></div><div class="bp-trend-lbl">'+day+'</div></div>';
   }).join('');
 }
 const CONTR_KEY='contrHist'+V;
