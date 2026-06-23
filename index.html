@@ -2285,31 +2285,38 @@ async function savePhoto(key,dataUrl){
   revokePhotoUrl(key);
 }
 async function migratePhotosToIndexedDB(){
-  if(localStorage.getItem('photosInIDB_v1')==='1')return;
+  if(localStorage.getItem('photosInIDB_v1')==='1')return false;
+  let migrated=0;
   const uzi=localStorage.getItem('uziPh');
-  if(uzi){await photoDBPut('uzi',dataUrlToBlob(uzi));localStorage.removeItem('uziPh');}
+  if(uzi){await photoDBPut('uzi',dataUrlToBlob(uzi));localStorage.removeItem('uziPh');migrated++;}
   const phRaw=localStorage.getItem('galPh'+V);
   if(phRaw){
     try{
       const ph=JSON.parse(phRaw);
       for(const w of Object.keys(ph)){
-        if(ph[w])await photoDBPut('gal_'+w,dataUrlToBlob(ph[w]));
+        if(ph[w]){await photoDBPut('gal_'+w,dataUrlToBlob(ph[w]));migrated++;}
       }
     }catch(e){}
     localStorage.removeItem('galPh'+V);
   }
   localStorage.setItem('photosInIDB_v1','1');
+  return migrated>0;
 }
 async function initPhotoStorage(edd){
   try{
-    await migratePhotosToIndexedDB();
+    if(!window.indexedDB)throw new Error('NO_IDB');
+    const migrated=await migratePhotosToIndexedDB();
     if(navigator.storage&&navigator.storage.persist){try{await navigator.storage.persist();}catch(e){}}
     await migrateStoredPhotos();
     await loadUziPh();
     await renderGallery(edd||localStorage.getItem('eddDate'));
     updatePhotoStorageUI();
     updatePWAStatusUI();
-  }catch(e){console.error('initPhotoStorage',e);}
+    if(migrated)toast('Старые фото перенесены — теперь места для снимков больше ✨');
+  }catch(e){
+    console.error('initPhotoStorage',e);
+    if(e&&e.message==='NO_IDB')toast('Браузер не поддерживает хранилище фото — обнови iOS или открой через Safari');
+  }
 }
 async function migrateStoredPhotos(){
   if(localStorage.getItem('imgMigrated_v3')==='1')return;
@@ -2411,9 +2418,24 @@ function updatePWAStatusUI(){
 function checkForAppUpdate(){
   H();
   if(!('serviceWorker' in navigator)){toast('Обновления недоступны в этом браузере');return;}
-  navigator.serviceWorker.getRegistration().then(reg=>{
-    if(!reg){toast('Приложение ещё не установлено как PWA');return;}
-    reg.update().then(()=>toast('Проверяем обновления…')).catch(()=>toast('Не удалось проверить обновления'));
+  navigator.serviceWorker.getRegistration().then(async reg=>{
+    if(!reg){toast('Открой приложение по HTTPS или с экрана «Домой»');return;}
+    try{
+      await reg.update();
+      if(reg.waiting){
+        reg.waiting.postMessage({type:'SKIP_WAITING'});
+        toast('Обновление загружено — перезагружаем…');
+        setTimeout(()=>location.reload(),500);
+        return;
+      }
+      if(reg.installing){
+        toast('Скачиваем обновление…');
+        return;
+      }
+      toast('Уже последняя версия ✨');
+    }catch(e){
+      toast('Не удалось проверить обновления');
+    }
   });
 }
 function resetUziPhotoUI(){
@@ -4598,7 +4620,7 @@ window.addEventListener('scroll',()=>{
           if(!worker)return;
           worker.addEventListener('statechange',()=>{
             if(worker.state==='installed'&&navigator.serviceWorker.controller){
-              toast('Доступно обновление — закрой и открой приложение снова ✨');
+              toast('Доступно обновление — нажми «Проверить обновления» в настройках ✨');
             }
           });
         });
