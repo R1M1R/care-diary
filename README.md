@@ -127,6 +127,8 @@ care-diary/
 ├── manifest.webmanifest    # PWA manifest
 ├── vercel.json             # Конфиг деплоя
 ├── package.json            # npm scripts (локальный preview)
+├── scripts/
+│   └── generate-icons.py   # Генерация лёгких иконок (~6 KB)
 ├── apple-icon.png          # Иконка 512×512
 ├── icon-192.png            # Иконка 192×192
 ├── splash-iphone.png       # Splash screen iOS
@@ -162,6 +164,7 @@ care-diary/
 | Задача | Действие |
 |---|---|
 | Локальный сервер | `npm start` |
+| Перегенерировать иконки | `npm run icons` |
 | Проверка SW | DevTools → Application → Service Workers |
 | Квота storage | Настройки → Память для фото |
 | Сброс данных | Настройки → Очистить все данные |
@@ -173,6 +176,19 @@ care-diary/
 ```bash
 npm install browser-image-compression
 ```
+
+### OneDrive / облачная синхронизация
+
+> **Важно:** OneDrive может silently заменить `apple-icon.png` старой версией (~3.6 MB). Это ломает PWA и грузит память.
+
+Если иконка «раздулась»:
+```bash
+npm run icons
+git add apple-icon.png icon-192.png
+git commit -m "Regenerate lightweight app icons"
+```
+
+CI на GitHub (`check-assets`) автоматически проверяет, что иконка не тяжелее 100 KB.
 
 ---
 

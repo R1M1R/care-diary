@@ -1,0 +1,30 @@
+name: Check assets
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  icons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pillow
+        run: pip install pillow
+
+      - name: Regenerate icons and verify size
+        run: python scripts/generate-icons.py
+
+      - name: Fail if tracked icon differs from generated
+        run: |
+          git diff --exit-code apple-icon.png icon-192.png || (
+            echo "::error::Icons are outdated or too heavy. Run: python scripts/generate-icons.py"
+            exit 1
+          )

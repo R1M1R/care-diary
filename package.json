@@ -4,6 +4,7 @@
   "description": "Дневник заботы для Индиры — PWA",
   "scripts": {
     "start": "npx --yes serve . -p 4173",
-    "preview": "npm run start"
+    "preview": "npm run start",
+    "icons": "python scripts/generate-icons.py"
   }
 }
