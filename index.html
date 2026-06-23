@@ -1540,6 +1540,33 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .report-action-btn.primary{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border:none}
 #toast .toast-undo{margin-left:10px;padding:4px 10px;border:none;border-radius:999px;background:rgba(255,255,255,.2);color:#fff;font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;cursor:pointer}
 
+/* ── 45. PREMIUM v6 — next action, symptoms, coach ── */
+.next-action-card{display:flex;align-items:center;gap:12px;margin:0 15px 14px;padding:14px 16px;background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(232,50,90,.06));border:1px solid var(--cb);border-radius:20px;box-shadow:var(--sh2);animation:cIn .5s ease backwards}
+.next-action-card.urgent{border-color:rgba(232,50,90,.35);box-shadow:0 8px 28px rgba(232,50,90,.18);background:linear-gradient(135deg,rgba(232,50,90,.08),rgba(255,240,245,.9))}
+.next-action-ico{font-size:28px;line-height:1;flex-shrink:0}
+.next-action-body{flex:1;min-width:0}
+.next-action-lbl{font-size:9px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:3px}
+.next-action-txt{font-size:14px;font-weight:800;color:var(--t1);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.next-action-btn{width:40px;height:40px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-size:18px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(232,50,90,.35);flex-shrink:0}
+.home-quick-nav{display:flex;gap:8px;margin:0 15px 14px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.home-quick-nav::-webkit-scrollbar{display:none}
+.home-qpill{flex:0 0 auto;padding:9px 14px;border:1px solid var(--cb);border-radius:999px;background:var(--card);font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--t2);cursor:pointer;white-space:nowrap;box-shadow:var(--sh2)}
+.home-qpill:active{transform:scale(.96)}
+.symptom-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.symptom-chip{padding:10px 14px;border:2px solid var(--cb);border-radius:14px;background:var(--bg2);font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:var(--t2);cursor:pointer;transition:all .2s}
+.symptom-chip.on{border-color:var(--rose);background:rgba(232,50,90,.08);color:var(--rose)}
+.bp-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.bp-inp{width:72px;padding:12px 8px;border:2px solid var(--cb);border-radius:14px;background:var(--bg2);font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;text-align:center;color:var(--t1)}
+.bp-sep{font-size:18px;font-weight:900;color:var(--t3)}
+.bp-log{font-size:11px;font-weight:800;color:var(--t3);line-height:1.55;padding:10px 12px;background:var(--bg2);border-radius:12px;border:1px solid var(--cb)}
+.bp-log.warn{color:var(--rose);border-color:rgba(232,50,90,.25);background:rgba(232,50,90,.06)}
+.coach-mark{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;padding:24px;padding-bottom:calc(100px + env(safe-area-inset-bottom));animation:cIn .4s ease}
+.coach-card{max-width:360px;width:100%;background:var(--card);border-radius:24px;padding:22px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);border:1px solid var(--cb)}
+.coach-ico{font-size:48px;margin-bottom:10px}
+.coach-title{font-size:17px;font-weight:900;color:var(--t1);margin-bottom:8px}
+.coach-sub{font-size:13px;font-weight:700;color:var(--t3);line-height:1.55;margin-bottom:16px}
+.coach-btn{width:100%;padding:14px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer}
+
 /* ══ END PREMIUM GLASS SYSTEM ══ */
 
 </style>
@@ -1558,6 +1585,14 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 <canvas id="cvs"></canvas>
 <div class="gb gb1"></div><div class="gb gb2"></div><div class="gb gb3"></div>
 <div id="toast"></div>
+<div class="coach-mark" id="coachSwipe" style="display:none" onclick="if(event.target===this)dismissCoach()">
+  <div class="coach-card">
+    <div class="coach-ico">👆</div>
+    <div class="coach-title">Свайп между вкладками</div>
+    <div class="coach-sub">Проведи пальцем влево или вправо — так быстрее переключаться между Главной, Заботой и Дневником</div>
+    <button type="button" class="coach-btn" onclick="dismissCoach()">Понятно ✨</button>
+  </div>
+</div>
 <div class="img-compress-overlay" id="imgCompressOverlay" aria-live="polite" aria-busy="false">
   <div class="img-compress-card">
     <div class="img-compress-spin" aria-hidden="true"></div>
@@ -1630,6 +1665,23 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <button type="button" class="today-chip" onclick="document.getElementById('waterRow')&&document.getElementById('waterRow').scrollIntoView({behavior:'smooth',block:'center'})"><span class="today-chip-ico">💧</span><span class="today-chip-val" id="tdWater">0/8</span><span class="today-chip-lbl">вода</span></button>
         <button type="button" class="today-chip" onclick="document.querySelector('.mood-row')&&document.querySelector('.mood-row').scrollIntoView({behavior:'smooth',block:'center'})"><span class="today-chip-ico" id="tdMoodIco">🤍</span><span class="today-chip-val" id="tdMood">—</span><span class="today-chip-lbl">настроение</span></button>
         <button type="button" class="today-chip" onclick="switchTabById('journal')"><span class="today-chip-ico">📷</span><span class="today-chip-val" id="tdGal">0</span><span class="today-chip-lbl">фото</span></button>
+      </div>
+
+      <div class="next-action-card" id="nextActionCard" style="display:none" role="status" aria-live="polite">
+        <div class="next-action-ico" id="naIco">💊</div>
+        <div class="next-action-body">
+          <div class="next-action-lbl" id="naLbl">Следующая задача</div>
+          <div class="next-action-txt" id="naTxt">—</div>
+        </div>
+        <button type="button" class="next-action-btn" id="naBtn" onclick="runNextAction()" aria-label="Перейти">→</button>
+      </div>
+
+      <div class="home-quick-nav" role="navigation" aria-label="Быстрые переходы">
+        <button type="button" class="home-qpill" onclick="switchTabById('meds')">💊 Забота</button>
+        <button type="button" class="home-qpill" onclick="switchTabById('journal')">📓 Дневник</button>
+        <button type="button" class="home-qpill" onclick="goHomeSection('wellness')">🌬️ Дыхание</button>
+        <button type="button" class="home-qpill" onclick="goHomeSection('daily')">💧 Вода</button>
+        <button type="button" class="home-qpill" onclick="goHomeSection('support')">💌 Письма</button>
       </div>
 
       <div id="smartTips" style="margin-top:4px"></div>
@@ -1909,6 +1961,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
               <button type="button" class="report-action-btn primary" onclick="copyReport()">📋 Скопировать</button>
               <button type="button" class="report-action-btn" onclick="shareReport()">📤 Поделиться</button>
               <button type="button" class="report-action-btn" onclick="downloadReport()">💾 Скачать .txt</button>
+              <button type="button" class="report-action-btn" onclick="printReport()">🖨️ Печать / PDF</button>
             </div>
           </div></div>
         </div>
@@ -1936,6 +1989,19 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
             <button type="button" class="wt-save-btn" style="flex:0 0 auto;padding:12px 16px" onclick="addAppt()">＋</button>
           </div>
           <div class="appt-list" id="apptList"></div>
+        </div></div>
+        <div class="card"><div class="cb">
+          <div class="sh">🩺 Самочувствие сегодня</div>
+          <div class="ssub">Отметь симптомы и давление — попадёт в отчёт для врача</div>
+          <div class="symptom-row" id="symptomRow"></div>
+          <div class="bp-row">
+            <input type="number" class="bp-inp" id="bpSys" placeholder="120" min="70" max="220" aria-label="Верхнее давление">
+            <span class="bp-sep">/</span>
+            <input type="number" class="bp-inp" id="bpDia" placeholder="80" min="40" max="140" aria-label="Нижнее давление">
+            <span style="font-size:12px;font-weight:800;color:var(--t3)">мм рт.ст.</span>
+            <button type="button" class="wt-save-btn" style="flex:0 0 auto;padding:12px 14px" onclick="saveBP()">Записать</button>
+          </div>
+          <div class="bp-log" id="bpLogEl">Давление ещё не записывали сегодня</div>
         </div></div>
         <div class="card"><div class="cb">
           <div class="sh">📊 История настроений</div>
@@ -3848,7 +3914,9 @@ function init(){
   renderWtChart();
   renderJournalLog();
   initHomeSections();
+  ensureDefaultAppts();
   renderAppts();
+  renderSymptomsUI();
   initPhotoStorage(edd);
   loadKickSession();
   updateTodayDash();
@@ -3856,13 +3924,15 @@ function init(){
   loadTMsg();
   updateCD(edd);
   checkAnniv();
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();}});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();}});
   if(!_appTimersSet){
     _appTimersSet=true;
     setInterval(()=>updateCD(localStorage.getItem('eddDate')||edd),60000);
     setInterval(checkNotifs,30000);
     setInterval(updateMedNextPill,60000);
+    setInterval(updateNextActionCard,60000);
   }
+  setTimeout(showCoachIfNeeded,3000);
 }
 
 // ══ GENDER SYSTEM ══
@@ -4514,6 +4584,71 @@ function updateTodayDash(){
   if(elMood)elMood.textContent=mood||'—';
   if(elMoodIco)elMoodIco.textContent=mood||'🤍';
   getPhotoStorageStats().then(st=>{if(elGal)elGal.textContent=String((st.hasUzi?1:0)+st.galCount);}).catch(()=>{});
+  updateNextActionCard();
+}
+let nextActionHandler=null;
+function setNextAction(ico,lbl,txt,handler,urgent){
+  const card=document.getElementById('nextActionCard');
+  if(!card)return;
+  card.style.display='flex';
+  card.classList.toggle('urgent',!!urgent);
+  const i=document.getElementById('naIco'),l=document.getElementById('naLbl'),t=document.getElementById('naTxt');
+  if(i)i.textContent=ico;
+  if(l)l.textContent=lbl;
+  if(t)t.textContent=txt;
+  nextActionHandler=handler;
+}
+function updateNextActionCard(){
+  const card=document.getElementById('nextActionCard');
+  if(!card)return;
+  const now=new Date();
+  const today=now.toISOString().slice(0,10);
+  const state=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
+  const {active}=getScheduleMeds(now);
+  const nowM=now.getHours()*60+now.getMinutes();
+  const pending=active.filter(t=>!state[t.id]).sort((a,b)=>minsFromTime(a.time)-minsFromTime(b.time));
+  const nextMed=pending.find(t=>minsFromTime(t.time)>=nowM-30)||pending[0];
+  if(nextMed){
+    const due=minsFromTime(nextMed.time);
+    const urgent=due<=nowM+30&&due>=nowM-10;
+    setNextAction('💊',urgent?'Пора принять!':'Следующий препарат',nextMed.time+' — '+nextMed.name,()=>switchTabById('meds'),urgent);
+    return;
+  }
+  const appt=getNextAppt();
+  if(appt&&appt.date===today){
+    setNextAction('🗓️','Сегодня визит',appt.title,()=>switchTabById('journal'),true);
+    return;
+  }
+  const w=JSON.parse(localStorage.getItem('water'+V)||'[]');
+  if(w.length<8){
+    setNextAction('💧','Выпей воды',w.length+' из 8 стаканов',()=>goHomeSection('daily'),false);
+    return;
+  }
+  if(!localStorage.getItem('mood'+V)){
+    setNextAction('🤍','Как настроение?','Отметь — я хочу знать',()=>goHomeSection('wellness'),false);
+    return;
+  }
+  card.style.display='none';
+  nextActionHandler=null;
+}
+function runNextAction(){H();if(nextActionHandler)nextActionHandler();}
+function goHomeSection(id){
+  switchTabById('home');
+  setTimeout(()=>{
+    const body=document.getElementById('sec-'+id);
+    if(body&&!body.classList.contains('open'))toggleHomeSec(id);
+    body&&body.scrollIntoView({behavior:'smooth',block:'start'});
+  },200);
+}
+function showCoachIfNeeded(){
+  if(localStorage.getItem('coachSwipe'+V)==='1')return;
+  const el=document.getElementById('coachSwipe');
+  if(el)el.style.display='flex';
+}
+function dismissCoach(){
+  localStorage.setItem('coachSwipe'+V,'1');
+  const el=document.getElementById('coachSwipe');
+  if(el)el.style.display='none';
 }
 function injectApptTip(){
   const tipsEl=document.getElementById('smartTips');
@@ -4602,6 +4737,10 @@ function loadAppts(){
   return [];
 }
 function saveAppts(list){localStorage.setItem(APPT_KEY,JSON.stringify(list));}
+function ensureDefaultAppts(){
+  if(loadAppts().length)return;
+  saveAppts([{id:Date.now(),date:SCREENING_DATE,title:'Скрининг',done:false}]);
+}
 function renderAppts(){
   const el=document.getElementById('apptList');
   if(!el)return;
@@ -4646,6 +4785,87 @@ function toggleAppt(id){
 function getNextAppt(){
   const today=new Date().toISOString().slice(0,10);
   return loadAppts().filter(a=>!a.done&&a.date>=today).sort((a,b)=>a.date.localeCompare(b.date))[0]||null;
+}
+const SYMPTOM_KEY='symptomsLog'+V;
+const BP_KEY='bpLog'+V;
+const SYMPTOM_TYPES=[
+  {id:'nausea',label:'Тошнота',emoji:'🤢'},
+  {id:'headache',label:'Голова',emoji:'🤕'},
+  {id:'swelling',label:'Отёки',emoji:'🦶'},
+  {id:'tired',label:'Усталость',emoji:'😴'},
+  {id:'heartburn',label:'Изжога',emoji:'🔥'}
+];
+function loadSymptomsLog(){
+  try{const r=localStorage.getItem(SYMPTOM_KEY);if(r)return JSON.parse(r);}catch(e){}
+  return {};
+}
+function loadBPLog(){
+  try{const r=localStorage.getItem(BP_KEY);if(r)return JSON.parse(r);}catch(e){}
+  return {};
+}
+function toggleSymptom(id){
+  H();
+  const today=new Date().toISOString().slice(0,10);
+  const log=loadSymptomsLog();
+  if(!log[today])log[today]=[];
+  const i=log[today].indexOf(id);
+  if(i>=0)log[today].splice(i,1);
+  else log[today].push(id);
+  localStorage.setItem(SYMPTOM_KEY,JSON.stringify(log));
+  renderSymptomsUI();
+  const s=SYMPTOM_TYPES.find(x=>x.id===id);
+  toast(i>=0?'Снято: '+s.label:'Отмечено: '+s.label);
+}
+function saveBP(){
+  H();
+  const sys=parseInt(document.getElementById('bpSys').value,10);
+  const dia=parseInt(document.getElementById('bpDia').value,10);
+  if(isNaN(sys)||isNaN(dia)||sys<70||sys>220||dia<40||dia>140){toast('Проверь значения (верхнее 70–220, нижнее 40–140)');return;}
+  const today=new Date().toISOString().slice(0,10);
+  const log=loadBPLog();
+  log[today]={sys,dia,at:new Date().toISOString()};
+  localStorage.setItem(BP_KEY,JSON.stringify(log));
+  renderSymptomsUI();
+  if(sys>=140||dia>=90)toast('Давление записано — обсуди с врачом ⚠️');
+  else toast('Давление записано ✓');
+}
+function renderSymptomsUI(){
+  const row=document.getElementById('symptomRow');
+  const bpEl=document.getElementById('bpLogEl');
+  const today=new Date().toISOString().slice(0,10);
+  const sym=loadSymptomsLog()[today]||[];
+  if(row){
+    row.innerHTML=SYMPTOM_TYPES.map(s=>'<button type="button" class="symptom-chip'+(sym.includes(s.id)?' on':'')+'" onclick="toggleSymptom(\''+s.id+'\')">'+s.emoji+' '+s.label+'</button>').join('');
+  }
+  if(bpEl){
+    const bp=loadBPLog()[today];
+    if(bp){
+      const warn=bp.sys>=140||bp.dia>=90;
+      bpEl.className='bp-log'+(warn?' warn':'');
+      bpEl.textContent=(warn?'⚠️ ':'✓ ')+'Сегодня: '+bp.sys+'/'+bp.dia+' мм рт.ст.'+(warn?' — покажи врачу':' — в норме');
+      const sysIn=document.getElementById('bpSys'),diaIn=document.getElementById('bpDia');
+      if(sysIn&&!sysIn.value)sysIn.value=bp.sys;
+      if(diaIn&&!diaIn.value)diaIn.value=bp.dia;
+    }else{
+      bpEl.className='bp-log';
+      bpEl.textContent='Давление ещё не записывали сегодня';
+    }
+  }
+}
+function getSymptomsReportLines(){
+  const log=loadSymptomsLog();
+  const keys=Object.keys(log).sort().slice(-7);
+  if(!keys.length)return['  (нет записей)'];
+  return keys.map(k=>{
+    const labels=(log[k]||[]).map(id=>{const s=SYMPTOM_TYPES.find(x=>x.id===id);return s?s.label:id;}).join(', ');
+    return '  '+k+': '+(labels||'—');
+  });
+}
+function getBPReportLines(){
+  const log=loadBPLog();
+  const keys=Object.keys(log).sort().slice(-7);
+  if(!keys.length)return['  (нет записей)'];
+  return keys.map(k=>{const b=log[k];return '  '+k+': '+b.sys+'/'+b.dia+(b.sys>=140||b.dia>=90?' ⚠️':'');});
 }
 function getBagStats(bag){
   const items=bag.filter(x=>x&&!x.isC);
@@ -4961,7 +5181,7 @@ function switchTab(id,btn){
   btn.setAttribute('aria-selected','true');
   btn.setAttribute('aria-current','page');
   if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();}
-  if(id==='journal'){renderJournalLog();renderAppts();}
+  if(id==='journal'){renderJournalLog();renderAppts();renderSymptomsUI();}
   if(id==='home')updateTodayDash();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -5179,6 +5399,12 @@ function buildReportText(){
     '─── НАСТРОЕНИЕ (7 дней) ───',
     ...(moodLines.length?moodLines:['  (нет записей)']),
     '',
+    '─── СИМПТОМЫ (7 дней) ───',
+    ...getSymptomsReportLines(),
+    '',
+    '─── ДАВЛЕНИЕ (7 дней) ───',
+    ...getBPReportLines(),
+    '',
     '─── ШЕВЕЛЕНИЯ ───',
     '  Сегодня: '+kicks+' (норма ≥10 за 2ч)',
     ...(kickHist.length?['  История:',...kickHist]:[]),
@@ -5231,6 +5457,17 @@ function downloadReport(){
   a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),3000);
   toast('Файл скачан 💾');
+}
+function printReport(){
+  H();
+  const text=(document.getElementById('reportArea')&&document.getElementById('reportArea').value)||buildReportText();
+  const w=window.open('','_blank');
+  if(!w){copyReport();toast('Разреши всплывающие окна для печати');return;}
+  const safe=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  w.document.write('<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Отчёт для врача</title><style>@page{margin:18mm}body{font-family:Georgia,serif;padding:24px;line-height:1.65;color:#111;max-width:720px;margin:0 auto}h1{font-size:18px;margin-bottom:16px}pre{white-space:pre-wrap;font-family:Nunito,sans-serif;font-size:13px}</style></head><body><h1>Отчёт для врача — Для Индиры</h1><pre>'+safe+'</pre></body></html>');
+  w.document.close();
+  w.focus();
+  setTimeout(()=>{w.print();},400);
 }
 
 // ══ HEIGHT SAVE (for BMI) ══
