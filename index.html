@@ -1676,6 +1676,41 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .photo-fullscreen-close{position:absolute;top:calc(env(safe-area-inset-top,16px) + 12px);right:16px;width:40px;height:40px;border:none;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;font-size:18px;font-weight:900;cursor:pointer}
 .app-version{font-size:11px;font-weight:800;color:var(--t3);text-align:center;margin-top:16px;opacity:.7}
 
+/* ── 50. PREMIUM v12 — appt widget, photo compare, journal PDF, water nudge ── */
+.appt-home-card{display:flex;align-items:center;gap:12px;margin:0 15px 14px;padding:14px 16px;background:linear-gradient(135deg,rgba(30,156,176,.1),rgba(255,255,255,.7));border:1.5px solid rgba(30,156,176,.28);border-radius:20px;box-shadow:var(--sh2);cursor:pointer;transition:transform .2s}
+.appt-home-card:active{transform:scale(.98)}
+.appt-home-card.soon{border-color:rgba(232,50,90,.35);background:linear-gradient(135deg,rgba(232,50,90,.08),rgba(255,248,250,.95))}
+.appt-home-ico{font-size:28px;line-height:1;flex-shrink:0}
+.appt-home-body{flex:1;min-width:0}
+.appt-home-lbl{font-size:9px;font-weight:900;color:var(--teal);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:3px}
+.appt-home-card.soon .appt-home-lbl{color:var(--rose)}
+.appt-home-title{font-size:14px;font-weight:900;color:var(--t1);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.appt-home-sub{font-size:11px;font-weight:800;color:var(--t3);margin-top:2px}
+.appt-home-arrow{width:36px;height:36px;border-radius:12px;background:rgba(30,156,176,.15);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;flex-shrink:0}
+.appt-home-card.soon .appt-home-arrow{background:rgba(232,50,90,.12);color:var(--rose)}
+.water-hint{margin:0 0 12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(67,200,224,.12),rgba(30,156,176,.06));border:1px solid rgba(30,156,176,.2);font-size:12px;font-weight:800;color:var(--teal2);line-height:1.45;text-align:center}
+.water-hint.urgent{background:linear-gradient(135deg,rgba(232,50,90,.1),rgba(255,200,210,.15));border-color:rgba(232,50,90,.25);color:var(--rose)}
+.water-prog{height:6px;border-radius:999px;background:var(--bg2);margin:0 0 12px;overflow:hidden}
+.water-prog-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--teal),var(--teal2));transition:width .4s cubic-bezier(.34,1.56,.64,1)}
+.gal-toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.gal-compare-btn{flex:1;min-width:140px;padding:11px 14px;border:2px solid var(--cb);border-radius:14px;background:var(--bg2);font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;color:var(--t1);cursor:pointer;transition:all .2s}
+.gal-compare-btn:active{transform:scale(.97);border-color:var(--rose)}
+.compare-mo .mo-b{max-width:420px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.compare-picks{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.compare-pick{flex:1;padding:10px 8px;border:2px solid var(--cb);border-radius:14px;background:var(--bg2);font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;color:var(--t1);outline:none}
+.compare-picks-mid{font-size:16px;font-weight:900;color:var(--t3);flex-shrink:0}
+.compare-stage{position:relative;width:100%;aspect-ratio:3/4;max-height:52vh;border-radius:18px;overflow:hidden;background:var(--bg2);margin-bottom:10px;touch-action:none;user-select:none}
+.compare-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.compare-front-wrap{position:absolute;top:0;left:0;bottom:0;overflow:hidden;width:50%;border-right:2px solid #fff;box-shadow:2px 0 12px rgba(0,0,0,.25)}
+.compare-front-wrap .compare-img{width:100%;height:100%;object-fit:cover;max-width:none}
+.compare-handle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:50%;background:#fff;box-shadow:0 4px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:var(--rose);pointer-events:none;z-index:3}
+.compare-range{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;z-index:4;margin:0;-webkit-appearance:none;appearance:none}
+.compare-labels{display:flex;justify-content:space-between;font-size:11px;font-weight:900;color:var(--t3);padding:0 4px}
+.compare-empty{text-align:center;padding:40px 20px;color:var(--t3);font-size:13px;font-weight:700;line-height:1.6}
+.journal-export-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.journal-export-btn{flex:1;min-width:120px;padding:11px 14px;border:2px solid var(--cb);border-radius:14px;background:var(--bg2);font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;color:var(--t1);cursor:pointer}
+.journal-export-btn.primary{background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;border:none;box-shadow:0 4px 14px rgba(232,50,90,.25)}
+
 /* ══ END PREMIUM GLASS SYSTEM ══ */
 
 </style>
@@ -1784,6 +1819,16 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           <div class="next-action-txt" id="naTxt">—</div>
         </div>
         <button type="button" class="next-action-btn" id="naBtn" onclick="runNextAction()" aria-label="Перейти">→</button>
+      </div>
+
+      <div class="appt-home-card" id="apptHomeCard" style="display:none" onclick="openNextAppt()" role="button" tabindex="0" aria-label="Следующий визит к врачу">
+        <div class="appt-home-ico" id="ahIco">🗓️</div>
+        <div class="appt-home-body">
+          <div class="appt-home-lbl" id="ahLbl">Следующий визит</div>
+          <div class="appt-home-title" id="ahTitle">—</div>
+          <div class="appt-home-sub" id="ahSub">—</div>
+        </div>
+        <div class="appt-home-arrow">→</div>
       </div>
 
       <div class="milestone-card" id="milestoneCard" style="display:none" onclick="runMilestoneAction()" role="button" tabindex="0" aria-label="Ближайшее событие">
@@ -2013,6 +2058,8 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <div class="cb">
           <div class="sh">💧 Водичка</div>
           <div class="ssub">Пей за двоих, родная! Норма: 8 стаканов в день</div>
+          <div class="water-hint" id="waterHint" style="display:none"></div>
+          <div class="water-prog"><div class="water-prog-fill" id="waterProgFill" style="width:0%"></div></div>
           <div class="water-row" id="waterRow"></div>
           <div id="waterTxt" style="text-align:center;font-size:12px;font-weight:800;color:var(--t3);margin-top:12px"></div>
         </div>
@@ -2130,6 +2177,10 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           <div class="sh">📓 Записи по дням</div>
           <div class="ssub">Мысли, события и воспоминания — с датой и неделей беременности</div>
           <input type="search" class="journal-search" id="journalSearch" placeholder="🔍 Искать в записях…" oninput="renderJournalLog()" aria-label="Поиск по дневнику">
+          <div class="journal-export-row">
+            <button type="button" class="journal-export-btn primary" onclick="printJournal()">🖨️ Экспорт дневника</button>
+            <button type="button" class="journal-export-btn" onclick="shareJournal()">📤 Поделиться</button>
+          </div>
           <textarea id="journalNewT" class="journal-new" placeholder="Сегодня малыш так сильно пинался, когда папа гладил животик…"></textarea>
           <button type="button" class="lq" style="margin-top:12px" onclick="saveJournalEntry()">Сохранить запись 💖</button>
           <div class="journal-log" id="journalLog"></div>
@@ -2225,6 +2276,9 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <div class="card"><div class="cb">
           <div class="sh">📷 Животик по неделям</div>
           <div class="ssub">Тапни на ячейку — выбери из галереи или сними. Превью сохранится в приложении, оригинал останется в iPhone.</div>
+          <div class="gal-toolbar">
+            <button type="button" class="gal-compare-btn" onclick="openCompareModal()">↔ Сравнить недели</button>
+          </div>
           <div class="gal-section-head"><span class="gal-count" id="galCount">0 / 22</span></div>
           <div class="gal-grid" id="galGrid"></div>
         </div></div>
@@ -2342,7 +2396,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v11</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v12</div>
         </div></div>
       </div>
     </div>
@@ -2413,6 +2467,30 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
   <img id="photoFullscreenImg" src="" alt="Фото животика">
 </div>
 
+<div class="mo compare-mo" id="compareMo" role="dialog" aria-modal="true" aria-labelledby="compareMoT" onclick="if(event.target===this)closeCompareModal()">
+  <div class="mo-b" onclick="event.stopPropagation()">
+    <button type="button" class="mo-x" onclick="closeCompareModal()" aria-label="Закрыть">✕</button>
+    <div style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;font-weight:900;text-align:center;margin-bottom:14px" id="compareMoT">↔ Сравнение животика</div>
+    <div class="compare-picks">
+      <select class="compare-pick" id="cmpW1" onchange="updateCompareView()" aria-label="Первая неделя"></select>
+      <span class="compare-picks-mid">↔</span>
+      <select class="compare-pick" id="cmpW2" onchange="updateCompareView()" aria-label="Вторая неделя"></select>
+    </div>
+    <div id="compareBody">
+      <div class="compare-stage" id="compareStage">
+        <img class="compare-img" id="cmpImgBack" alt="Неделя B">
+        <div class="compare-front-wrap" id="cmpFrontWrap">
+          <img class="compare-img" id="cmpImgFront" alt="Неделя A">
+        </div>
+        <div class="compare-handle" id="cmpHandle">↔</div>
+        <input type="range" class="compare-range" id="cmpRange" min="0" max="100" value="50" oninput="setComparePos(this.value)" aria-label="Ползунок сравнения">
+      </div>
+      <div class="compare-labels"><span id="cmpLbl1">—</span><span id="cmpLbl2">—</span></div>
+    </div>
+    <div class="compare-empty" id="compareEmpty" style="display:none">Нужно минимум 2 фото в разных неделях — добавь в галерею животика 📷</div>
+  </div>
+</div>
+
 <!-- MODAL: MEDICATION -->
 <div class="mo" id="medMo" onclick="if(event.target===this)closeMedForm()">
   <div class="ms" style="position:relative">
@@ -2455,7 +2533,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
 <script>
 const V="_v16";
-const APP_DATA_VER='v11';
+const APP_DATA_VER='v12';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -4313,6 +4391,7 @@ function init(){
   loadKickSession();
   updateTodayDash();
   updateNotifUI();
+  updateApptHomeCard();
   loadTMsg();
   updateCD(edd);
   checkAnniv();
@@ -4322,7 +4401,7 @@ function init(){
   else if(localStorage.getItem('dataMigrateToast_v8')!=='1'&&localStorage.getItem('eddDate')){
     localStorage.setItem('dataMigrateToast_v8','1');
   }
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();}});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();updateApptHomeCard();updateWaterHint();}});
   if(!_appTimersSet){
     _appTimersSet=true;
     setInterval(()=>updateCD(localStorage.getItem('eddDate')||edd),60000);
@@ -4330,6 +4409,8 @@ function init(){
     setInterval(updateMedNextPill,60000);
     setInterval(updateNextActionCard,60000);
     setInterval(updateMilestoneCard,60000);
+    setInterval(updateApptHomeCard,60000);
+    setInterval(updateWaterHint,60000);
   }
   setTimeout(showCoachIfNeeded,3000);
   updateOfflinePill();
@@ -4513,6 +4594,7 @@ function updateAll(edd){
   updateBMI(week);
   renderJourneyTimeline(week,days);
   celebrateWeekMilestone(week);
+  updateApptHomeCard();
 }
 
 function tFaq(i){H();const q=document.getElementById('fq'+i),a=document.getElementById('fa'+i);const o=a.classList.contains('o');document.querySelectorAll('.faq-q').forEach(e=>e.classList.remove('o'));document.querySelectorAll('.faq-a').forEach(e=>e.classList.remove('o'));if(!o){q.classList.add('o');a.classList.add('o')}}
@@ -4604,7 +4686,7 @@ function saveMoodH(m){const t=new Date().toISOString().split('T')[0];let h=JSON.
 function renderMoodHist(){const h=JSON.parse(localStorage.getItem('moodH'+V)||'{}');const el=document.getElementById('mhGrid');if(!el)return;const d=Object.keys(h).sort().slice(-14);if(!d.length){el.innerHTML='<p style="color:var(--t3);font-size:13px;font-weight:700;padding-bottom:20px">Настроение ещё не отмечено!</p>';return}el.innerHTML=d.map(k=>{const dt=new Date(k);return`<div class="mh-dot" title="${k}">${h[k]}<div class="mh-date">${dt.getDate()}/${dt.getMonth()+1}</div></div>`}).join('')}
 
 // WATER
-function renderWater(){const w=JSON.parse(localStorage.getItem('water'+V)||'[]');const c=document.getElementById('waterRow');c.innerHTML='';for(let i=0;i<8;i++){const a=w.includes(i);const d=document.createElement('div');d.className='dw'+(a?' act':'');d.onclick=()=>toggleWater(i);d.innerHTML=`<svg width="30" height="38" viewBox="0 0 32 40"><defs><linearGradient id="wg${i}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#43C8E0"/><stop offset="100%" stop-color="#1E7FA0"/></linearGradient></defs><path d="M16 2C16 2 4 16 4 26C4 33.7 9.4 39 16 39C22.6 39 28 33.7 28 26C28 16 16 2 16 2Z" fill="${a?'url(#wg'+i+')':'rgba(148,163,184,.12)'}" stroke="${a?'none':'#94A3B8'}" stroke-width="1.5" style="${a?'filter:drop-shadow(0 4px 14px rgba(67,200,224,.7))':''}"/></svg>`;c.appendChild(d)}const pt=document.getElementById('waterTxt');const cnt=w.length;const wpct=Math.round(cnt/8*100);pt.innerHTML=cnt===0?'<span style="opacity:.65">Нажми на капельку — отмечай каждый стакан 💧</span>':cnt===8?'<b>Умница! Все 8 стаканов! 🏆</b>':('<b>'+cnt+' из 8</b> стаканов — '+wpct+'% нормы'+(cnt>=6?' 💪 Почти всё!':''));updateTodayDash();}
+function renderWater(){const w=JSON.parse(localStorage.getItem('water'+V)||'[]');const c=document.getElementById('waterRow');c.innerHTML='';for(let i=0;i<8;i++){const a=w.includes(i);const d=document.createElement('div');d.className='dw'+(a?' act':'');d.onclick=()=>toggleWater(i);d.innerHTML=`<svg width="30" height="38" viewBox="0 0 32 40"><defs><linearGradient id="wg${i}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#43C8E0"/><stop offset="100%" stop-color="#1E7FA0"/></linearGradient></defs><path d="M16 2C16 2 4 16 4 26C4 33.7 9.4 39 16 39C22.6 39 28 33.7 28 26C28 16 16 2 16 2Z" fill="${a?'url(#wg'+i+')':'rgba(148,163,184,.12)'}" stroke="${a?'none':'#94A3B8'}" stroke-width="1.5" style="${a?'filter:drop-shadow(0 4px 14px rgba(67,200,224,.7))':''}"/></svg>`;c.appendChild(d)}const pt=document.getElementById('waterTxt');const cnt=w.length;const wpct=Math.round(cnt/8*100);pt.innerHTML=cnt===0?'<span style="opacity:.65">Нажми на капельку — отмечай каждый стакан 💧</span>':cnt===8?'<b>Умница! Все 8 стаканов! 🏆</b>':('<b>'+cnt+' из 8</b> стаканов — '+wpct+'% нормы'+(cnt>=6?' 💪 Почти всё!':''));updateWaterHint();updateTodayDash();}
 function toggleWater(i){H();let w=JSON.parse(localStorage.getItem('water'+V)||'[]');if(w.includes(i))w=w.filter(x=>x!==i);else w.push(i);localStorage.setItem('water'+V,JSON.stringify(w));renderWater();if(w.length===8)toast("Умница! Все 8 стаканов выпиты 💧🏆")}
 
 // WEIGHT
@@ -5025,6 +5107,7 @@ function updateTodayDash(){
   if(elMoodIco)elMoodIco.textContent=mood||'🤍';
   getPhotoStorageStats().then(st=>{if(elGal)elGal.textContent=String((st.hasUzi?1:0)+st.galCount);}).catch(()=>{});
   updateNextActionCard();
+  updateApptHomeCard();
   updatePerfectDayBadge();
   renderWeekWellness();
 }
@@ -5223,6 +5306,173 @@ function closePhotoFullscreen(){
   fs.classList.remove('open');
   document.body.style.overflow='';
 }
+
+function getWaterTargetByHour(h){
+  if(h<9)return 1;
+  if(h<12)return 2;
+  if(h<15)return 4;
+  if(h<18)return 5;
+  if(h<21)return 7;
+  return 8;
+}
+function getWaterNudge(cnt,h){
+  const target=getWaterTargetByHour(h);
+  if(cnt>=8)return {text:'Умница! Все 8 стаканов — идеально 💧🏆',urgent:false};
+  if(cnt>=target)return {text:cnt+' из 8 · ты в графике на сегодня 💪',urgent:false};
+  const behind=target-cnt;
+  if(h>=18&&cnt<6)return {text:'Вечер — добей до 8 стаканов, осталось '+(8-cnt)+' 💧',urgent:true};
+  if(h>=14&&cnt<4)return {text:'К обеду лучше 4+ стакана — сейчас '+cnt+' из 8',urgent:true};
+  if(h>=10&&cnt<2)return {text:'Утро — начни с воды, '+cnt+' из 8 стаканов',urgent:false};
+  return {text:cnt+' из 8 · к этому времени лучше '+target+' стакан'+(target===1?'':'а'),urgent:behind>=2&&h>=12};
+}
+function updateWaterHint(){
+  const hint=document.getElementById('waterHint');
+  const fill=document.getElementById('waterProgFill');
+  const cnt=JSON.parse(localStorage.getItem('water'+V)||'[]').length;
+  const h=new Date().getHours();
+  const nudge=getWaterNudge(cnt,h);
+  if(hint){
+    hint.textContent=nudge.text;
+    hint.style.display='block';
+    hint.classList.toggle('urgent',!!nudge.urgent);
+  }
+  if(fill)fill.style.width=Math.round(cnt/8*100)+'%';
+}
+function updateApptHomeCard(){
+  const card=document.getElementById('apptHomeCard');
+  if(!card)return;
+  const appt=getNextAppt();
+  if(!appt){card.style.display='none';return;}
+  const days=Math.ceil((new Date(appt.date+'T12:00:00')-new Date())/86400000);
+  if(days<0||days>14){card.style.display='none';return;}
+  const soon=days<=3;
+  card.style.display='flex';
+  card.classList.toggle('soon',soon);
+  const d=new Date(appt.date+'T12:00:00');
+  document.getElementById('ahLbl').textContent=days===0?'Сегодня визит!':days===1?'Завтра визит':'Следующий визит';
+  document.getElementById('ahTitle').textContent=appt.title;
+  document.getElementById('ahSub').textContent=d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'})+(days>1?' · через '+days+' '+pluralDays(days):'');
+  document.getElementById('ahIco').textContent=soon?'🏥':'🗓️';
+}
+function openNextAppt(){
+  H();
+  switchTabById('journal');
+  setTimeout(()=>{
+    const c=document.getElementById('visitPrepCard');
+    if(c&&c.style.display!=='none')c.scrollIntoView({behavior:'smooth',block:'start'});
+    else document.getElementById('apptList')?.scrollIntoView({behavior:'smooth',block:'start'});
+  },300);
+}
+async function getGalleryWeeksWithPhotos(){
+  try{
+    const keys=await photoDBKeys();
+    const weeks=new Set();
+    keys.forEach(k=>{const m=String(k).match(/^gal_(\d+)$/);if(m)weeks.add(parseInt(m[1],10));});
+    return[...weeks].sort((a,b)=>a-b);
+  }catch(e){return[];}
+}
+async function openCompareModal(){
+  H();
+  const weeks=await getGalleryWeeksWithPhotos();
+  const mo=document.getElementById('compareMo');
+  const body=document.getElementById('compareBody');
+  const empty=document.getElementById('compareEmpty');
+  if(!mo)return;
+  if(weeks.length<2){
+    if(body)body.style.display='none';
+    if(empty)empty.style.display='block';
+    mo.classList.add('open');
+    return;
+  }
+  if(body)body.style.display='block';
+  if(empty)empty.style.display='none';
+  const s1=document.getElementById('cmpW1');
+  const s2=document.getElementById('cmpW2');
+  const opts=weeks.map(w=>'<option value="'+w+'">'+w+' нед.</option>').join('');
+  if(s1){s1.innerHTML=opts;s1.value=weeks[0];}
+  if(s2){s2.innerHTML=opts;s2.value=weeks[weeks.length-1];}
+  mo.classList.add('open');
+  await updateCompareView();
+}
+function closeCompareModal(){
+  const mo=document.getElementById('compareMo');
+  if(mo)mo.classList.remove('open');
+}
+async function updateCompareView(){
+  const w1=parseInt(document.getElementById('cmpW1')?.value,10);
+  const w2=parseInt(document.getElementById('cmpW2')?.value,10);
+  if(!w1||!w2)return;
+  const url1=await getPhotoUrl('gal_'+w1,true)||await getPhotoUrl('gal_'+w1,false);
+  const url2=await getPhotoUrl('gal_'+w2,true)||await getPhotoUrl('gal_'+w2,false);
+  const back=document.getElementById('cmpImgBack');
+  const front=document.getElementById('cmpImgFront');
+  if(back)back.src=url2||'';
+  if(front){
+    front.src=url1||'';
+    front.onload=()=>setComparePos(document.getElementById('cmpRange')?.value||50);
+  }
+  document.getElementById('cmpLbl1').textContent=w1+' нед.';
+  document.getElementById('cmpLbl2').textContent=w2+' нед.';
+  setComparePos(document.getElementById('cmpRange')?.value||50);
+}
+function setComparePos(val){
+  const pct=Math.min(100,Math.max(0,parseFloat(val)||50));
+  const wrap=document.getElementById('cmpFrontWrap');
+  const handle=document.getElementById('cmpHandle');
+  const range=document.getElementById('cmpRange');
+  const stage=document.getElementById('compareStage');
+  const front=document.getElementById('cmpImgFront');
+  if(wrap)wrap.style.width=pct+'%';
+  if(handle)handle.style.left=pct+'%';
+  if(range&&String(range.value)!==String(pct))range.value=pct;
+  if(stage&&front){
+    const w=stage.offsetWidth||stage.clientWidth;
+    if(w)front.style.width=w+'px';
+  }
+}
+function buildJournalText(){
+  const log=loadJournalLog();
+  const edd=localStorage.getItem('eddDate');
+  const{week}=calcW(edd||'');
+  let text='ДНЕВНИК БЕРЕМЕННОСТИ — Для Индиры\n';
+  text+='Экспорт: '+new Date().toLocaleString('ru-RU')+'\n';
+  text+='Срок: '+week+' нед.\n';
+  text+='Записей: '+log.length+'\n';
+  text+='═'.repeat(36)+'\n\n';
+  if(!log.length){text+='(Пока нет записей)\n';return text;}
+  log.slice().reverse().forEach(e=>{
+    const d=new Date(e.date);
+    text+=d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' · '+e.week+' нед.\n';
+    text+=e.text+'\n\n';
+  });
+  return text;
+}
+function printJournal(){
+  H();
+  const text=buildJournalText();
+  const w=window.open('','_blank');
+  if(!w){navigator.clipboard?.writeText(text).then(()=>toast('Дневник скопирован 📋')).catch(()=>toast('Разреши всплывающие окна'));return;}
+  const safe=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  w.document.write('<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Дневник — Для Индиры</title><style>@page{margin:18mm}body{font-family:Georgia,serif;padding:24px;line-height:1.65;color:#111;max-width:720px;margin:0 auto}h1{font-size:18px;margin-bottom:16px;color:#E8325A}pre{white-space:pre-wrap;font-family:Nunito,sans-serif;font-size:13px}</style></head><body><h1>📓 Дневник беременности</h1><pre>'+safe+'</pre></body></html>');
+  w.document.close();
+  w.focus();
+  setTimeout(()=>w.print(),400);
+}
+async function shareJournal(){
+  H();
+  const text=buildJournalText();
+  try{
+    if(navigator.share){
+      await navigator.share({title:'Дневник — Для Индиры',text});
+      return;
+    }
+  }catch(e){if(e&&e.name==='AbortError')return;}
+  try{
+    await navigator.clipboard.writeText(text);
+    toast('Дневник скопирован 📋');
+  }catch(e){toast('Не удалось поделиться');}
+}
+
 const VISIT_PREP_DEFAULT=[
   {id:'docs',label:'Обменная карта и паспорт'},
   {id:'analyses',label:'Свежие анализы и результаты УЗИ'},
@@ -5347,8 +5597,12 @@ function updateNextActionCard(){
     return;
   }
   const w=JSON.parse(localStorage.getItem('water'+V)||'[]');
+  const h=now.getHours();
+  const target=getWaterTargetByHour(h);
   if(w.length<8){
-    setNextAction('💧','Выпей воды',w.length+' из 8 стаканов',()=>goHomeSection('daily'),false);
+    const nudge=getWaterNudge(w.length,h);
+    const urgent=!!nudge.urgent;
+    setNextAction('💧',urgent?'Пора пить воду!':'Выпей воды',w.length+' из 8 · цель к '+h+':00 — '+target,()=>goHomeSection('daily'),urgent);
     return;
   }
   if(!localStorage.getItem('mood'+V)){
@@ -5545,6 +5799,7 @@ function addAppt(){
   document.getElementById('apptTitle').value='';
   renderAppts();
   renderVisitPrep();
+  updateApptHomeCard();
   toast('Визит добавлен 🗓️');
   injectApptTip();
 }
@@ -5556,6 +5811,7 @@ function toggleAppt(id){
   list[i].done=!list[i].done;
   saveAppts(list);
   renderAppts();
+  updateApptHomeCard();
 }
 function getNextAppt(){
   const today=new Date().toISOString().slice(0,10);
@@ -6181,7 +6437,7 @@ function switchTab(id,btn){
   btn.setAttribute('aria-selected','true');
   btn.setAttribute('aria-current','page');
   if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();updateDataStatusUI();updateBackupReminder();updatePhotoModeUI();}
-  if(id==='journal'){renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();}
+  if(id==='journal'){renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();}
   if(id==='bag')renderBag();
   if(id==='meds')renderMedWeekChart();
   if(id==='home'){updateTodayDash();renderWeekWellness();}
