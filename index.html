@@ -13,7 +13,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Для Индиры">
 <meta name="description" content="Дневник беременности: забота, фото, витамины и послания от мужа">
-<link rel="apple-touch-startup-image" href="splash-iphone.png" media="(orientation: portrait)">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Lora:ital,wght@0,500;0,600;1,500;1,600&family=Nunito:wght@400;600;700;800;900&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <script>
 // Inline confetti - no Web Worker (avoids blob: security error in previews)
@@ -1721,7 +1720,10 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .gal-toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .gal-compare-btn{flex:1;min-width:140px;padding:11px 14px;border:2px solid var(--cb);border-radius:14px;background:var(--bg2);font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;color:var(--t1);cursor:pointer;transition:all .2s}
 .gal-compare-btn:active{transform:scale(.97);border-color:var(--rose)}
-.compare-mo .mo-b{max-width:420px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.compare-mo{align-items:center;padding:20px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.compare-mo .mo-b{background:var(--bg3);width:100%;max-width:420px;border-radius:28px;padding:24px 20px 28px;position:relative;animation:cIn .35s ease;max-height:90vh;overflow-y:auto;box-shadow:0 12px 48px rgba(0,0,0,.25);border:1px solid var(--cb)}
+.compare-mo .mo-x{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:var(--bg2);border:none;cursor:pointer;font-size:18px;font-weight:900;color:var(--t3);display:flex;align-items:center;justify-content:center;z-index:2;transition:transform .15s}
+.compare-mo .mo-x:active{transform:scale(.9)}
 .compare-picks{display:flex;align-items:center;gap:8px;margin-bottom:14px}
 .compare-pick{flex:1;padding:10px 8px;border:2px solid var(--cb);border-radius:14px;background:var(--bg2);font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;color:var(--t1);outline:none}
 .compare-picks-mid{font-size:16px;font-weight:900;color:var(--t3);flex-shrink:0}
@@ -1799,7 +1801,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
     <div class="img-compress-sub">Это займёт пару секунд — так приложение не перегрузит память</div>
   </div>
 </div>
-<div class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
+<div class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх" title="Наверх">↑</div>
 
 <!-- SETUP -->
 <div id="setupScreen" style="display:none">
@@ -2069,7 +2071,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           <div class="ssub">Отметь настроение — я хочу знать 💕</div>
           <div class="mood-row" role="group" aria-label="Выбери настроение">
             <button class="mb" onclick="saveMood('😊',this)" aria-label="Хорошее настроение" aria-pressed="false">😊</button>
-            <button class="mb" onclick="saveMood('🥰',this)" aria-label="Влюблённое настроение" aria-pressed="false">🥰</button>
+            <button class="mb" onclick="saveMood('🥰',this)" aria-label="Романтичное настроение" aria-pressed="false">🥰</button>
             <button class="mb" onclick="saveMood('🥱',this)" aria-label="Устала" aria-pressed="false">🥱</button>
             <button class="mb" onclick="saveMood('🤢',this)" aria-label="Тошнит" aria-pressed="false">🤢</button>
             <button class="mb" onclick="saveMood('✨',this)" aria-label="Сияю" aria-pressed="false">✨</button>
@@ -2440,7 +2442,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <div class="card"><div class="cb">
           <div class="tog-w"><span style="font-size:15px;font-weight:800">Тёмная тема 🌙</span><label class="tog"><input type="checkbox" id="thmTog" onchange="toggleTheme()"><span class="tog-sl"></span></label></div>
           <div class="tog-w"><span style="font-size:15px;font-weight:800">Уведомления 🔔</span><button id="notifBtn" onclick="reqNotifs()" style="background:linear-gradient(135deg,#1E9CB0,#30C0D8);color:#fff;border:none;border-radius:50px;padding:9px 20px;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(30,156,176,.3)">Включить</button></div>
-          <div class="notif-status" id="notifStatus">Напомню о препаратах в нужное время — разреши уведомления</div>
+          <div class="notif-status" id="notifStatus">Напомню о препаратах — разреши уведомления. На iPhone напоминания приходят, когда приложение открыто или недавно использовалось.</div>
           <p style="font-size:12px;font-weight:700;color:var(--t3);padding:2px 4px 20px;line-height:1.65">На iPhone напоминания работают, когда приложение установлено на экран «Домой» и периодически открывается.</p>
           
           <div style="font-size:15px;font-weight:800;margin-bottom:8px">Твой рост (для расчёта ИМТ):</div>
@@ -2478,7 +2480,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v17</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v18</div>
         </div></div>
       </div>
     </div>
@@ -2523,7 +2525,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 <div class="mo" id="galMo" role="dialog" aria-modal="true" aria-labelledby="galMoT" onclick="if(event.target===this)closeGal()">
   <div class="ms" style="position:relative">
     <div class="ms-hdl"></div>
-    <button class="ms-close" onclick="closeGal()">✕</button>
+    <button class="ms-close" onclick="closeGal()" aria-label="Закрыть">✕</button>
     <div style="font-family:'Playfair Display',serif;font-size:24px;font-style:italic;font-weight:900;text-align:center;margin-bottom:16px" id="galMoT"></div>
     <div class="gal-prev-wrap" id="galPrev">
       <div class="gal-prev-empty" id="galPrevEmpty">👼</div>
@@ -2619,7 +2621,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
 <script>
 const V="_v16";
-const APP_DATA_VER='v17';
+const APP_DATA_VER='v18';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -4901,7 +4903,10 @@ function updateGalToolbar(galCount,curWeek){
   const howto=document.getElementById('galHowto');
   const wk=curWeek??calcW(localStorage.getItem('eddDate')).week;
   const galW=Math.min(40,Math.max(19,wk));
-  if(lbl)lbl.textContent='неделя '+galW+(wk===galW?' ✨':'');
+  if(lbl){
+    if(wk<19)lbl.textContent='галерея с 19-й недели · сейчас '+wk+'-я';
+    else lbl.textContent='неделя '+galW+(wk===galW?' ✨':'');
+  }
   if(howto)howto.style.display=galCount>=1?'none':'flex';
 }
 function openGalCurrentWeek(){
@@ -5160,7 +5165,7 @@ function renderSchedule(edd){
     });
   }
   document.getElementById('schedC').innerHTML=html;
-  document.getElementById('medsInfo').textContent='Расписание на '+now.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})+' · '+active.length+' приём(ов)';
+  document.getElementById('medsInfo').textContent='Расписание на '+now.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})+' · '+active.length+' '+pluralMeds(active.length);
   updateProg(active);
   updateMedNextPill();
   syncNotifsToSW();
@@ -5192,7 +5197,7 @@ function loadStreak(){
   const hero=document.getElementById('heroStreak');
   if(hero){
     const g=localStorage.getItem('babyGender')||'n';
-    const ctx=g==='b'?'забота о сыне':g==='g'?'забота о дочке':'идеальный день';
+    const ctx=g==='b'?'забота о сыне':g==='g'?'забота о дочке':'серия заботы';
     hero.title=n+' '+pluralDays(n)+' подряд · '+total+' '+pluralDays(total)+' всего\n'+ctx;
   }
 }
@@ -5357,11 +5362,11 @@ function buildWeekSummaryText(){
   const moodCount=keys.filter(k=>moodH[k]).length;
   const bagStats=getBagStats(loadBagList());
   const g=localStorage.getItem('babyGender')||'n';
-  const streakSub=g==='b'?'забота о сыне':g==='g'?'забота о дочке':'идеальный день';
+  const streakSub=g==='b'?'забота о сыне':g==='g'?'забота о дочке':'серия заботы';
   return 'Сводка недели '+week+' 🤍\n'+
     'Индекс заботы: '+score+' из 100\n'+
     'Серия: '+streak+' '+pluralDays(parseInt(streak,10)||0)+' · '+streakSub+'\n'+
-    'Всего идеальных дней: '+total+'\n'+
+    'Всего завершённых дней: '+total+'\n'+
     'Настроение отмечено: '+moodCount+' из 7 дней · Сумка: '+bagStats.done+' из '+bagStats.total+'\n'+
     '— Приложение «Для Индиры»';
 }
@@ -5375,6 +5380,13 @@ function shareWeekSummary(){
   }else toast(text.slice(0,120)+'…');
 }
 let milestoneHandler=null;
+function pluralMeds(n){
+  const m=n%10,l=n%100;
+  if(l>=11&&l<=14)return 'приёмов';
+  if(m===1)return 'приём';
+  if(m>=2&&m<=4)return 'приёма';
+  return 'приёмов';
+}
 function pluralDays(n){
   const m=n%10,l=n%100;
   if(l>=11&&l<=14)return 'дней';
@@ -5400,7 +5412,7 @@ function formatStreakWeekStat(streak){
   const n=parseInt(streak,10)||0;
   const g=localStorage.getItem('babyGender')||'n';
   const d=pluralDays(n);
-  const sub=g==='b'?'забота о сыне':g==='g'?'забота о дочке':'идеальный день заботы';
+  const sub=g==='b'?'забота о сыне':g==='g'?'забота о дочке':'серия заботы';
   return {val:'<b>'+n+'</b> '+d+' подряд',lbl:sub};
 }
 function weekStatHtml(ico,val,lbl,action){
@@ -6579,7 +6591,7 @@ function updateNotifUI(){
   if(p==='granted'){
     const next=getNextMedReminder();
     el.className='notif-status ok';
-    el.innerHTML='✓ Напоминания включены'+(next?'<br>Ближайшее: <b>'+escapeHtml(next)+'</b>':'<br>На сегодня все препараты отмечены 🎉');
+    el.innerHTML='✓ Напоминания включены'+(next?'<br>Ближайшее: <b>'+escapeHtml(next)+'</b>':'<br>На сегодня все препараты отмечены 🎉')+'<br><span style="font-size:11px;opacity:.85">На iPhone держи приложение открытым — так напоминания точнее</span>';
     if(btn){btn.textContent='Активны ✓';btn.disabled=true;}
   }else if(p==='denied'){
     el.className='notif-status warn';
@@ -6587,7 +6599,7 @@ function updateNotifUI(){
     if(btn){btn.textContent='Заблокировано';btn.disabled=true;}
   }else{
     el.className='notif-status';
-    el.textContent='Напомню о препаратах в нужное время — нажми «Включить»';
+    el.textContent='Напомню о препаратах — нажми «Включить». На iPhone работает лучше, когда приложение открыто.';
     if(btn){btn.textContent='Включить';btn.disabled=false;}
   }
 }
