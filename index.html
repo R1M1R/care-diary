@@ -1573,9 +1573,15 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .week-wellness-title{font-size:11px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px}
 .week-wellness-wk{font-size:13px;font-weight:900;color:var(--teal)}
 .week-wellness-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.week-stat{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;background:var(--card);border:1px solid var(--cb);font-size:11px;font-weight:800;color:var(--t2);line-height:1.35}
-.week-stat-ico{font-size:18px;line-height:1;flex-shrink:0}
-.week-stat b{color:var(--rose);font-weight:900}
+.week-stat{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:14px;background:var(--card);border:1px solid var(--cb);line-height:1.35;min-height:52px}
+.week-stat-ico{font-size:18px;line-height:1;flex-shrink:0;margin-top:1px}
+.week-stat-body{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.week-stat-val{font-size:11px;font-weight:900;color:var(--t1);line-height:1.3}
+.week-stat-val b{color:var(--rose);font-weight:900}
+.week-stat-lbl{font-size:9px;font-weight:800;color:var(--t3);line-height:1.25}
+.wellness-score{font-size:11px;font-weight:900;letter-spacing:-.3px}
+.wellness-score-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0}
+.wellness-score-lbl{font-size:8px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
 .perfect-day-badge{display:none;margin:0 15px 14px;padding:12px 16px;border-radius:18px;background:linear-gradient(135deg,rgba(82,184,130,.15),rgba(45,122,85,.08));border:1px solid rgba(45,122,85,.25);text-align:center;font-size:13px;font-weight:900;color:var(--sage);animation:cIn .5s ease}
 .perfect-day-badge.show{display:block}
 .trend-block{margin-top:16px;padding-top:14px;border-top:1px solid var(--cb)}
@@ -1889,7 +1895,10 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           <span class="week-wellness-title">Твоя неделя</span>
           <div class="wellness-head-right">
             <button type="button" class="week-share-btn" onclick="shareWeekSummary()" aria-label="Поделиться сводкой">📤 Сводка</button>
-            <div class="wellness-score" id="wellnessScore" title="Индекс заботы за неделю">—</div>
+            <div class="wellness-score-wrap" title="Индекс заботы за 7 дней">
+              <div class="wellness-score" id="wellnessScore" aria-label="Индекс заботы">—</div>
+              <span class="wellness-score-lbl">индекс</span>
+            </div>
             <span class="week-wellness-wk" id="weekWellnessWk">— нед.</span>
           </div>
         </div>
@@ -2439,7 +2448,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v13</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v14</div>
         </div></div>
       </div>
     </div>
@@ -2576,7 +2585,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
 <script>
 const V="_v16";
-const APP_DATA_VER='v13';
+const APP_DATA_VER='v14';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -5282,10 +5291,13 @@ function buildWeekSummaryText(){
   const moodH=JSON.parse(localStorage.getItem('moodH'+V)||'{}');
   const moodCount=keys.filter(k=>moodH[k]).length;
   const bagStats=getBagStats(loadBagList());
+  const g=localStorage.getItem('babyGender')||'n';
+  const streakSub=g==='b'?'забота о сыне':g==='g'?'забота о дочке':'идеальный день';
   return 'Сводка недели '+week+' 🤍\n'+
-    'Индекс заботы: '+score+'/100\n'+
-    'Streak: '+streak+' дн. · Всего завершённых: '+total+'\n'+
-    'Настроений: '+moodCount+'/7 · Сумка: '+bagStats.done+'/'+bagStats.total+'\n'+
+    'Индекс заботы: '+score+' из 100\n'+
+    'Серия: '+streak+' '+pluralDays(parseInt(streak,10)||0)+' · '+streakSub+'\n'+
+    'Всего идеальных дней: '+total+'\n'+
+    'Настроение отмечено: '+moodCount+' из 7 дней · Сумка: '+bagStats.done+' из '+bagStats.total+'\n'+
     '— Приложение «Для Индиры»';
 }
 function shareWeekSummary(){
@@ -5304,6 +5316,30 @@ function pluralDays(n){
   if(m===1)return 'день';
   if(m>=2&&m<=4)return 'дня';
   return 'дней';
+}
+function pluralSessions(n){
+  const m=n%10,l=n%100;
+  if(l>=11&&l<=14)return 'сессий';
+  if(m===1)return 'сессия';
+  if(m>=2&&m<=4)return 'сессии';
+  return 'сессий';
+}
+function pluralMeasurements(n){
+  const m=n%10,l=n%100;
+  if(l>=11&&l<=14)return 'замеров';
+  if(m===1)return 'замер';
+  if(m>=2&&m<=4)return 'замера';
+  return 'замеров';
+}
+function formatStreakWeekStat(streak){
+  const n=parseInt(streak,10)||0;
+  const g=localStorage.getItem('babyGender')||'n';
+  const d=pluralDays(n);
+  const sub=g==='b'?'забота о сыне':g==='g'?'забота о дочке':'идеальный день заботы';
+  return {val:'<b>'+n+'</b> '+d+' подряд',lbl:sub};
+}
+function weekStatHtml(ico,val,lbl){
+  return '<div class="week-stat"><span class="week-stat-ico">'+ico+'</span><span class="week-stat-body"><span class="week-stat-val">'+val+'</span><span class="week-stat-lbl">'+lbl+'</span></span></div>';
 }
 function updateMilestoneCard(){
   const card=document.getElementById('milestoneCard');
@@ -5644,17 +5680,21 @@ function renderWeekWellness(){
   const todayKey=keys[6];
   const todayWater=JSON.parse(localStorage.getItem('water'+V)||'[]').length;
   const waterDays=keys.filter(k=>(k===todayKey?todayWater:waterHist[k])>=8).length;
-  const g=localStorage.getItem('babyGender')||'n';
-  const streakLbl=genderMsgs[g]?.streakLabel||'дней подряд';
+  const streakStat=formatStreakWeekStat(streak);
   grid.innerHTML=[
-    {ico:'🔥',txt:'<b>'+streak+'</b> '+streakLbl.split(' ').slice(-2).join(' ')},
-    {ico:'😊',txt:'<b>'+moodCount+'/7</b> настроений'},
-    {ico:'💧',txt:'<b>'+waterDays+'/7</b> дней норма воды'},
-    {ico:'🩺',txt:'<b>'+bpCount+'/7</b> замеров давления'},
-    {ico:'🦶',txt:'<b>'+kickWeek+'</b> сессий шевелений'}
-  ].map(s=>'<div class="week-stat"><span class="week-stat-ico">'+s.ico+'</span><span>'+s.txt+'</span></div>').join('');
+    weekStatHtml('🔥',streakStat.val,streakStat.lbl),
+    weekStatHtml('😊','<b>'+moodCount+'/7</b> дней','настроение отмечено'),
+    weekStatHtml('💧','<b>'+waterDays+'/7</b> дней','норма воды выполнена'),
+    weekStatHtml('🩺','<b>'+bpCount+'/7</b> '+pluralMeasurements(bpCount),'давление записано'),
+    weekStatHtml('🦶','<b>'+kickWeek+'</b> '+pluralSessions(kickWeek),'подсчёт шевелений')
+  ].join('');
   const scoreEl=document.getElementById('wellnessScore');
-  if(scoreEl)scoreEl.textContent=getWellnessScore();
+  if(scoreEl){
+    const score=getWellnessScore();
+    scoreEl.textContent=score;
+    scoreEl.setAttribute('aria-label','Индекс заботы: '+score+' из 100');
+    scoreEl.parentElement.title='Индекс заботы за 7 дней: '+score+' из 100';
+  }
   updateMilestoneCard();
 }
 let nextActionHandler=null;
