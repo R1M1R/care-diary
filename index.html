@@ -1651,6 +1651,31 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .backup-reminder{padding:12px 14px;border-radius:14px;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);font-size:12px;font-weight:800;color:#8A5800;line-height:1.55;margin-bottom:12px;display:none}
 .backup-reminder.show{display:block}
 
+/* ── 49. PREMIUM v11 — journey, call fab, journal search, photo share ── */
+.journey-card{margin:0 15px 14px;padding:16px 18px;background:var(--card);border:1px solid var(--cb);border-radius:22px;box-shadow:var(--sh2)}
+.journey-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:11px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1px}
+.journey-head b{font-size:15px;color:var(--rose);letter-spacing:0}
+.journey-track{position:relative;height:10px;border-radius:999px;background:var(--bg2);overflow:hidden;margin-bottom:8px}
+.journey-seg{position:absolute;top:0;bottom:0}
+.journey-seg.t1{left:0;width:32.9%;background:linear-gradient(90deg,rgba(30,156,176,.35),rgba(30,156,176,.15))}
+.journey-seg.t2{left:32.9%;width:32.1%;background:linear-gradient(90deg,rgba(155,47,190,.25),rgba(232,50,90,.12))}
+.journey-seg.t3{left:65%;width:35%;background:linear-gradient(90deg,rgba(232,50,90,.2),rgba(212,160,23,.25))}
+.journey-marker{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--plum));border:2px solid #fff;box-shadow:0 2px 10px rgba(232,50,90,.45);transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.34,1.56,.64,1)}
+.journey-labels{display:flex;justify-content:space-between;font-size:9px;font-weight:900;color:var(--t3);padding:0 2px}
+.journey-labels span.act{color:var(--rose)}
+.call-fab{position:fixed;right:16px;bottom:calc(88px + env(safe-area-inset-bottom));z-index:95;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;text-decoration:none;box-shadow:0 8px 28px rgba(30,156,176,.4);transition:transform .2s}
+.call-fab:active{transform:scale(.92)}
+.offline-pill{position:fixed;top:calc(env(safe-area-inset-top,12px) + 8px);left:50%;transform:translateX(-50%);z-index:200;padding:6px 14px;border-radius:999px;background:rgba(30,156,176,.92);color:#fff;font-size:11px;font-weight:900;box-shadow:0 4px 16px rgba(0,0,0,.15);display:none}
+.journal-search{width:100%;padding:12px 14px;margin-bottom:12px;border:2px solid var(--cb);border-radius:16px;background:var(--bg2);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--t1);outline:none}
+.journal-search:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(232,50,90,.1)}
+.gal-share-row{display:flex;gap:8px;margin-top:10px}
+.gal-share-row .gal-btn{flex:1;margin:0}
+.photo-fullscreen{position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;padding:20px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.photo-fullscreen.open{display:flex}
+.photo-fullscreen img{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
+.photo-fullscreen-close{position:absolute;top:calc(env(safe-area-inset-top,16px) + 12px);right:16px;width:40px;height:40px;border:none;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;font-size:18px;font-weight:900;cursor:pointer}
+.app-version{font-size:11px;font-weight:800;color:var(--t3);text-align:center;margin-top:16px;opacity:.7}
+
 /* ══ END PREMIUM GLASS SYSTEM ══ */
 
 </style>
@@ -1669,6 +1694,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 <canvas id="cvs"></canvas>
 <div class="gb gb1"></div><div class="gb gb2"></div><div class="gb gb3"></div>
 <div id="toast"></div>
+<div class="offline-pill" id="offlinePill" role="status">📱 Офлайн — всё работает</div>
 <div class="coach-mark" id="coachSwipe" style="display:none" onclick="if(event.target===this)dismissCoach()">
   <div class="coach-card">
     <div class="coach-ico">👆</div>
@@ -1789,6 +1815,17 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           </div>
         </div>
         <div class="week-wellness-grid" id="weekWellnessGrid"></div>
+      </div>
+
+      <div class="journey-card" id="journeyCard" role="region" aria-label="Прогресс беременности">
+        <div class="journey-head"><span>Путь к малышу</span><b id="journeyPct">—%</b></div>
+        <div class="journey-track">
+          <div class="journey-seg t1"></div>
+          <div class="journey-seg t2"></div>
+          <div class="journey-seg t3"></div>
+          <div class="journey-marker" id="journeyMarker" style="left:0%"></div>
+        </div>
+        <div class="journey-labels"><span id="jl1">I трим. · 1–13</span><span id="jl2">II · 14–27</span><span id="jl3">III · 28–40</span></div>
       </div>
 
       <div id="smartTips" style="margin-top:4px"></div>
@@ -2092,6 +2129,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <div class="card"><div class="cb">
           <div class="sh">📓 Записи по дням</div>
           <div class="ssub">Мысли, события и воспоминания — с датой и неделей беременности</div>
+          <input type="search" class="journal-search" id="journalSearch" placeholder="🔍 Искать в записях…" oninput="renderJournalLog()" aria-label="Поиск по дневнику">
           <textarea id="journalNewT" class="journal-new" placeholder="Сегодня малыш так сильно пинался, когда папа гладил животик…"></textarea>
           <button type="button" class="lq" style="margin-top:12px" onclick="saveJournalEntry()">Сохранить запись 💖</button>
           <div class="journal-log" id="journalLog"></div>
@@ -2304,11 +2342,14 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v11</div>
         </div></div>
       </div>
     </div>
 
   </div>
+
+  <a href="tel:" id="callFab" class="call-fab" style="display:none" aria-label="Позвонить Эмиру" title="Позвонить">📞</a>
 
   <div id="nav" role="tablist" aria-label="Навигация приложения">
     <button class="nb act" role="tab" aria-selected="true" aria-current="page" aria-label="Главная" onclick="switchTab('home',this)"><span>🤍</span>Главная</button>
@@ -2350,18 +2391,26 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
     <div style="font-family:'Playfair Display',serif;font-size:24px;font-style:italic;font-weight:900;text-align:center;margin-bottom:16px" id="galMoT"></div>
     <div class="gal-prev-wrap" id="galPrev">
       <div class="gal-prev-empty" id="galPrevEmpty">👼</div>
-      <img id="galPrevImg" src="" alt="" style="display:none">
+      <img id="galPrevImg" src="" alt="" style="display:none;cursor:zoom-in" onclick="event.stopPropagation();openPhotoFullscreen()" title="Тапни для полного экрана">
       <span class="gal-prev-badge" id="galPrevBadge" style="display:none">Неделя сохранена ✨</span>
     </div>
     <div class="gal-actions">
       <button type="button" class="gal-btn gal-btn-primary" onclick="if(imgProcessing)return;document.getElementById('galInCam').click()">Снять животик 📷</button>
       <button type="button" class="gal-btn gal-btn-secondary" onclick="if(imgProcessing)return;document.getElementById('galInLib').click()">Выбрать из галереи 🖼️</button>
     </div>
+    <div class="gal-share-row" id="galShareRow" style="display:none">
+      <button type="button" class="gal-btn gal-btn-secondary" onclick="shareGalPhoto()">📤 Поделиться</button>
+    </div>
     <p class="photo-storage-sub" id="galModeHint" style="text-align:center;margin:10px 0 0">Превью в приложении · оригинал остаётся в галерее телефона 📱</p>
     <button type="button" id="galDel" class="gal-btn-danger" onclick="deleteGalPhoto()">Удалить фото</button>
     <input type="file" id="galInCam" accept="image/jpeg,image/png,image/heic,image/heif,image/webp,.heic,.heif" capture="environment" style="display:none" onchange="loadGalPhoto(event)">
     <input type="file" id="galInLib" accept="image/jpeg,image/png,image/heic,image/heif,image/webp,.heic,.heif" style="display:none" onchange="loadGalPhoto(event)">
   </div>
+</div>
+
+<div class="photo-fullscreen" id="photoFullscreen" onclick="closePhotoFullscreen()" role="dialog" aria-modal="true" aria-label="Фото на весь экран">
+  <button type="button" class="photo-fullscreen-close" onclick="event.stopPropagation();closePhotoFullscreen()" aria-label="Закрыть">✕</button>
+  <img id="photoFullscreenImg" src="" alt="Фото животика">
 </div>
 
 <!-- MODAL: MEDICATION -->
@@ -2406,7 +2455,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
 <script>
 const V="_v16";
-const APP_DATA_VER='v10';
+const APP_DATA_VER='v11';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -3012,12 +3061,14 @@ function updateGalPreview(src){
   const emptyEl=document.getElementById('galPrevEmpty');
   const badgeEl=document.getElementById('galPrevBadge');
   const delBtn=document.getElementById('galDel');
+  const shareRow=document.getElementById('galShareRow');
   if(!imgEl||!emptyEl)return;
   imgEl.src=src;
   imgEl.style.display='block';
   emptyEl.style.display='none';
   if(badgeEl)badgeEl.style.display='inline-flex';
   if(delBtn)delBtn.classList.add('show');
+  if(shareRow)shareRow.style.display='flex';
 }
 
 function showImgCompressOverlay(msg){
@@ -4235,6 +4286,7 @@ function init(){
   document.getElementById('appInterface').style.display='block';
   const ph=localStorage.getItem('husbandPhone');
   if(ph){document.getElementById('phoneIn').value=ph;document.getElementById('callBtn').href='tel:'+ph}
+  updateCallFab();
   const di=localStorage.getItem('diaryEntry');
   if(di)document.getElementById('diaryT').value=di;
   document.getElementById('newEdd').value=edd;
@@ -4280,6 +4332,9 @@ function init(){
     setInterval(updateMilestoneCard,60000);
   }
   setTimeout(showCoachIfNeeded,3000);
+  updateOfflinePill();
+  window.addEventListener('online',updateOfflinePill);
+  window.addEventListener('offline',updateOfflinePill);
 }
 
 // ══ GENDER SYSTEM ══
@@ -4456,6 +4511,8 @@ function updateAll(edd){
   updateMilestoneCard();
   updateFetusVisual(week);
   updateBMI(week);
+  renderJourneyTimeline(week,days);
+  celebrateWeekMilestone(week);
 }
 
 function tFaq(i){H();const q=document.getElementById('fq'+i),a=document.getElementById('fa'+i);const o=a.classList.contains('o');document.querySelectorAll('.faq-q').forEach(e=>e.classList.remove('o'));document.querySelectorAll('.faq-a').forEach(e=>e.classList.remove('o'));if(!o){q.classList.add('o');a.classList.add('o')}}
@@ -4688,6 +4745,8 @@ async function openGal(w){
     badgeEl.style.display='none';
     delBtn.classList.remove('show');
   }
+  const shareRow=document.getElementById('galShareRow');
+  if(shareRow)shareRow.style.display=url?'flex':'none';
   document.getElementById('galMo').classList.add('open');
 }
 function closeGal(){document.getElementById('galMo').classList.remove('open')}
@@ -5098,6 +5157,72 @@ function updateMilestoneCard(){
   milestoneHandler=()=>{switchTabById('journal');setTimeout(()=>{const c=document.getElementById('visitPrepCard');c&&c.scrollIntoView({behavior:'smooth',block:'start'});},300);};
 }
 function runMilestoneAction(){H();if(milestoneHandler)milestoneHandler();}
+
+const WEEK_MILESTONES={12:{t:'Первый триместр позади! 🌸',s:'Малыш уже сформирован — ты прошла важнейший этап'},20:{t:'Половина пути! 🎀',s:'20 недель — середина беременности, гордись собой'},28:{t:'III триместр! 👑',s:'Финишная прямая началась — каждый день ближе к встрече'},36:{t:'Малыш скоро готов! 🍼',s:'36 недель — малыш считается доношенным'},40:{t:'Срок подошёл! 🤍',s:'Ты невероятная — скоро обнимешь малыша'}};
+function celebrateWeekMilestone(week){
+  const m=WEEK_MILESTONES[week];
+  if(!m)return;
+  const k='weekMilestone_'+week+V;
+  if(localStorage.getItem(k)==='1')return;
+  localStorage.setItem(k,'1');
+  setTimeout(()=>{
+    confetti({particleCount:180,spread:110,origin:{y:.45},colors:['#E8325A','#FFD700','#C44DFF','#43C8E0','#fff']});
+    toast(m.t+' · '+m.s);
+  },800);
+}
+function renderJourneyTimeline(week,days){
+  const pct=Math.min(100,Math.max(0,(days/280)*100));
+  const pctEl=document.getElementById('journeyPct');
+  const marker=document.getElementById('journeyMarker');
+  if(pctEl)pctEl.textContent=Math.round(pct)+'%';
+  if(marker)marker.style.left=pct.toFixed(1)+'%';
+  const tri=week<=13?1:week<=27?2:3;
+  ['jl1','jl2','jl3'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.classList.toggle('act',i+1===tri);});
+}
+function updateCallFab(){
+  const ph=localStorage.getItem('husbandPhone');
+  const fab=document.getElementById('callFab');
+  if(!fab)return;
+  if(ph&&ph.replace(/\D/g,'').length>=10){
+    fab.href='tel:'+ph;
+    fab.style.display='flex';
+  }else fab.style.display='none';
+}
+function updateOfflinePill(){
+  const pill=document.getElementById('offlinePill');
+  if(!pill)return;
+  pill.style.display=navigator.onLine?'none':'block';
+}
+async function shareGalPhoto(){
+  H();
+  if(curGW==null)return;
+  try{
+    const blob=await photoDBGet('gal_'+curGW)||await photoDBGet(photoFullKey('gal_'+curGW));
+    if(!blob){toast('Сначала добавь фото');return;}
+    const file=new File([blob],'zhivotik-nedelya-'+curGW+'.jpg',{type:blob.type||'image/jpeg'});
+    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({title:'Животик · неделя '+curGW,files:[file]});
+    }else if(navigator.share){
+      await navigator.share({title:'Животик · неделя '+curGW,text:'Неделя '+curGW+' 🤍 · Для Индиры'});
+    }else toast('Поделиться не поддерживается на этом устройстве');
+  }catch(e){if(e&&e.name!=='AbortError')toast('Не удалось поделиться');}
+}
+function openPhotoFullscreen(){
+  const src=document.getElementById('galPrevImg')?.src;
+  if(!src)return;
+  const fs=document.getElementById('photoFullscreen');
+  const img=document.getElementById('photoFullscreenImg');
+  if(!fs||!img)return;
+  img.src=src;
+  fs.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closePhotoFullscreen(){
+  const fs=document.getElementById('photoFullscreen');
+  if(!fs)return;
+  fs.classList.remove('open');
+  document.body.style.overflow='';
+}
 const VISIT_PREP_DEFAULT=[
   {id:'docs',label:'Обменная карта и паспорт'},
   {id:'analyses',label:'Свежие анализы и результаты УЗИ'},
@@ -5303,11 +5428,17 @@ function renderJournalLog(){
   const el=document.getElementById('journalLog');
   if(!el)return;
   const log=loadJournalLog();
+  const q=(document.getElementById('journalSearch')?.value||'').trim().toLowerCase();
+  const filtered=q?log.filter(e=>(e.text||'').toLowerCase().includes(q)):log;
   if(!log.length){
     el.innerHTML='<div class="empty-state"><div class="empty-ico">📓</div><div class="empty-title">Первые воспоминания</div><div class="empty-sub">Запиши, как прошёл день — через годы будет приятно перечитать</div></div>';
     return;
   }
-  el.innerHTML=log.map(e=>{
+  if(!filtered.length){
+    el.innerHTML='<div class="empty-state"><div class="empty-ico">🔍</div><div class="empty-title">Ничего не найдено</div><div class="empty-sub">Попробуй другие слова</div></div>';
+    return;
+  }
+  el.innerHTML=filtered.map(e=>{
     const d=new Date(e.date);
     return '<div class="journal-entry"><div class="journal-entry-meta">'+d.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'})+' · '+e.week+' нед.</div><div class="journal-entry-text">'+escapeHtml(e.text).replace(/\n/g,'<br>')+'</div><button type="button" class="journal-del" onclick="deleteJournalEntry('+e.id+')" aria-label="Удалить запись">✕</button></div>';
   }).join('');
@@ -6035,7 +6166,7 @@ function checkReset(){
     localStorage.setItem('lastD'+V,d);
   }
 }
-function savePhone(){H();const p=document.getElementById('phoneIn').value;if(p){localStorage.setItem('husbandPhone',p);document.getElementById('callBtn').href='tel:'+p;toast("Мой номер сохранён!")}}
+function savePhone(){H();const p=document.getElementById('phoneIn').value;if(p){localStorage.setItem('husbandPhone',p);document.getElementById('callBtn').href='tel:'+p;updateCallFab();toast("Мой номер сохранён!")}}
 function saveDiary(){H();localStorage.setItem('diaryEntry',document.getElementById('diaryT').value);toast("Письмо сохранено в сердце! 💖")}
 function switchTab(id,btn){
   H();
