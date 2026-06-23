@@ -10,18 +10,14 @@ except ImportError as e:
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "apple-icon.source.png"
 APPLE = ROOT / "apple-icon.png"
-ICON192 = ROOT / "icon-192.png"
 MAX_BYTES = 500_000
 
 
 def optimize(src: Image.Image) -> None:
     apple = src.resize((512, 512), Image.LANCZOS)
-    icon192 = src.resize((192, 192), Image.LANCZOS)
     apple.save(APPLE, "PNG", optimize=True)
-    icon192.save(ICON192, "PNG", optimize=True)
     size = APPLE.stat().st_size
     print(f"apple-icon.png  {size:,} bytes (512×512)")
-    print(f"icon-192.png    {ICON192.stat().st_size:,} bytes")
     if size > MAX_BYTES:
         raise SystemExit(f"apple-icon.png still too large ({size} > {MAX_BYTES})")
 
@@ -37,7 +33,7 @@ def main():
         raise SystemExit("apple-icon.png or apple-icon.source.png not found")
 
     optimize(src)
-    print("Icons optimized (original design preserved)")
+    print("Icon optimized (original design preserved)")
 
 
 if __name__ == "__main__":

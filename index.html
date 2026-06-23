@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Для Индиры 🤍</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
-<link rel="apple-touch-icon" href="apple-icon.png" sizes="180x180">
+<link rel="icon" href="apple-icon.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-icon.png">
 <meta name="theme-color" content="#E8325A">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1908,7 +1908,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <div class="card"><div class="cb">
           <div class="photo-storage-card">
             <div class="photo-storage-title">📸 Память для фото</div>
-            <p class="photo-storage-sub">Фото хранятся на телефоне и сжимаются автоматически. Если приложение тормозит — очисти или оптимизируй альбом.</p>
+            <p class="photo-storage-sub">Фото сохраняются в хранилище браузера для этого приложения — не в галерею и не «забивают» память телефона. Места здесь намного больше, чем раньше.</p>
             <div class="photo-storage-meta" id="photoStorageInfo">Загрузка…</div>
             <div class="photo-storage-sub" id="photoStorageQuota" style="margin-top:-6px;margin-bottom:10px;min-height:18px"></div>
             <div class="photo-storage-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Заполнение памяти фото">
@@ -2196,33 +2196,152 @@ async function recompressDataUrl(dataUrl,presetKey){
   img.src='';
   return out;
 }
-async function migrateStoredPhotos(){
-  if(localStorage.getItem('imgMigrated_v2')==='1')return;
-  let changed=false;
+
+// ══ PHOTO STORAGE (IndexedDB — не localStorage, лимит намного выше) ══
+const PHOTO_DB='careDiaryPhotos_v1';
+const PHOTO_STORE='photos';
+let photoDbPromise=null;
+const photoUrlCache=new Map();
+
+function dataUrlToBlob(dataUrl){
+  const parts=dataUrl.split(',');
+  const mime=(parts[0].match(/:(.*?);/)||[])[1]||'image/jpeg';
+  const bin=atob(parts[1]||'');
+  const arr=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+  return new Blob([arr],{type:mime});
+}
+function openPhotoDB(){
+  if(photoDbPromise)return photoDbPromise;
+  photoDbPromise=new Promise((resolve,reject)=>{
+    if(!window.indexedDB){reject(new Error('NO_IDB'));return;}
+    const req=indexedDB.open(PHOTO_DB,1);
+    req.onupgradeneeded=e=>{e.target.result.createObjectStore(PHOTO_STORE);};
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error||new Error('IDB_OPEN'));
+  });
+  return photoDbPromise;
+}
+function idbTx(store,mode){
+  return openPhotoDB().then(db=>db.transaction(PHOTO_STORE,mode).objectStore(PHOTO_STORE));
+}
+async function photoDBPut(key,blob){
+  const store=await idbTx('readwrite');
+  return new Promise((resolve,reject)=>{
+    const req=store.put(blob,key);
+    req.onsuccess=()=>resolve();
+    req.onerror=()=>reject(new Error('IDB_PUT'));
+  });
+}
+async function photoDBGet(key){
+  const store=await idbTx('readonly');
+  return new Promise((resolve,reject)=>{
+    const req=store.get(key);
+    req.onsuccess=()=>resolve(req.result||null);
+    req.onerror=()=>reject(req.error||new Error('IDB_GET'));
+  });
+}
+async function photoDBDelete(key){
+  const store=await idbTx('readwrite');
+  return new Promise((resolve,reject)=>{
+    const req=store.delete(key);
+    req.onsuccess=()=>resolve();
+    req.onerror=()=>reject(req.error||new Error('IDB_DEL'));
+  });
+}
+async function photoDBClear(){
+  const store=await idbTx('readwrite');
+  return new Promise((resolve,reject)=>{
+    const req=store.clear();
+    req.onsuccess=()=>resolve();
+    req.onerror=()=>reject(req.error||new Error('IDB_CLEAR'));
+  });
+}
+async function photoDBKeys(){
+  const store=await idbTx('readonly');
+  return new Promise((resolve,reject)=>{
+    const req=store.getAllKeys();
+    req.onsuccess=()=>resolve(req.result||[]);
+    req.onerror=()=>reject(req.error||new Error('IDB_KEYS'));
+  });
+}
+function revokePhotoUrl(key){
+  if(photoUrlCache.has(key)){URL.revokeObjectURL(photoUrlCache.get(key));photoUrlCache.delete(key);}
+}
+function revokeAllPhotoUrls(){
+  photoUrlCache.forEach(u=>URL.revokeObjectURL(u));
+  photoUrlCache.clear();
+}
+async function getPhotoUrl(key){
+  if(photoUrlCache.has(key))return photoUrlCache.get(key);
+  const blob=await photoDBGet(key);
+  if(!blob)return null;
+  const url=URL.createObjectURL(blob);
+  photoUrlCache.set(key,url);
+  return url;
+}
+async function savePhoto(key,dataUrl){
+  await photoDBPut(key,dataUrlToBlob(dataUrl));
+  revokePhotoUrl(key);
+}
+async function migratePhotosToIndexedDB(){
+  if(localStorage.getItem('photosInIDB_v1')==='1')return;
   const uzi=localStorage.getItem('uziPh');
-  if(uzi&&estimateDataUrlBytes(uzi)>IMG_COMPRESS_PRESETS.uzi.maxBytes){
-    try{
-      localStorage.setItem('uziPh',await recompressDataUrl(uzi,'uzi'));
-      changed=true;
-    }catch(e){}
-  }
+  if(uzi){await photoDBPut('uzi',dataUrlToBlob(uzi));localStorage.removeItem('uziPh');}
   const phRaw=localStorage.getItem('galPh'+V);
   if(phRaw){
     try{
       const ph=JSON.parse(phRaw);
       for(const w of Object.keys(ph)){
-        if(ph[w]&&estimateDataUrlBytes(ph[w])>IMG_COMPRESS_PRESETS.gallery.maxBytes){
-          ph[w]=await recompressDataUrl(ph[w],'gallery');
-          changed=true;
-        }
+        if(ph[w])await photoDBPut('gal_'+w,dataUrlToBlob(ph[w]));
       }
-      if(changed)localStorage.setItem('galPh'+V,JSON.stringify(ph));
+    }catch(e){}
+    localStorage.removeItem('galPh'+V);
+  }
+  localStorage.setItem('photosInIDB_v1','1');
+}
+async function initPhotoStorage(edd){
+  try{
+    await migratePhotosToIndexedDB();
+    if(navigator.storage&&navigator.storage.persist){try{await navigator.storage.persist();}catch(e){}}
+    await migrateStoredPhotos();
+    await loadUziPh();
+    await renderGallery(edd||localStorage.getItem('eddDate'));
+    updatePhotoStorageUI();
+    updatePWAStatusUI();
+  }catch(e){console.error('initPhotoStorage',e);}
+}
+async function migrateStoredPhotos(){
+  if(localStorage.getItem('imgMigrated_v3')==='1')return;
+  let changed=false;
+  const uziBlob=await photoDBGet('uzi');
+  if(uziBlob&&uziBlob.size>IMG_COMPRESS_PRESETS.uzi.maxBytes){
+    try{
+      const url=URL.createObjectURL(uziBlob);
+      const dataUrl=await recompressDataUrl(url,'uzi');
+      URL.revokeObjectURL(url);
+      await photoDBPut('uzi',dataUrlToBlob(dataUrl));
+      changed=true;
     }catch(e){}
   }
-  localStorage.setItem('imgMigrated_v2','1');
+  const keys=await photoDBKeys();
+  for(const k of keys){
+    if(!k.startsWith('gal_'))continue;
+    const blob=await photoDBGet(k);
+    if(!blob||blob.size<=IMG_COMPRESS_PRESETS.gallery.maxBytes)continue;
+    try{
+      const url=URL.createObjectURL(blob);
+      const dataUrl=await recompressDataUrl(url,'gallery');
+      URL.revokeObjectURL(url);
+      await photoDBPut(k,dataUrlToBlob(dataUrl));
+      changed=true;
+    }catch(e){}
+  }
+  localStorage.setItem('imgMigrated_v3','1');
   if(changed){
-    loadUziPh();
-    renderGallery(localStorage.getItem('eddDate'));
+    revokeAllPhotoUrls();
+    await loadUziPh();
+    await renderGallery(localStorage.getItem('eddDate'));
   }
   updatePhotoStorageUI();
 }
@@ -2232,17 +2351,20 @@ function formatPhotoBytes(bytes){
   if(bytes<1024*1024)return (bytes/1024).toFixed(1)+' KB';
   return (bytes/(1024*1024)).toFixed(1)+' MB';
 }
-function getPhotoStorageStats(){
-  let uziBytes=0,galBytes=0,galCount=0;
-  const uzi=localStorage.getItem('uziPh');
-  if(uzi)uziBytes=estimateDataUrlBytes(uzi);
+async function getPhotoStorageStats(){
+  let uziBytes=0,galBytes=0,galCount=0,hasUzi=false;
   try{
-    const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');
-    Object.keys(ph).forEach(w=>{if(ph[w]){galBytes+=estimateDataUrlBytes(ph[w]);galCount++;}});
+    const keys=await photoDBKeys();
+    for(const k of keys){
+      const blob=await photoDBGet(k);
+      if(!blob)continue;
+      if(k==='uzi'){uziBytes=blob.size;hasUzi=true;}
+      else if(k.startsWith('gal_')){galBytes+=blob.size;galCount++;}
+    }
   }catch(e){}
-  return{uziBytes,galBytes,totalBytes:uziBytes+galBytes,galCount,hasUzi:!!uzi};
+  return{uziBytes,galBytes,totalBytes:uziBytes+galBytes,galCount,hasUzi};
 }
-function updatePhotoStorageUI(){
+async function updatePhotoStorageUI(){
   const info=document.getElementById('photoStorageInfo');
   const bar=document.getElementById('photoStorageBar');
   const quotaEl=document.getElementById('photoStorageQuota');
@@ -2250,8 +2372,17 @@ function updatePhotoStorageUI(){
   const clearBtn=document.getElementById('clearPhotosBtn');
   const recompBtn=document.getElementById('recompressPhotosBtn');
   if(!info)return;
-  const s=getPhotoStorageStats();
-  const limit=4.5*1024*1024;
+  const s=await getPhotoStorageStats();
+  let limit=50*1024*1024;
+  if(navigator.storage&&navigator.storage.estimate){
+    try{
+      const est=await navigator.storage.estimate();
+      if(est.quota)limit=est.quota;
+      if(quotaEl){
+        quotaEl.textContent=`Хранилище сайта: ${formatPhotoBytes(est.usage||0)} из ~${formatPhotoBytes(est.quota||limit)} — это не занятость памяти телефона`;
+      }
+    }catch(e){if(quotaEl)quotaEl.textContent='';}
+  }else if(quotaEl){quotaEl.textContent='';}
   const pct=s.totalBytes?Math.min(100,Math.round(s.totalBytes/limit*100)):0;
   info.textContent=s.totalBytes
     ?`${formatPhotoBytes(s.totalBytes)} · УЗИ: ${s.hasUzi?1:0} · животик: ${s.galCount}/22`
@@ -2263,13 +2394,6 @@ function updatePhotoStorageUI(){
   if(track)track.setAttribute('aria-valuenow',String(pct));
   if(clearBtn)clearBtn.disabled=!s.totalBytes;
   if(recompBtn)recompBtn.disabled=!s.totalBytes;
-  if(quotaEl&&navigator.storage&&navigator.storage.estimate){
-    navigator.storage.estimate().then(est=>{
-      const used=est.usage||0;
-      const quota=est.quota||0;
-      quotaEl.textContent=quota?`Браузер: ${formatPhotoBytes(used)} из ~${formatPhotoBytes(quota)} на этом сайте`:'';
-    }).catch(()=>{if(quotaEl)quotaEl.textContent='';});
-  }else if(quotaEl){quotaEl.textContent='';}
 }
 function updatePWAStatusUI(){
   const el=document.getElementById('pwaStatusInfo');
@@ -2303,23 +2427,27 @@ function resetUziPhotoUI(){
 }
 async function recompressAllPhotosForce(){
   let changed=false;
-  const uzi=localStorage.getItem('uziPh');
-  if(uzi){
+  const uziBlob=await photoDBGet('uzi');
+  if(uziBlob){
     try{
-      localStorage.setItem('uziPh',await recompressDataUrl(uzi,'uzi'));
+      const url=URL.createObjectURL(uziBlob);
+      const dataUrl=await recompressDataUrl(url,'uzi');
+      URL.revokeObjectURL(url);
+      await photoDBPut('uzi',dataUrlToBlob(dataUrl));
       changed=true;
     }catch(e){}
   }
-  const phRaw=localStorage.getItem('galPh'+V);
-  if(phRaw){
+  const keys=await photoDBKeys();
+  for(const k of keys){
+    if(!k.startsWith('gal_'))continue;
+    const blob=await photoDBGet(k);
+    if(!blob)continue;
     try{
-      const ph=JSON.parse(phRaw);
-      for(const w of Object.keys(ph)){
-        if(!ph[w])continue;
-        ph[w]=await recompressDataUrl(ph[w],'gallery');
-        changed=true;
-      }
-      if(changed)localStorage.setItem('galPh'+V,JSON.stringify(ph));
+      const url=URL.createObjectURL(blob);
+      const dataUrl=await recompressDataUrl(url,'gallery');
+      URL.revokeObjectURL(url);
+      await photoDBPut(k,dataUrlToBlob(dataUrl));
+      changed=true;
     }catch(e){}
   }
   return changed;
@@ -2327,15 +2455,17 @@ async function recompressAllPhotosForce(){
 async function recompressAllPhotosManual(){
   H();
   if(imgProcessing){toast('Подожди — идёт обработка фото');return;}
-  if(!getPhotoStorageStats().totalBytes){toast('Нет фото для оптимизации');return;}
+  const s=await getPhotoStorageStats();
+  if(!s.totalBytes){toast('Нет фото для оптимизации');return;}
   imgProcessing=true;
   showImgCompressOverlay('Оптимизируем все фото…');
   try{
     await recompressAllPhotosForce();
-    loadUziPh();
-    renderGallery(localStorage.getItem('eddDate'));
+    revokeAllPhotoUrls();
+    await loadUziPh();
+    await renderGallery(localStorage.getItem('eddDate'));
     updatePhotoStorageUI();
-    toast('Фото оптимизированы! Память обновлена ✨');
+    toast('Фото оптимизированы! ✨');
   }catch(e){
     toast('Не удалось оптимизировать все фото');
   }finally{
@@ -2343,18 +2473,18 @@ async function recompressAllPhotosManual(){
     hideImgCompressOverlay();
   }
 }
-function clearAllPhotos(){
+async function clearAllPhotos(){
   H();
-  const s=getPhotoStorageStats();
+  const s=await getPhotoStorageStats();
   if(!s.totalBytes){toast('Фото уже удалены');return;}
   if(!confirm('Удалить все фото ('+formatPhotoBytes(s.totalBytes)+')? Дневник, лекарства и настройки останутся.'))return;
-  localStorage.removeItem('uziPh');
-  localStorage.removeItem('galPh'+V);
-  localStorage.removeItem('imgMigrated_v2');
+  await photoDBClear();
+  revokeAllPhotoUrls();
+  localStorage.removeItem('imgMigrated_v3');
   resetUziPhotoUI();
-  renderGallery(localStorage.getItem('eddDate'));
+  await renderGallery(localStorage.getItem('eddDate'));
   updatePhotoStorageUI();
-  toast('Все фото удалены — память освобождена ✨');
+  toast('Все фото удалены ✨');
 }
 function openUziPhotoPicker(){
   if(imgProcessing)return;
@@ -3538,11 +3668,9 @@ function init(){
   renderBag();
   loadStreak();
   loadMoodState();
-  loadUziPh();
   renderMoodHist();
   renderWtChart();
-  renderGallery(edd);
-  migrateStoredPhotos().catch(()=>{}).finally(()=>{updatePhotoStorageUI();updatePWAStatusUI();});
+  initPhotoStorage(edd);
   loadTMsg();
   updateCD(edd);
   checkAnniv();
@@ -3876,35 +4004,36 @@ function renderWtChart(){
 }
 
 // GALLERY — с 19 по 40 неделю
-function renderGallery(edd){
+async function renderGallery(edd){
   const{week}=calcW(edd||localStorage.getItem('eddDate'));
-  const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');
   const gr=document.getElementById('galGrid');if(!gr)return;
-  const count=Object.keys(ph).filter(k=>ph[k]).length;
-  const cntEl=document.getElementById('galCount');
-  if(cntEl)cntEl.textContent=count+' / 22';
+  revokeAllPhotoUrls();
+  let galCount=0;
   let html='';
   for(let w=19;w<=40;w++){
-    const p=ph[w];
+    const url=await getPhotoUrl('gal_'+w);
+    if(url)galCount++;
     const isCur=w===week;
-    const inner=p
-      ?`<div class="gal-img-wrap"><img src="${p}" alt="Неделя ${w}" loading="lazy" decoding="async"></div>`
+    const inner=url
+      ?`<div class="gal-img-wrap"><img src="${url}" alt="Неделя ${w}" loading="lazy" decoding="async"></div>`
       :`<div class="gal-plus">+</div>`;
-    html+=`<div class="gal-item ${p?'hp':''} ${isCur?'current-week':''}" onclick="openGal(${w})">${inner}<div class="gal-wk">${w} нед.${isCur?' ✨':''}</div></div>`;
+    html+=`<div class="gal-item ${url?'hp':''} ${isCur?'current-week':''}" onclick="openGal(${w})">${inner}<div class="gal-wk">${w} нед.${isCur?' ✨':''}</div></div>`;
   }
   gr.innerHTML=html;
+  const cntEl=document.getElementById('galCount');
+  if(cntEl)cntEl.textContent=galCount+' / 22';
 }
-function openGal(w){
+async function openGal(w){
   H();
   curGW=w;
   document.getElementById('galMoT').textContent='📷 Неделя '+w;
-  const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');
   const imgEl=document.getElementById('galPrevImg');
   const emptyEl=document.getElementById('galPrevEmpty');
   const badgeEl=document.getElementById('galPrevBadge');
   const delBtn=document.getElementById('galDel');
-  if(ph[w]){
-    imgEl.src=ph[w];
+  const url=await getPhotoUrl('gal_'+w);
+  if(url){
+    imgEl.src=url;
     imgEl.style.display='block';
     emptyEl.style.display='none';
     badgeEl.style.display='inline-flex';
@@ -3930,29 +4059,15 @@ async function loadGalPhoto(ev){
   showImgCompressOverlay('Сжимаем фото…');
   try{
     const compressed=await compressImageFile(f,'gallery');
-    const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');
-    ph[curGW]=compressed;
-    try{
-      localStorage.setItem('galPh'+V,JSON.stringify(ph));
-      updateGalPreview(compressed);
-      renderGallery(localStorage.getItem('eddDate'));
-      updatePhotoStorageUI();
-      toast('Фото недели '+curGW+' сохранено! 📷');
-    }catch(err){
-      try{
-        const solo={};solo[curGW]=compressed;
-        localStorage.setItem('galPh'+V,JSON.stringify(solo));
-        updateGalPreview(compressed);
-        toast('Память заполнена — другие фото очищены. 📷 '+curGW+' сохранено.');
-        renderGallery(localStorage.getItem('eddDate'));
-        updatePhotoStorageUI();
-      }catch(e2){
-        toast('Фото не сохранилось — память переполнена 😔');
-      }
-    }
+    await savePhoto('gal_'+curGW,compressed);
+    updateGalPreview(compressed);
+    await renderGallery(localStorage.getItem('eddDate'));
+    updatePhotoStorageUI();
+    toast('Фото недели '+curGW+' сохранено! 📷');
   }catch(err){
     console.error('loadGalPhoto',err);
-    toast(compressErrorMessage(err));
+    if(err&&err.message==='IDB_PUT')toast('Не удалось сохранить фото — попробуй «Оптимизировать все фото» в настройках');
+    else toast(compressErrorMessage(err));
   }finally{
     imgProcessing=false;
     setGalMoLoading(false);
@@ -3960,7 +4075,15 @@ async function loadGalPhoto(ev){
     resetFileInput(input);
   }
 }
-function deleteGalPhoto(){H();if(curGW==null)return;const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');delete ph[curGW];localStorage.setItem('galPh'+V,JSON.stringify(ph));renderGallery(localStorage.getItem('eddDate'));updatePhotoStorageUI();closeGal();toast("Фото удалено")}
+async function deleteGalPhoto(){
+  H();if(curGW==null)return;
+  await photoDBDelete('gal_'+curGW);
+  revokePhotoUrl('gal_'+curGW);
+  await renderGallery(localStorage.getItem('eddDate'));
+  updatePhotoStorageUI();
+  closeGal();
+  toast('Фото удалено');
+}
 
 // UZI PHOTO
 async function loadUziPhoto(ev){
@@ -3972,16 +4095,14 @@ async function loadUziPhoto(ev){
   showImgCompressOverlay('Сжимаем фото УЗИ…');
   try{
     const compressed=await compressImageFile(f,'uzi');
-    try{localStorage.setItem('uziPh',compressed)}catch(er){
-      toast('Не хватает места для сохранения фото 😔');
-      return;
-    }
+    await savePhoto('uzi',compressed);
     showUziPh(compressed);
     updatePhotoStorageUI();
     toast('Фото нашего малыша сохранено! 💕');
   }catch(err){
     console.error('loadUziPhoto',err);
-    toast(compressErrorMessage(err));
+    if(err&&err.message==='IDB_PUT')toast('Не удалось сохранить фото — это лимит браузера для сайта, не память телефона. Попробуй удалить старые фото в настройках.');
+    else toast(compressErrorMessage(err));
   }finally{
     imgProcessing=false;
     setPfLoading(false);
@@ -3989,7 +4110,10 @@ async function loadUziPhoto(ev){
     resetFileInput(input);
   }
 }
-function loadUziPh(){const p=localStorage.getItem('uziPh');if(p)showUziPh(p)}
+async function loadUziPh(){
+  const url=await getPhotoUrl('uzi');
+  if(url)showUziPh(url);
+}
 function showUziPh(src){
   if(uziPreviewBlobUrl){URL.revokeObjectURL(uziPreviewBlobUrl);uziPreviewBlobUrl=null;}
   const pf=document.getElementById('photoF');
@@ -4171,14 +4295,15 @@ function savePhone(){H();const p=document.getElementById('phoneIn').value;if(p){
 function saveDiary(){H();localStorage.setItem('diaryEntry',document.getElementById('diaryT').value);toast("Письмо сохранено в сердце! 💖")}
 function switchTab(id,btn){H();document.querySelectorAll('.tab-c').forEach(e=>e.classList.remove('act'));document.getElementById('tab-'+id).classList.add('act');document.querySelectorAll('.nb').forEach(e=>e.classList.remove('act'));btn.classList.add('act');if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();}window.scrollTo({top:0,behavior:'smooth'})}
 function toggleTheme(){H();const d=document.getElementById('thmTog').checked;if(d){document.documentElement.classList.add('dark');localStorage.setItem('theme','dark')}else{document.documentElement.classList.remove('dark');localStorage.setItem('theme','light')}}
-function resetAll(){
+async function resetAll(){
   H();
   if(!confirm("Родная, это удалит все данные и фотографии. Точно сбрасываем?"))return;
-  // Удаляем только ключи этого приложения, не трогая другие сайты
+  revokeAllPhotoUrls();
+  try{await photoDBClear();}catch(e){}
   const toDelete=[];
   for(let i=0;i<localStorage.length;i++){
     const k=localStorage.key(i);
-    if(k&&(k.includes(V)||['eddDate','husbandPhone','diaryEntry','theme','babyGender','heightCm','uziPh','imgMigrated_v2'].indexOf(k)>=0)){
+    if(k&&(k.includes(V)||['eddDate','husbandPhone','diaryEntry','theme','babyGender','heightCm','uziPh','galPh_v16','photosInIDB_v1','imgMigrated_v2','imgMigrated_v3'].indexOf(k)>=0)){
       toDelete.push(k);
     }
   }
