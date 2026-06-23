@@ -1567,6 +1567,42 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .coach-sub{font-size:13px;font-weight:700;color:var(--t3);line-height:1.55;margin-bottom:16px}
 .coach-btn{width:100%;padding:14px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer}
 
+/* ── 46. PREMIUM v7 — weekly wellness, trends, contractions ── */
+.week-wellness{margin:0 15px 14px;padding:16px 18px;background:linear-gradient(135deg,rgba(30,156,176,.08),rgba(232,50,90,.05));border:1px solid var(--cb);border-radius:22px;box-shadow:var(--sh2)}
+.week-wellness-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.week-wellness-title{font-size:11px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px}
+.week-wellness-wk{font-size:13px;font-weight:900;color:var(--teal)}
+.week-wellness-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.week-stat{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;background:var(--card);border:1px solid var(--cb);font-size:11px;font-weight:800;color:var(--t2);line-height:1.35}
+.week-stat-ico{font-size:18px;line-height:1;flex-shrink:0}
+.week-stat b{color:var(--rose);font-weight:900}
+.perfect-day-badge{display:none;margin:0 15px 14px;padding:12px 16px;border-radius:18px;background:linear-gradient(135deg,rgba(82,184,130,.15),rgba(45,122,85,.08));border:1px solid rgba(45,122,85,.25);text-align:center;font-size:13px;font-weight:900;color:var(--sage);animation:cIn .5s ease}
+.perfect-day-badge.show{display:block}
+.trend-block{margin-top:16px;padding-top:14px;border-top:1px solid var(--cb)}
+.trend-label{font-size:10px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.symptom-trend{display:grid;grid-template-columns:32px repeat(7,1fr);gap:4px;align-items:center}
+.symptom-trend-lbl{font-size:9px;font-weight:800;color:var(--t3);line-height:1.2;padding-right:4px}
+.symptom-trend-day{font-size:8px;font-weight:900;color:var(--t3);text-align:center;margin-bottom:2px}
+.symptom-trend-cell{width:100%;aspect-ratio:1;border-radius:6px;background:var(--bg2);border:1px solid var(--cb);transition:background .2s}
+.symptom-trend-cell.on{background:linear-gradient(135deg,rgba(232,50,90,.35),rgba(232,50,90,.15));border-color:rgba(232,50,90,.35)}
+.bp-trend{display:flex;align-items:flex-end;gap:6px;height:72px;padding:0 2px}
+.bp-trend-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.bp-trend-bar{width:100%;max-width:28px;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,var(--teal2),var(--teal));min-height:8px;transition:height .4s}
+.bp-trend-bar.warn{background:linear-gradient(180deg,#FF8FA3,var(--rose))}
+.bp-trend-lbl{font-size:8px;font-weight:900;color:var(--t3)}
+.bp-trend-val{font-size:9px;font-weight:900;color:var(--t2);line-height:1}
+.contr-card .contr-big{font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:var(--rose);text-align:center;line-height:1.1;margin:8px 0}
+.contr-meta{display:flex;justify-content:space-around;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.contr-stat{text-align:center;padding:10px 12px;border-radius:14px;background:var(--bg2);border:1px solid var(--cb);flex:1;min-width:88px}
+.contr-stat-val{font-size:18px;font-weight:900;color:var(--rose);font-variant-numeric:tabular-nums}
+.contr-stat-lbl{font-size:9px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.contr-btn{width:100%;padding:16px;border:none;border-radius:18px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 8px 24px rgba(232,50,90,.32);margin-bottom:10px}
+.contr-btn.secondary{background:var(--bg2);color:var(--t2);border:2px solid var(--cb);box-shadow:none;font-size:13px;padding:12px}
+.contr-warn{padding:12px 14px;border-radius:14px;background:rgba(232,50,90,.08);border:1px solid rgba(232,50,90,.2);font-size:12px;font-weight:800;color:var(--rose);line-height:1.5;margin-top:10px;display:none}
+.contr-warn.show{display:block}
+.contr-hist{margin-top:14px;display:flex;flex-direction:column;gap:6px}
+.contr-hist-item{display:flex;justify-content:space-between;padding:8px 12px;border-radius:12px;font-size:11px;font-weight:800;background:var(--bg2);border:1px solid var(--cb);color:var(--t2)}
+
 /* ══ END PREMIUM GLASS SYSTEM ══ */
 
 </style>
@@ -1682,6 +1718,16 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <button type="button" class="home-qpill" onclick="goHomeSection('wellness')">🌬️ Дыхание</button>
         <button type="button" class="home-qpill" onclick="goHomeSection('daily')">💧 Вода</button>
         <button type="button" class="home-qpill" onclick="goHomeSection('support')">💌 Письма</button>
+      </div>
+
+      <div class="perfect-day-badge" id="perfectDayBadge" role="status">🌟 Идеальный день заботы — ты молодец!</div>
+
+      <div class="week-wellness" id="weekWellness" role="region" aria-label="Сводка за неделю">
+        <div class="week-wellness-head">
+          <span class="week-wellness-title">Твоя неделя</span>
+          <span class="week-wellness-wk" id="weekWellnessWk">— нед.</span>
+        </div>
+        <div class="week-wellness-grid" id="weekWellnessGrid"></div>
       </div>
 
       <div id="smartTips" style="margin-top:4px"></div>
@@ -2002,6 +2048,27 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
             <button type="button" class="wt-save-btn" style="flex:0 0 auto;padding:12px 14px" onclick="saveBP()">Записать</button>
           </div>
           <div class="bp-log" id="bpLogEl">Давление ещё не записывали сегодня</div>
+          <div class="trend-block">
+            <div class="trend-label">Симптомы · 7 дней</div>
+            <div id="symptomTrend"></div>
+          </div>
+          <div class="trend-block">
+            <div class="trend-label">Давление · 7 дней</div>
+            <div class="bp-trend" id="bpTrend"></div>
+          </div>
+        </div></div>
+        <div class="card contr-card"><div class="cb">
+          <div class="sh">⏱️ Таймер схваток</div>
+          <div class="ssub">На случай родов — отмечай каждую схватку, приложение посчитает интервал</div>
+          <div class="contr-meta">
+            <div class="contr-stat"><div class="contr-stat-val" id="contrCount">0</div><div class="contr-stat-lbl">за сессию</div></div>
+            <div class="contr-stat"><div class="contr-stat-val" id="contrLast">—</div><div class="contr-stat-lbl">интервал</div></div>
+            <div class="contr-stat"><div class="contr-stat-val" id="contrAvg">—</div><div class="contr-stat-lbl">средний</div></div>
+          </div>
+          <button type="button" class="contr-btn" id="contrAddBtn" onclick="addContraction()">💗 Была схватка</button>
+          <button type="button" class="contr-btn secondary" onclick="endContrSession()">Завершить сессию</button>
+          <div class="contr-warn" id="contrWarn">⚠️ Схватки частые и регулярные — позвони врачу или мне прямо сейчас!</div>
+          <div class="contr-hist" id="contrHist"></div>
         </div></div>
         <div class="card"><div class="cb">
           <div class="sh">📊 История настроений</div>
@@ -3915,8 +3982,10 @@ function init(){
   renderJournalLog();
   initHomeSections();
   ensureDefaultAppts();
+  ensureMilestoneAppts();
   renderAppts();
   renderSymptomsUI();
+  renderContrUI();
   initPhotoStorage(edd);
   loadKickSession();
   updateTodayDash();
@@ -4585,6 +4654,60 @@ function updateTodayDash(){
   if(elMoodIco)elMoodIco.textContent=mood||'🤍';
   getPhotoStorageStats().then(st=>{if(elGal)elGal.textContent=String((st.hasUzi?1:0)+st.galCount);}).catch(()=>{});
   updateNextActionCard();
+  updatePerfectDayBadge();
+  renderWeekWellness();
+}
+function updatePerfectDayBadge(){
+  const el=document.getElementById('perfectDayBadge');
+  if(!el)return;
+  const state=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
+  const {active}=getScheduleMeds();
+  let medPct=100;
+  if(active.length){
+    let done=0;active.forEach(t=>{if(state[t.id])done++});
+    medPct=Math.round(done/active.length*100);
+  }
+  const w=JSON.parse(localStorage.getItem('water'+V)||'[]');
+  const mood=localStorage.getItem('mood'+V);
+  const perfect=medPct===100&&w.length>=8&&!!mood;
+  el.classList.toggle('show',perfect);
+}
+function getLast7DayKeys(){
+  const keys=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    keys.push(d.toISOString().slice(0,10));
+  }
+  return keys;
+}
+function renderWeekWellness(){
+  const wkEl=document.getElementById('weekWellnessWk');
+  const grid=document.getElementById('weekWellnessGrid');
+  if(!grid)return;
+  const edd=localStorage.getItem('eddDate');
+  const {week}=calcW(edd);
+  if(wkEl)wkEl.textContent=week+' нед.';
+  const keys=getLast7DayKeys();
+  const moodH=JSON.parse(localStorage.getItem('moodH'+V)||'{}');
+  const moodCount=keys.filter(k=>moodH[k]).length;
+  const kickHist=JSON.parse(localStorage.getItem('kickHist'+V)||'[]');
+  const kickWeek=kickHist.filter(h=>keys.includes(h.date.slice(0,10))).length;
+  const bpLog=loadBPLog();
+  const bpCount=keys.filter(k=>bpLog[k]).length;
+  const streak=localStorage.getItem('streak'+V)||'0';
+  const waterHist=JSON.parse(localStorage.getItem('waterHist'+V)||'{}');
+  const todayKey=keys[6];
+  const todayWater=JSON.parse(localStorage.getItem('water'+V)||'[]').length;
+  const waterDays=keys.filter(k=>(k===todayKey?todayWater:waterHist[k])>=8).length;
+  const g=localStorage.getItem('babyGender')||'n';
+  const streakLbl=genderMsgs[g]?.streakLabel||'дней подряд';
+  grid.innerHTML=[
+    {ico:'🔥',txt:'<b>'+streak+'</b> '+streakLbl.split(' ').slice(-2).join(' ')},
+    {ico:'😊',txt:'<b>'+moodCount+'/7</b> настроений'},
+    {ico:'💧',txt:'<b>'+waterDays+'/7</b> дней норма воды'},
+    {ico:'🩺',txt:'<b>'+bpCount+'/7</b> замеров давления'},
+    {ico:'🦶',txt:'<b>'+kickWeek+'</b> сессий шевелений'}
+  ].map(s=>'<div class="week-stat"><span class="week-stat-ico">'+s.ico+'</span><span>'+s.txt+'</span></div>').join('');
 }
 let nextActionHandler=null;
 function setNextAction(ico,lbl,txt,handler,urgent){
@@ -4738,8 +4861,49 @@ function loadAppts(){
 }
 function saveAppts(list){localStorage.setItem(APPT_KEY,JSON.stringify(list));}
 function ensureDefaultAppts(){
-  if(loadAppts().length)return;
-  saveAppts([{id:Date.now(),date:SCREENING_DATE,title:'Скрининг',done:false}]);
+  const list=loadAppts();
+  if(list.length)return;
+  saveAppts(buildDefaultAppts());
+}
+function buildDefaultAppts(){
+  const appts=[{id:Date.now(),date:SCREENING_DATE,title:'Скрининг 1 триместра',done:false}];
+  const edd=localStorage.getItem('eddDate');
+  if(edd){
+    getMilestoneDates(edd).forEach((m,i)=>{
+      appts.push({id:Date.now()+i+1,date:m.date,title:m.title,done:false});
+    });
+  }
+  return appts;
+}
+function getMilestoneDates(edd){
+  const eD=new Date(edd+'T12:00:00');
+  if(isNaN(eD.getTime()))return[];
+  const conception=new Date(eD.getTime()-280*86400000);
+  const addDays=(n)=>{
+    const d=new Date(conception.getTime()+n*86400000);
+    return d.toISOString().slice(0,10);
+  };
+  const milestones=[
+    {day:140,title:'УЗИ 2 триместра (20 нед.)'},
+    {day:168,title:'Глюкозный тест (24 нед.)'},
+    {day:196,title:'Консультация 3 триместра'},
+    {day:252,title:'УЗИ перед родами (36 нед.)'}
+  ];
+  const today=new Date().toISOString().slice(0,10);
+  return milestones.map(m=>({date:addDays(m.day),title:m.title})).filter(m=>m.date>=today||Math.abs((new Date(m.date)-new Date())/86400000)<=14);
+}
+function ensureMilestoneAppts(){
+  if(localStorage.getItem('apptsMigrated_v7')==='1')return;
+  const edd=localStorage.getItem('eddDate');
+  if(!edd){localStorage.setItem('apptsMigrated_v7','1');return;}
+  const list=loadAppts();
+  const titles=new Set(list.map(a=>a.title));
+  const toAdd=getMilestoneDates(edd).filter(m=>![...titles].some(t=>t.includes(m.title.split('(')[0].trim())||m.title.includes(t.split('(')[0].trim())));
+  if(toAdd.length){
+    toAdd.forEach((m,i)=>list.push({id:Date.now()+i+100,date:m.date,title:m.title,done:false}));
+    saveAppts(list);
+  }
+  localStorage.setItem('apptsMigrated_v7','1');
 }
 function renderAppts(){
   const el=document.getElementById('apptList');
@@ -4851,6 +5015,130 @@ function renderSymptomsUI(){
       bpEl.textContent='Давление ещё не записывали сегодня';
     }
   }
+  renderSymptomTrend();
+  renderBPTrend();
+}
+function renderSymptomTrend(){
+  const el=document.getElementById('symptomTrend');
+  if(!el)return;
+  const log=loadSymptomsLog();
+  const keys=getLast7DayKeys();
+  let html='<div></div>';
+  keys.forEach(k=>{
+    const dt=new Date(k+'T12:00:00');
+    html+='<div class="symptom-trend-day">'+dt.getDate()+'</div>';
+  });
+  SYMPTOM_TYPES.forEach(s=>{
+    html+='<div class="symptom-trend-lbl">'+s.emoji+'</div>';
+    keys.forEach(k=>{
+      const on=(log[k]||[]).includes(s.id);
+      html+='<div class="symptom-trend-cell'+(on?' on':'')+'" title="'+k+': '+s.label+'"></div>';
+    });
+  });
+  el.innerHTML=html;
+}
+function renderBPTrend(){
+  const el=document.getElementById('bpTrend');
+  if(!el)return;
+  const log=loadBPLog();
+  const keys=getLast7DayKeys();
+  const vals=keys.map(k=>log[k]).filter(Boolean);
+  if(!vals.length){
+    el.innerHTML='<div class="empty-sub" style="width:100%;text-align:center;padding:8px 0">Записывай давление — появится график</div>';
+    return;
+  }
+  const maxSys=Math.max(...vals.map(v=>v.sys),140);
+  el.innerHTML=keys.map(k=>{
+    const b=log[k];
+    if(!b)return '<div class="bp-trend-col"><div class="bp-trend-bar" style="height:8px;opacity:.2"></div><div class="bp-trend-lbl">'+new Date(k+'T12:00:00').getDate()+'</div></div>';
+    const warn=b.sys>=140||b.dia>=90;
+    const h=Math.max(12,Math.round(b.sys/maxSys*56));
+    return '<div class="bp-trend-col"><div class="bp-trend-val">'+b.sys+'</div><div class="bp-trend-bar'+(warn?' warn':'')+'" style="height:'+h+'px"></div><div class="bp-trend-lbl">'+new Date(k+'T12:00:00').getDate()+'</div></div>';
+  }).join('');
+}
+const CONTR_KEY='contrHist'+V;
+const CONTR_SESSION='contrSession'+V;
+function formatContrInterval(ms){
+  if(!ms||ms<0)return '—';
+  const sec=Math.floor(ms/1000);
+  const m=Math.floor(sec/60);
+  const s=sec%60;
+  return m+':'+String(s).padStart(2,'0');
+}
+function loadContrSession(){
+  try{const r=localStorage.getItem(CONTR_SESSION);if(r)return JSON.parse(r);}catch(e){}
+  return null;
+}
+function addContraction(){
+  H();
+  if(navigator.vibrate)navigator.vibrate([12,40,12]);
+  const now=Date.now();
+  let sess=loadContrSession();
+  if(!sess)sess={start:now,times:[]};
+  sess.times.push(now);
+  localStorage.setItem(CONTR_SESSION,JSON.stringify(sess));
+  renderContrUI();
+  toast('Схватка отмечена · '+sess.times.length+' за сессию');
+  if(sess.times.length>=3){
+    const intervals=[];
+    for(let i=1;i<sess.times.length;i++)intervals.push(sess.times[i]-sess.times[i-1]);
+    const avg=intervals.reduce((a,b)=>a+b,0)/intervals.length;
+    if(avg<300000&&intervals.every(x=>x<600000)){
+      const warn=document.getElementById('contrWarn');
+      if(warn)warn.classList.add('show');
+      toast('Схватки частые — позвони врачу ⚠️');
+    }
+  }
+}
+function endContrSession(){
+  H();
+  const sess=loadContrSession();
+  if(!sess||!sess.times.length){toast('Сначала отметь хотя бы одну схватку');return;}
+  const hist=JSON.parse(localStorage.getItem(CONTR_KEY)||'[]');
+  const intervals=[];
+  for(let i=1;i<sess.times.length;i++)intervals.push(sess.times[i]-sess.times[i-1]);
+  const avgMs=intervals.length?intervals.reduce((a,b)=>a+b,0)/intervals.length:0;
+  hist.unshift({date:new Date().toISOString(),count:sess.times.length,avgMin:avgMs?Math.round(avgMs/60000):0,duration:Math.round((sess.times[sess.times.length-1]-sess.start)/60000)});
+  localStorage.setItem(CONTR_KEY,JSON.stringify(hist.slice(0,15)));
+  localStorage.removeItem(CONTR_SESSION);
+  const warn=document.getElementById('contrWarn');
+  if(warn)warn.classList.remove('show');
+  renderContrUI();
+  toast('Сессия сохранена в истории ✓');
+}
+function renderContrUI(){
+  const sess=loadContrSession();
+  const countEl=document.getElementById('contrCount');
+  const lastEl=document.getElementById('contrLast');
+  const avgEl=document.getElementById('contrAvg');
+  const histEl=document.getElementById('contrHist');
+  if(sess&&sess.times.length){
+    if(countEl)countEl.textContent=sess.times.length;
+    const intervals=[];
+    for(let i=1;i<sess.times.length;i++)intervals.push(sess.times[i]-sess.times[i-1]);
+    if(lastEl)lastEl.textContent=sess.times.length>1?formatContrInterval(intervals[intervals.length-1]):'первая';
+    if(avgEl)avgEl.textContent=intervals.length?formatContrInterval(intervals.reduce((a,b)=>a+b,0)/intervals.length):'—';
+  }else{
+    if(countEl)countEl.textContent='0';
+    if(lastEl)lastEl.textContent='—';
+    if(avgEl)avgEl.textContent='—';
+  }
+  if(histEl){
+    const hist=JSON.parse(localStorage.getItem(CONTR_KEY)||'[]');
+    if(!hist.length){histEl.innerHTML='<div class="empty-sub" style="text-align:center;padding:8px 0">История сессий появится здесь</div>';return;}
+    histEl.innerHTML=hist.slice(0,5).map(h=>{
+      const d=new Date(h.date);
+      return '<div class="contr-hist-item"><span>'+d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'</span><span>'+h.count+' схв.</span><span>'+(h.avgMin?h.avgMin+' мин':'—')+'</span></div>';
+    }).join('');
+  }
+}
+function getContrReportLines(){
+  const hist=JSON.parse(localStorage.getItem(CONTR_KEY)||'[]');
+  if(!hist.length)return['  (нет записей)'];
+  return hist.slice(0,5).map(h=>{
+    const d=new Date(h.date);
+    return '  '+d.toLocaleDateString('ru-RU')+' '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+': '+h.count+' схваток, ср. '+h.avgMin+' мин, длит. '+h.duration+' мин';
+  });
 }
 function getSymptomsReportLines(){
   const log=loadSymptomsLog();
@@ -5156,6 +5444,29 @@ function checkNotifs(){
 function checkReset(){
   const d=new Date().toDateString();
   if(localStorage.getItem('lastD'+V)!==d){
+    const prevDay=localStorage.getItem('lastD'+V);
+    if(prevDay){
+      const prevIso=new Date(new Date().getTime()-86400000).toISOString().slice(0,10);
+      const prevWater=JSON.parse(localStorage.getItem('water'+V)||'[]');
+      if(prevWater.length){
+        let wh=JSON.parse(localStorage.getItem('waterHist'+V)||'{}');
+        wh[prevIso]=prevWater.length;
+        const wk=Object.keys(wh).sort().slice(-30);
+        const trimmed={};wk.forEach(k=>trimmed[k]=wh[k]);
+        localStorage.setItem('waterHist'+V,JSON.stringify(trimmed));
+      }
+      const state=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
+      const yDate=new Date(prevDay);
+      const {active}=getScheduleMeds(yDate);
+      if(active.length){
+        let done=0;active.forEach(t=>{if(state[t.id])done++});
+        let mh=JSON.parse(localStorage.getItem('medHist'+V)||'{}');
+        mh[prevIso]=Math.round(done/active.length*100);
+        const mk=Object.keys(mh).sort().slice(-30);
+        const mtrim={};mk.forEach(k=>mtrim[k]=mh[k]);
+        localStorage.setItem('medHist'+V,JSON.stringify(mtrim));
+      }
+    }
     if(localStorage.getItem('finished'+V)!=='true'&&localStorage.getItem('lastD'+V))localStorage.setItem('streak'+V,'0');
     localStorage.setItem('tasks'+V,'{}');
     localStorage.setItem('water'+V,'[]');
@@ -5181,8 +5492,8 @@ function switchTab(id,btn){
   btn.setAttribute('aria-selected','true');
   btn.setAttribute('aria-current','page');
   if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();}
-  if(id==='journal'){renderJournalLog();renderAppts();renderSymptomsUI();}
-  if(id==='home')updateTodayDash();
+  if(id==='journal'){renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();}
+  if(id==='home'){updateTodayDash();renderWeekWellness();}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function toggleTheme(){H();const d=document.getElementById('thmTog').checked;if(d){document.documentElement.classList.add('dark');localStorage.setItem('theme','dark')}else{document.documentElement.classList.remove('dark');localStorage.setItem('theme','light')}}
@@ -5408,6 +5719,9 @@ function buildReportText(){
     '─── ШЕВЕЛЕНИЯ ───',
     '  Сегодня: '+kicks+' (норма ≥10 за 2ч)',
     ...(kickHist.length?['  История:',...kickHist]:[]),
+    '',
+    '─── СХВАТКИ (история) ───',
+    ...getContrReportLines(),
     '',
     '─── ДНЕВНИК ───',
     ...(journal.length?journal:['  (нет записей)']),
