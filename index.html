@@ -1617,6 +1617,40 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .data-status-item b{display:block;font-size:16px;font-weight:900;color:var(--rose);margin-bottom:2px}
 .hero-streak-sub{display:block;font-size:9px;font-weight:800;opacity:.85;margin-top:1px;text-align:center;line-height:1.2}
 
+/* ── 48. PREMIUM v9 — milestone, wellness score, med chart, visit prep ── */
+.milestone-card{display:flex;align-items:center;gap:14px;margin:0 15px 14px;padding:16px 18px;border-radius:22px;background:linear-gradient(135deg,rgba(155,47,190,.12),rgba(232,50,90,.08));border:1px solid rgba(155,47,190,.22);box-shadow:var(--sh2);cursor:pointer;transition:transform .2s}
+.milestone-card:active{transform:scale(.98)}
+.milestone-card.urgent{border-color:rgba(232,50,90,.35);background:linear-gradient(135deg,rgba(232,50,90,.1),rgba(255,240,245,.92))}
+.milestone-ico{font-size:32px;line-height:1;flex-shrink:0}
+.milestone-body{flex:1;min-width:0}
+.milestone-lbl{font-size:9px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:3px}
+.milestone-title{font-size:15px;font-weight:900;color:var(--t1);line-height:1.35;margin-bottom:4px}
+.milestone-countdown{font-size:12px;font-weight:800;color:var(--plum)}
+.milestone-countdown b{color:var(--rose);font-size:14px}
+.wellness-head-right{display:flex;align-items:center;gap:8px}
+.wellness-score{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--plum));color:#fff;font-size:13px;font-weight:900;box-shadow:0 4px 14px rgba(232,50,90,.3);flex-shrink:0}
+.week-share-btn{padding:8px 12px;border:1px solid var(--cb);border-radius:999px;background:var(--card);font-family:'Nunito',sans-serif;font-size:10px;font-weight:900;color:var(--t2);cursor:pointer;white-space:nowrap}
+.med-week-chart{display:flex;align-items:flex-end;gap:6px;height:64px;margin-top:14px;padding:0 2px}
+.med-week-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.med-week-bar{width:100%;max-width:24px;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,var(--rose2),var(--rose));min-height:6px;transition:height .4s}
+.med-week-bar.partial{background:linear-gradient(180deg,#FFB0C4,rgba(232,50,90,.45))}
+.med-week-bar.empty{background:var(--bg2);border:1px dashed var(--cb);min-height:6px}
+.med-week-lbl{font-size:8px;font-weight:900;color:var(--t3)}
+.med-week-val{font-size:9px;font-weight:900;color:var(--rose)}
+.bag-search{width:100%;padding:12px 14px;margin-bottom:14px;border:2px solid var(--cb);border-radius:16px;background:var(--bg2);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--t1);outline:none}
+.bag-search:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(232,50,90,.1)}
+.bag-empty-filter{text-align:center;padding:20px;font-size:13px;font-weight:700;color:var(--t3)}
+.visit-prep-card{border:1.5px solid rgba(30,156,176,.25);background:linear-gradient(135deg,rgba(30,156,176,.06),rgba(232,50,90,.03))}
+.visit-prep-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--cb);cursor:pointer}
+.visit-prep-item:last-child{border:none}
+.visit-prep-chk{width:22px;height:22px;border-radius:7px;border:2px solid var(--teal2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.visit-prep-chk.done{background:var(--teal);border-color:var(--teal)}
+.visit-prep-chk.done::after{content:'✓';color:#fff;font-size:11px;font-weight:900}
+.visit-prep-lbl{font-size:13px;font-weight:800;color:var(--t1);line-height:1.4;flex:1}
+.visit-prep-lbl.done{text-decoration:line-through;opacity:.5}
+.backup-reminder{padding:12px 14px;border-radius:14px;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);font-size:12px;font-weight:800;color:#8A5800;line-height:1.55;margin-bottom:12px;display:none}
+.backup-reminder.show{display:block}
+
 /* ══ END PREMIUM GLASS SYSTEM ══ */
 
 </style>
@@ -1726,6 +1760,15 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <button type="button" class="next-action-btn" id="naBtn" onclick="runNextAction()" aria-label="Перейти">→</button>
       </div>
 
+      <div class="milestone-card" id="milestoneCard" style="display:none" onclick="runMilestoneAction()" role="button" tabindex="0" aria-label="Ближайшее событие">
+        <div class="milestone-ico" id="msIco">🗓️</div>
+        <div class="milestone-body">
+          <div class="milestone-lbl" id="msLbl">Ближайшее</div>
+          <div class="milestone-title" id="msTitle">—</div>
+          <div class="milestone-countdown" id="msCountdown">—</div>
+        </div>
+      </div>
+
       <div class="home-quick-nav" role="navigation" aria-label="Быстрые переходы">
         <button type="button" class="home-qpill" onclick="switchTabById('meds')">💊 Забота</button>
         <button type="button" class="home-qpill" onclick="switchTabById('journal')">📓 Дневник</button>
@@ -1739,7 +1782,11 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
       <div class="week-wellness" id="weekWellness" role="region" aria-label="Сводка за неделю">
         <div class="week-wellness-head">
           <span class="week-wellness-title">Твоя неделя</span>
-          <span class="week-wellness-wk" id="weekWellnessWk">— нед.</span>
+          <div class="wellness-head-right">
+            <button type="button" class="week-share-btn" onclick="shareWeekSummary()" aria-label="Поделиться сводкой">📤 Сводка</button>
+            <div class="wellness-score" id="wellnessScore" title="Индекс заботы за неделю">—</div>
+            <span class="week-wellness-wk" id="weekWellnessWk">— нед.</span>
+          </div>
         </div>
         <div class="week-wellness-grid" id="weekWellnessGrid"></div>
       </div>
@@ -1996,6 +2043,10 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           </div>
           <div class="pg-track"><div class="pg-fill" id="pgBar" style="width:0%"></div></div>
           <div id="medsInfo" style="font-size:12px;font-weight:700;color:var(--t3);margin-top:10px;text-align:center"></div>
+          <div class="trend-block" style="margin-top:14px;padding-top:0;border:none">
+            <div class="trend-label">Приём препаратов · 7 дней</div>
+            <div class="med-week-chart" id="medWeekChart"></div>
+          </div>
         </div></div>
         <div id="schedC"></div>
         <div id="finishC" style="display:none;margin-top:14px;animation:cIn .5s ease backwards">
@@ -2033,6 +2084,11 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
       <div style="padding-top:16px">
         <div class="page-h1">Дневник</div>
         <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:18px">История настроений, вес, записи и наш животик по неделям</p>
+        <div class="card visit-prep-card" id="visitPrepCard" style="display:none"><div class="cb">
+          <div class="sh">✅ Подготовка к визиту</div>
+          <div class="ssub" id="visitPrepSub">Отметь что уже готово — не забудешь ничего важного</div>
+          <div id="visitPrepList"></div>
+        </div></div>
         <div class="card"><div class="cb">
           <div class="sh">📓 Записи по дням</div>
           <div class="ssub">Мысли, события и воспоминания — с датой и неделей беременности</div>
@@ -2146,6 +2202,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           <button type="button" class="bag-add-btn" onclick="openBagForm(null,false)">＋ Добавить вещь</button>
           <button type="button" class="bag-add-btn secondary" onclick="openBagForm(null,true)">＋ Раздел</button>
         </div>
+        <input type="search" class="bag-search" id="bagSearch" placeholder="🔍 Найти вещь в списке…" oninput="renderBag()" aria-label="Поиск по сумке">
         <div class="card"><div class="cb">
           <div class="bag-prog-head"><span>📦 Прогресс сборки</span><span id="bagProgPct" style="color:var(--rose)">0%</span></div>
           <div class="pg-track"><div class="pg-fill" id="bagProgBar" style="width:0%"></div></div>
@@ -2230,6 +2287,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <div class="card"><div class="cb">
           <div class="photo-storage-title">💾 Резервная копия</div>
           <p class="photo-storage-sub">Сохрани все записи и фото в файл — можно перенести на новый телефон или восстановить после сброса.</p>
+          <div class="backup-reminder" id="backupReminder">💡 Давно не делала резервную копию — сохрани файл на всякий случай!</div>
           <div class="backup-actions">
             <button type="button" class="backup-btn backup-btn-primary" onclick="exportBackup()">Скачать резервную копию</button>
             <label class="backup-btn" style="text-align:center;cursor:pointer;margin:0">
@@ -2342,7 +2400,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
 <script>
 const V="_v16";
-const APP_DATA_VER='v8';
+const APP_DATA_VER='v9';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -4091,6 +4149,7 @@ function init(){
   renderAppts();
   renderSymptomsUI();
   renderContrUI();
+  renderVisitPrep();
   initPhotoStorage(edd);
   loadKickSession();
   updateTodayDash();
@@ -4099,17 +4158,19 @@ function init(){
   updateCD(edd);
   checkAnniv();
   updateDataStatusUI();
+  updateBackupReminder();
   if(migrated>0)toast('Твои записи и настройки сохранены ✓');
   else if(localStorage.getItem('dataMigrateToast_v8')!=='1'&&localStorage.getItem('eddDate')){
     localStorage.setItem('dataMigrateToast_v8','1');
   }
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();}});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();}});
   if(!_appTimersSet){
     _appTimersSet=true;
     setInterval(()=>updateCD(localStorage.getItem('eddDate')||edd),60000);
     setInterval(checkNotifs,30000);
     setInterval(updateMedNextPill,60000);
     setInterval(updateNextActionCard,60000);
+    setInterval(updateMilestoneCard,60000);
   }
   setTimeout(showCoachIfNeeded,3000);
 }
@@ -4285,6 +4346,7 @@ function updateAll(edd){
   document.getElementById('smartTips').innerHTML=tips.slice(0,3).map(t=>`<div class="stip ${t.c}"><div class="stip-ic">${t.i}</div><div class="stip-txt">${t.t}</div></div>`).join('');
   injectApptTip();
   renderBodyChanges(week);
+  updateMilestoneCard();
   updateFetusVisual(week);
   updateBMI(week);
 }
@@ -4719,6 +4781,7 @@ function renderSchedule(edd){
   updateMedNextPill();
   syncNotifsToSW();
   updateNotifUI();
+  renderMedWeekChart();
 }
 function tDet(id,btn){H();if(!btn)return;const d=document.getElementById('sdet'+id);if(!d)return;d.classList.toggle('o');btn.classList.toggle('o');btn.textContent=d.classList.contains('o')?'▴':'▾'}
 function tTask(id){
@@ -4732,7 +4795,7 @@ function tTask(id){
   }
   renderSchedule();
 }
-function updateProg(at){const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');const a=at||getScheduleMeds().active;let done=0;a.forEach(t=>{if(s[t.id])done++});const p=a.length?Math.round(done/a.length*100):100;document.getElementById('pgBar').style.width=p+'%';document.getElementById('pgT').textContent=p+'%';const fin=localStorage.getItem('finished'+V)==='true';const fc=document.getElementById('finishC');if(p===100&&a.length>0){fc.style.display='block';document.getElementById('finBtn').style.display=fin?'none':'block';document.getElementById('finMsg').style.display=fin?'block':'none'}else fc.style.display='none';updateTodayDash();}
+function updateProg(at){const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');const a=at||getScheduleMeds().active;let done=0;a.forEach(t=>{if(s[t.id])done++});const p=a.length?Math.round(done/a.length*100):100;document.getElementById('pgBar').style.width=p+'%';document.getElementById('pgT').textContent=p+'%';const fin=localStorage.getItem('finished'+V)==='true';const fc=document.getElementById('finishC');if(p===100&&a.length>0){fc.style.display='block';document.getElementById('finBtn').style.display=fin?'none':'block';document.getElementById('finMsg').style.display=fin?'block':'none'}else fc.style.display='none';updateTodayDash();renderMedWeekChart();}
 function finishDay(){H();localStorage.setItem('finished'+V,'true');let s=parseInt(localStorage.getItem('streak'+V)||'0');s++;localStorage.setItem('streak'+V,s.toString());let t=parseInt(localStorage.getItem('totalFinishedDays'+V)||'0');t++;localStorage.setItem('totalFinishedDays'+V,t.toString());const best=parseInt(localStorage.getItem('streakBest'+V)||'0');if(s>best)localStorage.setItem('streakBest'+V,s.toString());loadStreak();confetti({particleCount:350,spread:170,origin:{y:.6},colors:['#E8325A','#C44DFF','#FFB347','#43C8E0','#fff']});updateProg();updateDataStatusUI();toast("Горжусь тобой! Все витаминки выпиты 🏆")}
 function loadStreak(){
   const s=localStorage.getItem('streak'+V)||'0';
@@ -4787,7 +4850,171 @@ function updatePerfectDayBadge(){
   const w=JSON.parse(localStorage.getItem('water'+V)||'[]');
   const mood=localStorage.getItem('mood'+V);
   const perfect=medPct===100&&w.length>=8&&!!mood;
+  const todayKey=new Date().toISOString().slice(0,10);
+  const wasPerfect=localStorage.getItem('perfectDay_'+todayKey+V)==='1';
   el.classList.toggle('show',perfect);
+  if(perfect&&!wasPerfect){
+    localStorage.setItem('perfectDay_'+todayKey+V,'1');
+    confetti({particleCount:100,spread:90,origin:{y:.7},colors:['#52B882','#E8325A','#FFD700','#fff']});
+  }
+}
+function getWellnessScore(){
+  const keys=getLast7DayKeys();
+  const moodH=JSON.parse(localStorage.getItem('moodH'+V)||'{}');
+  const moodCount=keys.filter(k=>moodH[k]).length;
+  const waterHist=JSON.parse(localStorage.getItem('waterHist'+V)||'{}');
+  const todayKey=keys[6];
+  const todayWater=JSON.parse(localStorage.getItem('water'+V)||'[]').length;
+  const waterDays=keys.filter(k=>(k===todayKey?todayWater:waterHist[k])>=8).length;
+  const medHist=JSON.parse(localStorage.getItem('medHist'+V)||'{}');
+  const state=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
+  const {active}=getScheduleMeds();
+  let medSum=0;
+  keys.forEach(k=>{
+    if(k===todayKey){
+      if(!active.length)medSum+=100;
+      else{let d=0;active.forEach(t=>{if(state[t.id])d++});medSum+=Math.round(d/active.length*100);}
+    }else medSum+=medHist[k]!=null?medHist[k]:0;
+  });
+  const medAvg=medSum/7;
+  const bpLog=loadBPLog();
+  const bpCount=keys.filter(k=>bpLog[k]).length;
+  const streak=parseInt(localStorage.getItem('streak'+V)||'0',10);
+  return Math.min(100,Math.max(0,Math.round((moodCount/7)*25+(waterDays/7)*25+(medAvg/100)*30+(bpCount/7)*10+Math.min(streak,7)/7*10)));
+}
+function renderMedWeekChart(){
+  const el=document.getElementById('medWeekChart');
+  if(!el)return;
+  const keys=getLast7DayKeys();
+  const medHist=JSON.parse(localStorage.getItem('medHist'+V)||'{}');
+  const state=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
+  const {active}=getScheduleMeds();
+  const todayKey=keys[6];
+  el.innerHTML=keys.map(k=>{
+    let pct;
+    if(k===todayKey){
+      if(!active.length)pct=100;
+      else{let done=0;active.forEach(t=>{if(state[t.id])done++});pct=Math.round(done/active.length*100);}
+    }else pct=medHist[k]!=null?medHist[k]:null;
+    const dt=new Date(k+'T12:00:00');
+    const lbl=dt.getDate();
+    if(pct==null)return '<div class="med-week-col"><div class="med-week-bar empty" style="height:6px"></div><div class="med-week-lbl">'+lbl+'</div></div>';
+    const h=Math.max(8,Math.round(pct/100*52));
+    const cls=pct>=100?'med-week-bar':pct>0?'med-week-bar partial':'med-week-bar empty';
+    return '<div class="med-week-col"><div class="med-week-val">'+pct+'%</div><div class="'+cls+'" style="height:'+h+'px"></div><div class="med-week-lbl">'+lbl+'</div></div>';
+  }).join('');
+}
+function buildWeekSummaryText(){
+  const edd=localStorage.getItem('eddDate');
+  const {week}=calcW(edd);
+  const score=getWellnessScore();
+  const streak=localStorage.getItem('streak'+V)||'0';
+  const total=localStorage.getItem('totalFinishedDays'+V)||'0';
+  const keys=getLast7DayKeys();
+  const moodH=JSON.parse(localStorage.getItem('moodH'+V)||'{}');
+  const moodCount=keys.filter(k=>moodH[k]).length;
+  const bagStats=getBagStats(loadBagList());
+  return 'Сводка недели '+week+' 🤍\n'+
+    'Индекс заботы: '+score+'/100\n'+
+    'Streak: '+streak+' дн. · Всего завершённых: '+total+'\n'+
+    'Настроений: '+moodCount+'/7 · Сумка: '+bagStats.done+'/'+bagStats.total+'\n'+
+    '— Приложение «Для Индиры»';
+}
+function shareWeekSummary(){
+  H();
+  const text=buildWeekSummaryText();
+  if(navigator.share){
+    navigator.share({title:'Моя неделя — Для Индиры',text}).then(()=>toast('Сводка отправлена 📤')).catch(()=>{});
+  }else if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>toast('Сводка скопирована 📤')).catch(()=>toast('Не удалось скопировать'));
+  }else toast(text.slice(0,120)+'…');
+}
+let milestoneHandler=null;
+function pluralDays(n){
+  const m=n%10,l=n%100;
+  if(l>=11&&l<=14)return 'дней';
+  if(m===1)return 'день';
+  if(m>=2&&m<=4)return 'дня';
+  return 'дней';
+}
+function updateMilestoneCard(){
+  const card=document.getElementById('milestoneCard');
+  if(!card)return;
+  const candidates=[];
+  const daysSc=Math.ceil((new Date(SCREENING_DATE+'T12:00:00')-new Date())/86400000);
+  if(daysSc>=-1&&daysSc<=14){
+    candidates.push({date:SCREENING_DATE,title:'Скрининг 1 триместра',ico:'🔬',days:daysSc});
+  }
+  const appt=getNextAppt();
+  if(appt){
+    const days=Math.ceil((new Date(appt.date+'T12:00:00')-new Date())/86400000);
+    if(days>=0&&days<=30)candidates.push({date:appt.date,title:appt.title,ico:'🗓️',days});
+  }
+  if(!candidates.length){card.style.display='none';milestoneHandler=null;return;}
+  candidates.sort((a,b)=>a.days-b.days);
+  const m=candidates[0];
+  card.style.display='flex';
+  card.classList.toggle('urgent',m.days<=1);
+  document.getElementById('msIco').textContent=m.ico;
+  document.getElementById('msLbl').textContent=m.days===0?'Сегодня!':m.days===1?'Завтра':'Ближайшее событие';
+  document.getElementById('msTitle').textContent=m.title;
+  const cdEl=document.getElementById('msCountdown');
+  if(m.days<0)cdEl.innerHTML='Недавно прошло · <b>запиши результат</b>';
+  else if(m.days===0)cdEl.innerHTML='Сегодня · <b>не пропусти!</b>';
+  else if(m.days===1)cdEl.innerHTML='Завтра · через <b>1</b> день';
+  else cdEl.innerHTML='Через <b>'+m.days+'</b> '+pluralDays(m.days);
+  milestoneHandler=()=>{switchTabById('journal');setTimeout(()=>{const c=document.getElementById('visitPrepCard');c&&c.scrollIntoView({behavior:'smooth',block:'start'});},300);};
+}
+function runMilestoneAction(){H();if(milestoneHandler)milestoneHandler();}
+const VISIT_PREP_DEFAULT=[
+  {id:'docs',label:'Обменная карта и паспорт'},
+  {id:'analyses',label:'Свежие анализы и результаты УЗИ'},
+  {id:'bp',label:'Записать давление утром'},
+  {id:'questions',label:'Список вопросов врачу'},
+  {id:'snack',label:'Перекус и вода с собой'}
+];
+const VISIT_PREP_KEY='visitPrep'+V;
+function loadVisitPrep(){
+  try{const r=localStorage.getItem(VISIT_PREP_KEY);if(r)return JSON.parse(r);}catch(e){}
+  return {};
+}
+function saveVisitPrep(o){localStorage.setItem(VISIT_PREP_KEY,JSON.stringify(o));}
+function renderVisitPrep(){
+  const card=document.getElementById('visitPrepCard');
+  const list=document.getElementById('visitPrepList');
+  const sub=document.getElementById('visitPrepSub');
+  if(!card||!list)return;
+  const appt=getNextAppt();
+  if(!appt){card.style.display='none';return;}
+  const days=Math.ceil((new Date(appt.date+'T12:00:00')-new Date())/86400000);
+  if(days<0||days>7){card.style.display='none';return;}
+  card.style.display='block';
+  const d=new Date(appt.date+'T12:00:00');
+  if(sub)sub.textContent=(days===0?'Сегодня':'Через '+days+' '+pluralDays(days))+' — '+appt.title+'. Отметь что готово:';
+  const prep=loadVisitPrep();
+  const key=String(appt.id);
+  if(!prep[key])prep[key]=VISIT_PREP_DEFAULT.map(x=>({...x,done:false}));
+  list.innerHTML=prep[key].map((item,j)=>{
+    return '<div class="visit-prep-item" onclick="toggleVisitPrep(\''+key+'\','+j+')"><div class="visit-prep-chk'+(item.done?' done':'')+'"></div><span class="visit-prep-lbl'+(item.done?' done':'')+'">'+escapeHtml(item.label)+'</span></div>';
+  }).join('');
+  saveVisitPrep(prep);
+}
+function toggleVisitPrep(apptKey,idx){
+  H();
+  const prep=loadVisitPrep();
+  if(!prep[apptKey]||!prep[apptKey][idx])return;
+  prep[apptKey][idx].done=!prep[apptKey][idx].done;
+  saveVisitPrep(prep);
+  renderVisitPrep();
+  if(prep[apptKey].every(x=>x.done))toast('Всё готово к визиту! 🎉');
+}
+function updateBackupReminder(){
+  const el=document.getElementById('backupReminder');
+  if(!el)return;
+  const last=localStorage.getItem('lastBackupDate'+V);
+  if(!last){el.classList.add('show');return;}
+  const days=Math.floor((Date.now()-new Date(last).getTime())/86400000);
+  el.classList.toggle('show',days>=14);
 }
 function getLast7DayKeys(){
   const keys=[];
@@ -4825,6 +5052,9 @@ function renderWeekWellness(){
     {ico:'🩺',txt:'<b>'+bpCount+'/7</b> замеров давления'},
     {ico:'🦶',txt:'<b>'+kickWeek+'</b> сессий шевелений'}
   ].map(s=>'<div class="week-stat"><span class="week-stat-ico">'+s.ico+'</span><span>'+s.txt+'</span></div>').join('');
+  const scoreEl=document.getElementById('wellnessScore');
+  if(scoreEl)scoreEl.textContent=getWellnessScore();
+  updateMilestoneCard();
 }
 let nextActionHandler=null;
 function setNextAction(ico,lbl,txt,handler,urgent){
@@ -5051,6 +5281,7 @@ function addAppt(){
   saveAppts(list);
   document.getElementById('apptTitle').value='';
   renderAppts();
+  renderVisitPrep();
   toast('Визит добавлен 🗓️');
   injectApptTip();
 }
@@ -5301,6 +5532,8 @@ async function exportBackup(){
     a.click();
     setTimeout(()=>URL.revokeObjectURL(a.href),5000);
     toast('Резервная копия скачана 💾');
+    localStorage.setItem('lastBackupDate'+V,new Date().toISOString());
+    updateBackupReminder();
   }catch(e){
     console.error('exportBackup',e);
     toast('Не удалось создать резервную копию');
@@ -5515,11 +5748,26 @@ function renderBag(){
     confetti({particleCount:120,spread:100,origin:{y:.55},colors:['#E8325A','#FFD700','#43C8E0']});
     toast('Сумка полностью собрана! 🎉');
   }else if(stats.pct<100)localStorage.removeItem('bagDone'+V);
-  document.getElementById('bagBox').innerHTML=bag.map((item,i)=>{
-    if(!item)return'';
-    if(item.isC)return '<div class="bag-cat"><div class="bag-cat-txt">'+escapeHtml(item.t)+'</div><button type="button" class="bag-edit-btn" aria-label="Редактировать раздел" onclick="openBagForm('+i+',true)">✎</button></div>';
-    return '<div class="bag-item"><div class="bag-item-main" onclick="tBag('+i+')"><div class="bag-chk '+(item.done?'done':'')+'"></div><span class="bag-lbl '+(item.done?'done':'')+'">'+escapeHtml(item.t)+'</span></div><button type="button" class="bag-edit-btn" aria-label="Редактировать" onclick="event.stopPropagation();openBagForm('+i+',false)">✎</button></div>';
-  }).join('');
+  const q=(document.getElementById('bagSearch')?.value||'').trim().toLowerCase();
+  let html='';
+  if(q){
+    let any=false;
+    bag.forEach((item,i)=>{
+      if(!item||item.isC)return;
+      if(item.t.toLowerCase().includes(q)){
+        any=true;
+        html+='<div class="bag-item"><div class="bag-item-main" onclick="tBag('+i+')"><div class="bag-chk '+(item.done?'done':'')+'"></div><span class="bag-lbl '+(item.done?'done':'')+'">'+escapeHtml(item.t)+'</span></div><button type="button" class="bag-edit-btn" aria-label="Редактировать" onclick="event.stopPropagation();openBagForm('+i+',false)">✎</button></div>';
+      }
+    });
+    if(!any)html='<div class="bag-empty-filter">Ничего не найдено — попробуй другой запрос</div>';
+  }else{
+    html=bag.map((item,i)=>{
+      if(!item)return'';
+      if(item.isC)return '<div class="bag-cat"><div class="bag-cat-txt">'+escapeHtml(item.t)+'</div><button type="button" class="bag-edit-btn" aria-label="Редактировать раздел" onclick="openBagForm('+i+',true)">✎</button></div>';
+      return '<div class="bag-item"><div class="bag-item-main" onclick="tBag('+i+')"><div class="bag-chk '+(item.done?'done':'')+'"></div><span class="bag-lbl '+(item.done?'done':'')+'">'+escapeHtml(item.t)+'</span></div><button type="button" class="bag-edit-btn" aria-label="Редактировать" onclick="event.stopPropagation();openBagForm('+i+',false)">✎</button></div>';
+    }).join('');
+  }
+  document.getElementById('bagBox').innerHTML=html;
 }
 function tBag(i){
   H();
@@ -5669,9 +5917,10 @@ function switchTab(id,btn){
   btn.classList.add('act');
   btn.setAttribute('aria-selected','true');
   btn.setAttribute('aria-current','page');
-  if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();updateDataStatusUI();}
-  if(id==='journal'){renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();}
+  if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();updateDataStatusUI();updateBackupReminder();}
+  if(id==='journal'){renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();}
   if(id==='bag')renderBag();
+  if(id==='meds')renderMedWeekChart();
   if(id==='home'){updateTodayDash();renderWeekWellness();}
   window.scrollTo({top:0,behavior:'smooth'});
 }
