@@ -19,12 +19,19 @@ jobs:
       - name: Install Pillow
         run: pip install pillow
 
-      - name: Regenerate icons and verify size
-        run: python scripts/generate-icons.py
-
-      - name: Fail if tracked icon differs from generated
+      - name: Verify icon size and dimensions
         run: |
-          git diff --exit-code apple-icon.png icon-192.png || (
-            echo "::error::Icons are outdated or too heavy. Run: python scripts/generate-icons.py"
-            exit 1
-          )
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          p = Path("apple-icon.png")
+          if not p.exists():
+              raise SystemExit("apple-icon.png missing")
+          size = p.stat().st_size
+          if size > 500_000:
+              raise SystemExit(f"apple-icon.png too large: {size} bytes (max 500KB)")
+          img = Image.open(p)
+          if max(img.size) > 512:
+              raise SystemExit(f"apple-icon.png too big: {img.size} (max 512px)")
+          print(f"OK: apple-icon.png {img.size[0]}x{img.size[1]}, {size:,} bytes")
+          PY

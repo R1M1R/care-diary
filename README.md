@@ -128,8 +128,8 @@ care-diary/
 ├── vercel.json             # Конфиг деплоя
 ├── package.json            # npm scripts (локальный preview)
 ├── scripts/
-│   └── generate-icons.py   # Генерация лёгких иконок (~6 KB)
-├── apple-icon.png          # Иконка 512×512
+│   └── optimize-icons.py   # Сжатие apple-icon без смены дизайна
+├── apple-icon.png          # Оригинальная иконка (512×512, ~330 KB)
 ├── icon-192.png            # Иконка 192×192
 ├── splash-iphone.png       # Splash screen iOS
 └── README.md
@@ -164,7 +164,7 @@ care-diary/
 | Задача | Действие |
 |---|---|
 | Локальный сервер | `npm start` |
-| Перегенерировать иконки | `npm run icons` |
+| Перегенерировать иконки | `npm run icons` (только сжатие, дизайн не меняется) |
 | Проверка SW | DevTools → Application → Service Workers |
 | Квота storage | Настройки → Память для фото |
 | Сброс данных | Настройки → Очистить все данные |
@@ -179,16 +179,18 @@ npm install browser-image-compression
 
 ### OneDrive / облачная синхронизация
 
-> **Важно:** OneDrive может silently заменить `apple-icon.png` старой версией (~3.6 MB). Это ломает PWA и грузит память.
+> **Важно:** OneDrive может подменить `apple-icon.png` старой тяжёлой версией (~3.6 MB). Не заменяй файл вручную — восстанови из git:
 
-Если иконка «раздулась»:
 ```bash
-npm run icons
-git add apple-icon.png icon-192.png
-git commit -m "Regenerate lightweight app icons"
+git restore apple-icon.png icon-192.png
 ```
 
-CI на GitHub (`check-assets`) автоматически проверяет, что иконка не тяжелее 100 KB.
+Если нужно пересжать **тот же** дизайн после замены оригинала:
+```bash
+npm run icons
+```
+
+CI проверяет, что `apple-icon.png` не больше 500 KB и 512×512 px.
 
 ---
 
