@@ -1516,6 +1516,30 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .backup-btn-primary{background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;border:none;box-shadow:0 6px 18px rgba(232,50,90,.25)}
 #nav[role=tablist] .nb[aria-current=page]{color:var(--rose)}
 
+/* ── 44. PREMIUM v5 — weight corridor, appts, notifs, report ── */
+.wt-chart-wrap{position:relative;height:96px;margin:4px 0 6px;padding:0 2px}
+.wt-chart-wrap .wt-chart-v2{height:100%;margin:0}
+.wt-corridor-band{position:absolute;left:2px;right:2px;border-radius:10px;background:linear-gradient(180deg,rgba(82,184,130,.22),rgba(82,184,130,.08));border:1px dashed rgba(45,122,85,.35);pointer-events:none;z-index:0;transition:top .5s,height .5s}
+.wt-chart-v2{position:relative;z-index:1;display:flex;align-items:flex-end;gap:5px;height:96px}
+.wt-corridor-legend{font-size:10px;font-weight:800;color:var(--sage);text-align:center;margin:-2px 0 10px;line-height:1.45}
+.wt-bar.out-high{background:linear-gradient(180deg,#F0C060,#E8A020)!important;box-shadow:0 4px 14px rgba(212,160,23,.35)!important}
+.wt-bar.out-low{background:linear-gradient(180deg,#4EC8DC,#1E9CB0)!important}
+.notif-status{font-size:12px;font-weight:700;color:var(--t3);line-height:1.55;padding:12px 14px;background:var(--bg2);border:1px solid var(--cb);border-radius:14px;margin-bottom:12px}
+.notif-status.ok{color:var(--sage);background:rgba(82,184,130,.08);border-color:rgba(45,122,85,.2)}
+.notif-status.warn{color:var(--rose);background:rgba(232,50,90,.06);border-color:rgba(232,50,90,.15)}
+.appt-form{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.appt-inp{flex:1;min-width:120px;padding:12px;border:2px solid var(--cb);border-radius:14px;background:var(--bg2);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--t1)}
+.appt-list{display:flex;flex-direction:column;gap:8px}
+.appt-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:16px;background:var(--bg2);border:1px solid var(--cb);cursor:pointer;transition:transform .2s}
+.appt-item.done{opacity:.55}
+.appt-item:active{transform:scale(.98)}
+.appt-date{font-size:11px;font-weight:900;color:var(--rose);min-width:72px}
+.appt-title{font-size:13px;font-weight:800;color:var(--t1);flex:1;line-height:1.35}
+.report-actions{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.report-action-btn{width:100%;padding:13px;border-radius:16px;border:2px solid var(--cb);background:var(--bg2);font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;color:var(--t1);cursor:pointer}
+.report-action-btn.primary{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border:none}
+#toast .toast-undo{margin-left:10px;padding:4px 10px;border:none;border-radius:999px;background:rgba(255,255,255,.2);color:#fff;font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;cursor:pointer}
+
 /* ══ END PREMIUM GLASS SYSTEM ══ */
 
 </style>
@@ -1881,7 +1905,11 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
             <p style="font-size:13px;font-weight:700;color:var(--t3);margin-bottom:14px;line-height:1.6">Сформируй сводку приёма препаратов и самочувствия — удобно показать врачу!</p>
             <button class="report-btn" onclick="generateReport()">📊 Сформировать отчёт</button>
             <textarea class="report-area" id="reportArea" style="display:none" readonly></textarea>
-            <button class="copy-btn" id="reportCopyBtn" style="display:none" onclick="copyReport()">📋 Скопировать в буфер</button>
+            <div class="report-actions" id="reportActions" style="display:none">
+              <button type="button" class="report-action-btn primary" onclick="copyReport()">📋 Скопировать</button>
+              <button type="button" class="report-action-btn" onclick="shareReport()">📤 Поделиться</button>
+              <button type="button" class="report-action-btn" onclick="downloadReport()">💾 Скачать .txt</button>
+            </div>
           </div></div>
         </div>
       </div>
@@ -1898,6 +1926,16 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           <textarea id="journalNewT" class="journal-new" placeholder="Сегодня малыш так сильно пинался, когда папа гладил животик…"></textarea>
           <button type="button" class="lq" style="margin-top:12px" onclick="saveJournalEntry()">Сохранить запись 💖</button>
           <div class="journal-log" id="journalLog"></div>
+        </div></div>
+        <div class="card"><div class="cb">
+          <div class="sh">🗓️ Визиты к врачу</div>
+          <div class="ssub">Скрининг, УЗИ, анализы — отмечай и не пропусти</div>
+          <div class="appt-form">
+            <input type="date" class="appt-inp" id="apptDate" style="max-width:140px">
+            <input type="text" class="appt-inp" id="apptTitle" placeholder="Скрининг, УЗИ…" maxlength="80">
+            <button type="button" class="wt-save-btn" style="flex:0 0 auto;padding:12px 16px" onclick="addAppt()">＋</button>
+          </div>
+          <div class="appt-list" id="apptList"></div>
         </div></div>
         <div class="card"><div class="cb">
           <div class="sh">📊 История настроений</div>
@@ -1919,7 +1957,11 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
             </div>
 
             <!-- CHART -->
-            <div class="wt-chart-v2" id="wtChart"></div>
+            <div class="wt-chart-wrap" id="wtChartWrap">
+              <div class="wt-corridor-band" id="wtCorridor" style="display:none"></div>
+              <div class="wt-chart-v2" id="wtChart"></div>
+            </div>
+            <div class="wt-corridor-legend" id="wtCorridorLegend"></div>
             <div class="wt-stats-v2" id="wtStats"></div>
 
             <!-- BMI TOGGLE BUTTON -->
@@ -2010,8 +2052,9 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <div class="tog-w"><span style="font-size:15px;font-weight:800">Тёмная тема 🌙</span><label class="tog"><input type="checkbox" id="thmTog" onchange="toggleTheme()"><span class="tog-sl"></span></label></div>
-          <div class="tog-w"><span style="font-size:15px;font-weight:800">Уведомления 🔔</span><button onclick="reqNotifs()" style="background:linear-gradient(135deg,#1E9CB0,#30C0D8);color:#fff;border:none;border-radius:50px;padding:9px 20px;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(30,156,176,.3)">Включить</button></div>
-          <p style="font-size:12px;font-weight:700;color:var(--t3);padding:2px 4px 20px;line-height:1.65">Разреши уведомления — буду напоминать о препаратах из твоего расписания в нужное время.</p>
+          <div class="tog-w"><span style="font-size:15px;font-weight:800">Уведомления 🔔</span><button id="notifBtn" onclick="reqNotifs()" style="background:linear-gradient(135deg,#1E9CB0,#30C0D8);color:#fff;border:none;border-radius:50px;padding:9px 20px;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(30,156,176,.3)">Включить</button></div>
+          <div class="notif-status" id="notifStatus">Напомню о препаратах в нужное время — разреши уведомления</div>
+          <p style="font-size:12px;font-weight:700;color:var(--t3);padding:2px 4px 20px;line-height:1.65">На iPhone напоминания работают, когда приложение установлено на экран «Домой» и периодически открывается.</p>
           
           <div style="font-size:15px;font-weight:800;margin-bottom:8px">Твой рост (для расчёта ИМТ):</div>
           <div style="display:flex;gap:8px;margin-bottom:22px;align-items:center">
@@ -2152,7 +2195,21 @@ const H=()=>{if(navigator.vibrate)navigator.vibrate(9)};
 
 // ══ TOAST ══
 let tT;
-const toast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),3500)};
+let toastUndoFn=null;
+const toast=(m,undoFn)=>{
+  const t=document.getElementById('toast');
+  clearTimeout(tT);
+  if(undoFn){
+    toastUndoFn=undoFn;
+    t.innerHTML=String(m).replace(/&/g,'&amp;').replace(/</g,'&lt;')+' <button type="button" class="toast-undo" onclick="runToastUndo()">Отменить</button>';
+  }else{
+    toastUndoFn=null;
+    t.textContent=m;
+  }
+  t.classList.add('show');
+  tT=setTimeout(()=>{t.classList.remove('show');toastUndoFn=null;},undoFn?6000:3500);
+};
+function runToastUndo(){H();if(toastUndoFn){const fn=toastUndoFn;toastUndoFn=null;fn();}document.getElementById('toast').classList.remove('show');}
 
 // ══ IMAGE COMPRESSION (Canvas — без тяжёлого FileReader/base64 до сжатия) ══
 // Альтернатива с npm: npm install browser-image-compression
@@ -3791,16 +3848,19 @@ function init(){
   renderWtChart();
   renderJournalLog();
   initHomeSections();
+  renderAppts();
   initPhotoStorage(edd);
   loadKickSession();
   updateTodayDash();
+  updateNotifUI();
   loadTMsg();
   updateCD(edd);
   checkAnniv();
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();}});
   if(!_appTimersSet){
     _appTimersSet=true;
     setInterval(()=>updateCD(localStorage.getItem('eddDate')||edd),60000);
-    setInterval(checkNotifs,60000);
+    setInterval(checkNotifs,30000);
     setInterval(updateMedNextPill,60000);
   }
 }
@@ -3974,6 +4034,7 @@ function updateAll(edd){
   document.getElementById('faqBox').innerHTML=faqs[faqK].map((f,i)=>`<div class="faq-item"><div class="faq-q" id="fq${i}" onclick="tFaq(${i})"><span>${f.q}</span><span class="faq-ic">▾</span></div><div class="faq-a" id="fa${i}">${f.a}</div></div>`).join('');
   const tips=getSmartTips(week);
   document.getElementById('smartTips').innerHTML=tips.slice(0,3).map(t=>`<div class="stip ${t.c}"><div class="stip-ic">${t.i}</div><div class="stip-txt">${t.t}</div></div>`).join('');
+  injectApptTip();
   renderBodyChanges(week);
   updateFetusVisual(week);
   updateBMI(week);
@@ -4088,39 +4149,58 @@ function saveWt(){
 function renderWtChart(){
   const h=JSON.parse(localStorage.getItem('wtH'+V)||'{}');
   const el=document.getElementById('wtChart');
+  const corridorEl=document.getElementById('wtCorridor');
+  const legendEl=document.getElementById('wtCorridorLegend');
   if(!el)return;
   const k=Object.keys(h).sort().slice(-10);
   if(!k.length){
     el.innerHTML='<p style="color:var(--t3);font-size:13px;font-weight:700;width:100%;text-align:center;padding:16px 0;opacity:.6">Запиши первый вес!</p>';
+    if(corridorEl)corridorEl.style.display='none';
+    if(legendEl)legendEl.textContent='';
     return;
   }
   const v=k.map(k2=>h[k2]);
-  const mn=Math.min(...v);
-  const mx=Math.max(...v);
-  const range=mx-mn;
+  const firstWt=v[0];
+  const edd=localStorage.getItem('eddDate');
+  const {week}=calcW(edd||'');
+  const corridor=typeof getExpectedWeightRange==='function'?getExpectedWeightRange(firstWt,week):{minW:firstWt-0.5,maxW:firstWt+2,label:'ВОЗ'};
+  const chartMin=Math.min(...v,corridor.minW)-0.8;
+  const chartMax=Math.max(...v,corridor.maxW)+0.8;
+  const span=chartMax-chartMin||1;
+  if(corridorEl){
+    const topPct=(1-(corridor.maxW-chartMin)/span)*100;
+    const heightPct=((corridor.maxW-corridor.minW)/span)*100;
+    corridorEl.style.display='block';
+    corridorEl.style.top=Math.max(0,Math.min(92,topPct))+'%';
+    corridorEl.style.height=Math.max(10,Math.min(100,heightPct))+'%';
+  }
+  if(legendEl){
+    const cur=v[v.length-1];
+    const inCorridor=cur>=corridor.minW&&cur<=corridor.maxW;
+    legendEl.innerHTML='🟢 Коридор ВОЗ ('+corridor.label+'): <b>'+corridor.minW.toFixed(1)+'–'+corridor.maxW.toFixed(1)+' кг</b> на '+week+' нед.'+(inCorridor?' · ты в норме ✅':' · обсуди с врачом 💛');
+  }
   el.innerHTML=k.map((k2,i)=>{
-    const ht=range===0?50:Math.max(14,((v[i]-mn)/range)*60+14);
+    const wt=v[i];
+    const ht=Math.max(12,((wt-chartMin)/span)*100);
     const dt=new Date(k2);
     const isLast=i===k.length-1;
     const isFirst=i===0;
-    const barClass=isLast?'wt-bar latest':'wt-bar';
+    let extraClass='';
+    if(isLast){if(wt>corridor.maxW)extraClass=' out-high';else if(wt<corridor.minW)extraClass=' out-low';}
+    const barClass=(isLast?'wt-bar latest':'wt-bar')+extraClass;
     const showVal=isLast||isFirst;
-    return `<div class="wt-bar-w${showVal?' show-val':''}">
-      <div class="wt-val">${showVal?v[i]:''}</div>
-      <div class="${barClass}" style="height:${ht}px"></div>
-      <div class="wt-lbl">${dt.getDate()}/${dt.getMonth()+1}</div>
-    </div>`;
+    return '<div class="wt-bar-w'+(showVal?' show-val':'')+'"><div class="wt-val">'+(showVal?wt:'')+'</div><div class="'+barClass+'" style="height:'+ht+'%"></div><div class="wt-lbl">'+dt.getDate()+'/'+(dt.getMonth()+1)+'</div></div>';
   }).join('');
   const s=document.getElementById('wtStats');
   if(s){
     if(v.length===1){
       s.innerHTML='<span>📍 Первая запись: <b>'+v[0]+' кг</b></span>';
-    } else {
+    }else{
       const g=(v[v.length-1]-v[0]).toFixed(1);
       const gNum=parseFloat(g);
       const arrow=gNum>0?'↑':gNum<0?'↓':'→';
       const col=gNum>0?'var(--rose)':gNum<0?'var(--teal)':'var(--t3)';
-      s.innerHTML=`Прибавка: <b style="color:${col}">${arrow} ${gNum>0?'+':''}${g} кг</b> &nbsp;·&nbsp; Сейчас: <b>${v[v.length-1]} кг</b>`;
+      s.innerHTML='Прибавка: <b style="color:'+col+'">'+arrow+' '+(gNum>0?'+':'')+g+' кг</b> &nbsp;·&nbsp; Сейчас: <b>'+v[v.length-1]+' кг</b>';
     }
   }
 }
@@ -4201,12 +4281,21 @@ async function loadGalPhoto(ev){
 }
 async function deleteGalPhoto(){
   H();if(curGW==null)return;
+  const blob=await photoDBGet('gal_'+curGW);
+  const w=curGW;
   await photoDBDelete('gal_'+curGW);
   revokePhotoUrl('gal_'+curGW);
   await renderGallery(localStorage.getItem('eddDate'));
   updatePhotoStorageUI();
   closeGal();
-  toast('Фото удалено');
+  toast('Фото удалено',blob?()=>{
+    photoDBPut('gal_'+w,blob).then(()=>{
+      revokePhotoUrl('gal_'+w);
+      renderGallery(localStorage.getItem('eddDate'));
+      updatePhotoStorageUI();
+      toast('Фото восстановлено ✨');
+    });
+  }:null);
 }
 
 // UZI PHOTO
@@ -4379,6 +4468,8 @@ function renderSchedule(edd){
   document.getElementById('medsInfo').textContent='Расписание на '+now.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})+' · '+active.length+' приём(ов)';
   updateProg(active);
   updateMedNextPill();
+  syncNotifsToSW();
+  updateNotifUI();
 }
 function tDet(id,btn){H();if(!btn)return;const d=document.getElementById('sdet'+id);if(!d)return;d.classList.toggle('o');btn.classList.toggle('o');btn.textContent=d.classList.contains('o')?'▴':'▾'}
 function tTask(id){
@@ -4423,6 +4514,21 @@ function updateTodayDash(){
   if(elMood)elMood.textContent=mood||'—';
   if(elMoodIco)elMoodIco.textContent=mood||'🤍';
   getPhotoStorageStats().then(st=>{if(elGal)elGal.textContent=String((st.hasUzi?1:0)+st.galCount);}).catch(()=>{});
+}
+function injectApptTip(){
+  const tipsEl=document.getElementById('smartTips');
+  if(!tipsEl||typeof getNextAppt!=='function')return;
+  tipsEl.querySelectorAll('[data-appt-tip]').forEach(n=>n.remove());
+  const appt=getNextAppt();
+  if(!appt)return;
+  const d=new Date(appt.date+'T12:00:00');
+  const days=Math.ceil((d-new Date())/86400000);
+  if(days<0||days>7)return;
+  const extra=document.createElement('div');
+  extra.className='stip s-teal';
+  extra.setAttribute('data-appt-tip','1');
+  extra.innerHTML='<div class="stip-ic">🗓️</div><div class="stip-txt"><b>'+(days===0?'Сегодня визит!':'Через '+days+' дн.')+'</b> — '+escapeHtml(appt.title)+'</div>';
+  tipsEl.insertBefore(extra,tipsEl.firstChild);
 }
 function toggleHomeSec(id){
   H();
@@ -4489,6 +4595,57 @@ function deleteJournalEntry(id){
   localStorage.setItem(JOURNAL_KEY,JSON.stringify(log));
   renderJournalLog();
   toast('Запись удалена');
+}
+const APPT_KEY='appts'+V;
+function loadAppts(){
+  try{const r=localStorage.getItem(APPT_KEY);if(r){const p=JSON.parse(r);if(Array.isArray(p))return p;}}catch(e){}
+  return [];
+}
+function saveAppts(list){localStorage.setItem(APPT_KEY,JSON.stringify(list));}
+function renderAppts(){
+  const el=document.getElementById('apptList');
+  if(!el)return;
+  const list=loadAppts().filter(a=>a&&!a.done).sort((a,b)=>a.date.localeCompare(b.date));
+  const done=loadAppts().filter(a=>a&&a.done).slice(-3);
+  if(!list.length&&!done.length){
+    el.innerHTML='<div class="empty-sub" style="text-align:center;padding:12px 0">Добавь дату и название визита — напомним на главной</div>';
+    return;
+  }
+  const html=list.map(a=>{
+    const d=new Date(a.date+'T12:00:00');
+    const days=Math.ceil((d-new Date())/86400000);
+    const soon=days>=0&&days<=3;
+    return '<div class="appt-item'+(soon?' style="border-color:rgba(232,50,90,.35);box-shadow:0 0 0 1px rgba(232,50,90,.12)"':'')+'" onclick="toggleAppt('+a.id+')"><span class="appt-date">'+d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+'</span><span class="appt-title">'+escapeHtml(a.title)+(soon&&days===0?' · <b style="color:var(--rose)">сегодня!</b>':soon?' · через '+days+' дн.':'')+'</span></div>';
+  }).join('');
+  const doneHtml=done.length?'<div style="font-size:10px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px">Прошедшие</div>'+done.map(a=>'<div class="appt-item done" onclick="toggleAppt('+a.id+')"><span class="appt-date">'+new Date(a.date+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+'</span><span class="appt-title">'+escapeHtml(a.title)+' ✓</span></div>').join(''):'';
+  el.innerHTML=html+doneHtml;
+}
+function addAppt(){
+  H();
+  const date=document.getElementById('apptDate').value;
+  const title=document.getElementById('apptTitle').value.trim();
+  if(!date){toast('Выбери дату визита');return;}
+  if(!title){toast('Укажи название — УЗИ, скрининг…');return;}
+  const list=loadAppts();
+  list.push({id:Date.now(),date,title,done:false});
+  saveAppts(list);
+  document.getElementById('apptTitle').value='';
+  renderAppts();
+  toast('Визит добавлен 🗓️');
+  injectApptTip();
+}
+function toggleAppt(id){
+  H();
+  const list=loadAppts();
+  const i=list.findIndex(a=>a.id===id);
+  if(i<0)return;
+  list[i].done=!list[i].done;
+  saveAppts(list);
+  renderAppts();
+}
+function getNextAppt(){
+  const today=new Date().toISOString().slice(0,10);
+  return loadAppts().filter(a=>!a.done&&a.date>=today).sort((a,b)=>a.date.localeCompare(b.date))[0]||null;
 }
 function getBagStats(bag){
   const items=bag.filter(x=>x&&!x.isC);
@@ -4694,8 +4851,86 @@ function tBag(i){
 }
 
 // NOTIFS
-function reqNotifs(){H();if(!("Notification"in window)){toast("Уведомления не поддерживаются");return}if(Notification.permission==="granted"){toast("Уведомления уже включены! ❤️");return}Notification.requestPermission().then(p=>{if(p==="granted"){toast("Уведомления включены!");new Notification("Проверка связи 🤍",{body:"Буду напоминать о витаминках вовремя!",icon:"apple-icon.png"})}})}
-function checkNotifs(){if(Notification.permission!=="granted")return;const now=new Date();const cur=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');getScheduleMeds(now).active.forEach(t=>{if(t.time===cur&&!s[t.id]){const last=localStorage.getItem('ntf_'+t.id+V);if(last!==now.toDateString()){new Notification("Время заботы ❤️",{body:`Родная, пора принять: ${t.name}`,icon:"apple-icon.png"});localStorage.setItem('ntf_'+t.id+V,now.toDateString())}}})}
+// NOTIFS
+function getNextMedReminder(){
+  const now=new Date();
+  const nowM=now.getHours()*60+now.getMinutes();
+  const {active}=getScheduleMeds(now);
+  const state=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
+  const pending=active.filter(t=>!state[t.id]).map(t=>({...t,m:minsFromTime(t.time)})).sort((a,b)=>a.m-b.m);
+  const upcoming=pending.filter(t=>t.m>=nowM-5);
+  if(upcoming.length)return upcoming[0].time+' — '+upcoming[0].name;
+  if(pending.length)return 'завтра '+pending[0].time+' — '+pending[0].name;
+  return null;
+}
+function updateNotifUI(){
+  const el=document.getElementById('notifStatus');
+  const btn=document.getElementById('notifBtn');
+  if(!el)return;
+  if(!('Notification' in window)){el.textContent='Уведомления недоступны в этом браузере';el.className='notif-status warn';return;}
+  const p=Notification.permission;
+  if(p==='granted'){
+    const next=getNextMedReminder();
+    el.className='notif-status ok';
+    el.innerHTML='✓ Напоминания включены'+(next?'<br>Ближайшее: <b>'+escapeHtml(next)+'</b>':'<br>На сегодня все препараты отмечены 🎉');
+    if(btn){btn.textContent='Активны ✓';btn.disabled=true;}
+  }else if(p==='denied'){
+    el.className='notif-status warn';
+    el.textContent='Уведомления заблокированы — разреши в Настройки → Safari → Уведомления';
+    if(btn){btn.textContent='Заблокировано';btn.disabled=true;}
+  }else{
+    el.className='notif-status';
+    el.textContent='Напомню о препаратах в нужное время — нажми «Включить»';
+    if(btn){btn.textContent='Включить';btn.disabled=false;}
+  }
+}
+function syncNotifsToSW(){
+  if(!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return;
+  const {active}=getScheduleMeds();
+  navigator.serviceWorker.controller.postMessage({
+    type:'MED_SCHEDULE',
+    schedule:active.map(t=>({id:t.id,time:t.time,name:t.name,dose:t.dose}))
+  });
+}
+function reqNotifs(){
+  H();
+  if(!('Notification' in window)){toast('Уведомления не поддерживаются');return;}
+  if(Notification.permission==='granted'){updateNotifUI();toast('Уведомления уже включены! ❤️');return;}
+  Notification.requestPermission().then(p=>{
+    if(p==='granted'){
+      toast('Уведомления включены!');
+      new Notification('Проверка связи 🤍',{body:'Буду напоминать о витаминках вовремя!',icon:'apple-icon.png',tag:'care-test'});
+      syncNotifsToSW();
+    }
+    updateNotifUI();
+  });
+}
+function checkNotifs(){
+  if(Notification.permission!=='granted')return;
+  const now=new Date();
+  const cur=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
+  getScheduleMeds(now).active.forEach(t=>{
+    if(t.time===cur&&!s[t.id]){
+      const last=localStorage.getItem('ntf_'+t.id+V);
+      if(last!==now.toDateString()){
+        new Notification('Время заботы ❤️',{body:'Родная, пора принять: '+t.name+' '+t.dose,icon:'apple-icon.png',tag:'med-'+t.id});
+        localStorage.setItem('ntf_'+t.id+V,now.toDateString());
+        if(navigator.vibrate)navigator.vibrate([8,30,8]);
+      }
+    }
+  });
+  const today=now.toISOString().slice(0,10);
+  loadAppts().forEach(a=>{
+    if(a.done||a.date!==today)return;
+    const last=localStorage.getItem('apptNtf_'+a.id+V);
+    if(last===today)return;
+    if(now.getHours()>=8){
+      new Notification('Сегодня визит 🗓️',{body:a.title,icon:'apple-icon.png',tag:'appt-'+a.id});
+      localStorage.setItem('apptNtf_'+a.id+V,today);
+    }
+  });
+}
 
 // MISC
 function checkReset(){
@@ -4725,8 +4960,8 @@ function switchTab(id,btn){
   btn.classList.add('act');
   btn.setAttribute('aria-selected','true');
   btn.setAttribute('aria-current','page');
-  if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();}
-  if(id==='journal')renderJournalLog();
+  if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();}
+  if(id==='journal'){renderJournalLog();renderAppts();}
   if(id==='home')updateTodayDash();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -4813,6 +5048,18 @@ function getBMICategory(bmi){
   if(bmi<30)return 'overweight';
   return 'obese';
 }
+function getExpectedWeightRange(firstWt,week){
+  const h=parseFloat(localStorage.getItem('heightCm')||'165');
+  const bmi=firstWt/((h/100)*(h/100));
+  const cat=getBMICategory(bmi);
+  const wkRate=parseFloat(whoGain[cat].wkRate);
+  const gainMin=-0.5;
+  let gainMax=week<=13?2.0:2.0+(week-13)*wkRate;
+  const rangeParts=whoGain[cat].range.match(/[\d.]+/g);
+  const pregMax=rangeParts?parseFloat(rangeParts[1]||rangeParts[0]):16;
+  gainMax=Math.min(gainMax,pregMax);
+  return{minW:firstWt+gainMin,maxW:firstWt+gainMax,label:whoGain[cat].label.split('(')[0].trim()};
+}
 
 function updateBMI(week){
   const h=parseFloat(localStorage.getItem('heightCm')||'165');
@@ -4882,85 +5129,108 @@ function updateBMI(week){
 }
 
 // ══ DOCTOR REPORT ══
-function generateReport(){
-  H();
+function buildReportText(){
   const edd=localStorage.getItem('eddDate');
-  if(!edd){toast('Сначала укажи дату родов!');return;}
   const {week}=calcW(edd);
   const now=new Date();
   const gender=localStorage.getItem('babyGender')||'n';
-  const gStr=gender==='g'?'Девочка 🎀':gender==='b'?'Мальчик 🩵':'Не определён';
-  
-  // Meds history
+  const gStr=gender==='g'?'Девочка':gender==='b'?'Мальчик':'Не определён';
   const tasks=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
   const medsLines=getScheduleMeds(now).active.map(t=>{
     const done=!!tasks[t.id];
-    return `  ${done?'✓':'✗'} ${t.time} — ${t.name} ${t.dose} ${done?'(выпито)':'(не отмечено сегодня)'}`;
+    return '  '+(done?'✓':'✗')+' '+t.time+' — '+t.name+' '+t.dose+' '+(done?'(выпито)':'(не отмечено)');
   });
   const pausedMeds=getMedRegistry().filter(t=>t.paused);
-  const pausedLines=pausedMeds.length?['','─── НА ПАУЗЕ ───',...pausedMeds.map(t=>`  ⏸ ${t.time} — ${t.name}`)]:[];
-  
-  // Weight
+  const pausedLines=pausedMeds.length?['','─── НА ПАУЗЕ ───',...pausedMeds.map(t=>'  ⏸ '+t.time+' — '+t.name)]:[];
   const wts=JSON.parse(localStorage.getItem('wtH'+V)||'{}');
   const wtKeys=Object.keys(wts).sort();
-  const wtLines=wtKeys.slice(-5).map(k=>`  ${k}: ${wts[k]} кг`);
-  
-  // Mood
+  const wtLines=wtKeys.slice(-5).map(k=>'  '+k+': '+wts[k]+' кг');
+  let bmiLine='  (нет данных о весе)';
+  if(wtKeys.length){
+    const h=parseFloat(localStorage.getItem('heightCm')||'165');
+    const bmi=wts[wtKeys[0]]/((h/100)*(h/100));
+    const corridor=getExpectedWeightRange(wts[wtKeys[0]],week);
+    const cur=wts[wtKeys[wtKeys.length-1]];
+    bmiLine='  ИМТ '+bmi.toFixed(1)+' · прибавка '+(cur-wts[wtKeys[0]]).toFixed(1)+' кг · коридор ВОЗ: '+corridor.minW.toFixed(1)+'–'+corridor.maxW.toFixed(1)+' кг';
+  }
   const moodH=JSON.parse(localStorage.getItem('moodH'+V)||'{}');
-  const moodKeys=Object.keys(moodH).sort().slice(-7);
-  const moodLines=moodKeys.map(k=>`  ${k}: ${moodH[k]}`);
-  
-  // Diary
-  const diary=(localStorage.getItem('diaryEntry')||'(не заполнено)').slice(0,200);
-  
-  // Kick
+  const moodLines=Object.keys(moodH).sort().slice(-7).map(k=>'  '+k+': '+moodH[k]);
+  const journal=loadJournalLog().slice(0,5).map(e=>'  '+new Date(e.date).toLocaleDateString('ru-RU')+' ('+e.week+' нед.): '+e.text.slice(0,120));
+  const kickHist=JSON.parse(localStorage.getItem('kickHist'+V)||'[]').slice(0,5).map(h=>'  '+new Date(h.date).toLocaleDateString('ru-RU')+': '+h.count+' шев. '+(h.ok?'✓':'!'));
   const kicks=localStorage.getItem('kickCount'+V)||'0';
   const streak=localStorage.getItem('streak'+V)||'0';
-  
-  const report=[
+  const appts=loadAppts().filter(a=>!a.done).slice(0,5).map(a=>'  '+a.date+': '+a.title);
+  return [
     '═══════════════════════════════',
-    'ОТЧЁТ ДЛЯ ВРАЧА',
-    `Дата формирования: ${now.toLocaleDateString('ru-RU')} ${now.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}`,
-    `Пациентка: Индира`,
-    `Срок беременности: ${week} нед.`,
-    `ПДР: ${new Date(edd).toLocaleDateString('ru-RU')}`,
-    `Пол малыша: ${gStr}`,
+    'ОТЧЁТ ДЛЯ ВРАЧА — Для Индиры',
+    'Дата: '+now.toLocaleDateString('ru-RU')+' '+now.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}),
+    'Срок: '+week+' нед. · ПДР: '+new Date(edd).toLocaleDateString('ru-RU'),
+    'Пол малыша: '+gStr,
     '',
     '─── ПРЕПАРАТЫ СЕГОДНЯ ───',
-    ...(medsLines.length?medsLines:['  (нет активных препаратов)']),
+    ...(medsLines.length?medsLines:['  (нет активных)']),
     ...pausedLines,
-    `Дней подряд витаминки выпиты: ${streak}`,
+    'Дней подряд все препараты: '+streak,
     '',
-    '─── ВЕС (последние 5 записей) ───',
+    '─── ВЕС И ИМТ ───',
     ...wtLines,
+    bmiLine,
     '',
-    '─── НАСТРОЕНИЕ (последние 7 дней) ───',
-    ...moodLines,
+    '─── НАСТРОЕНИЕ (7 дней) ───',
+    ...(moodLines.length?moodLines:['  (нет записей)']),
     '',
-    '─── ШЕВЕЛЕНИЯ СЕГОДНЯ ───',
-    `  ${kicks} шевелений (норма ≥10 за 2ч)`,
+    '─── ШЕВЕЛЕНИЯ ───',
+    '  Сегодня: '+kicks+' (норма ≥10 за 2ч)',
+    ...(kickHist.length?['  История:',...kickHist]:[]),
     '',
-    '─── ЗАМЕТКИ ───',
-    `  ${diary}`,
+    '─── ДНЕВНИК ───',
+    ...(journal.length?journal:['  (нет записей)']),
+    '',
+    '─── ПРЕДСТОЯЩИЕ ВИЗИТЫ ───',
+    ...(appts.length?appts:['  (не добавлены)']),
     '',
     '═══════════════════════════════',
-    'Сформировано приложением "Для Индиры"',
+    'Сформировано приложением «Для Индиры»'
   ].join('\n');
-  
-  const area=document.getElementById('reportArea');
-  const copyBtn=document.getElementById('reportCopyBtn');
-  if(area){area.style.display='block';area.value=report;}
-  if(copyBtn)copyBtn.style.display='block';
-  toast('Отчёт сформирован! 📋');
 }
-
+function generateReport(){
+  H();
+  if(!localStorage.getItem('eddDate')){toast('Сначала укажи дату родов!');return;}
+  const report=buildReportText();
+  const area=document.getElementById('reportArea');
+  const actions=document.getElementById('reportActions');
+  if(area){area.style.display='block';area.value=report;}
+  if(actions)actions.style.display='flex';
+  toast('Отчёт готов! 📋');
+}
 function copyReport(){
   H();
   const area=document.getElementById('reportArea');
-  if(!area)return;
+  if(!area||!area.value){generateReport();return;}
+  const text=area.value;
   if(navigator.clipboard){
-    navigator.clipboard.writeText(area.value).then(()=>toast('Скопировано в буфер! 📋')).catch(()=>{area.select();document.execCommand('copy');toast('Скопировано! 📋');});
-  } else {area.select();document.execCommand('copy');toast('Скопировано! 📋');}
+    navigator.clipboard.writeText(text).then(()=>toast('Скопировано! 📋')).catch(fallbackCopy);
+  }else fallbackCopy();
+  function fallbackCopy(){area.select();try{document.execCommand('copy');toast('Скопировано! 📋');}catch(e){toast('Не удалось скопировать');}}
+}
+function shareReport(){
+  H();
+  const area=document.getElementById('reportArea');
+  const text=area&&area.value?area.value:buildReportText();
+  if(navigator.share){
+    navigator.share({title:'Отчёт для врача — Для Индиры',text:text}).catch(()=>{});
+  }else{copyReport();}
+}
+function downloadReport(){
+  H();
+  const text=(document.getElementById('reportArea')&&document.getElementById('reportArea').value)||buildReportText();
+  const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='otchet-vrach-'+new Date().toISOString().slice(0,10)+'.txt';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+  toast('Файл скачан 💾');
 }
 
 // ══ HEIGHT SAVE (for BMI) ══
