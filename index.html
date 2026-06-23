@@ -1603,6 +1603,20 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .contr-hist{margin-top:14px;display:flex;flex-direction:column;gap:6px}
 .contr-hist-item{display:flex;justify-content:space-between;padding:8px 12px;border-radius:12px;font-size:11px;font-weight:800;background:var(--bg2);border:1px solid var(--cb);color:var(--t2)}
 
+/* ── 47. PREMIUM v8 — bag edit, data guard ── */
+.bag-toolbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.bag-add-btn{flex:1;min-width:120px;padding:12px 14px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;cursor:pointer;box-shadow:0 6px 18px rgba(232,50,90,.28)}
+.bag-add-btn.secondary{background:var(--bg2);color:var(--t2);border:2px solid var(--cb);box-shadow:none}
+.bag-item{display:flex;align-items:center;gap:8px;padding:12px 0;border-bottom:1px solid var(--cb)}
+.bag-item-main{flex:1;display:flex;align-items:center;gap:14px;min-width:0;cursor:pointer}
+.bag-edit-btn{width:36px;height:36px;border:1px solid var(--cb);border-radius:12px;background:var(--bg2);color:var(--t3);font-size:14px;font-weight:900;cursor:pointer;flex-shrink:0}
+.bag-cat{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.bag-cat-txt{flex:1}
+.data-status-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.data-status-item{padding:12px;border-radius:14px;background:var(--bg2);border:1px solid var(--cb);font-size:11px;font-weight:800;color:var(--t2);line-height:1.45}
+.data-status-item b{display:block;font-size:16px;font-weight:900;color:var(--rose);margin-bottom:2px}
+.hero-streak-sub{display:block;font-size:9px;font-weight:800;opacity:.85;margin-top:1px;text-align:center;line-height:1.2}
+
 /* ══ END PREMIUM GLASS SYSTEM ══ */
 
 </style>
@@ -1674,7 +1688,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <div class="hero" id="heroBg">
         <div class="hero-orb hero-orb1"></div><div class="hero-orb hero-orb2"></div>
         <div class="hero-shine"></div>
-        <div class="hero-streak">🔥 <span id="streakNum">0</span></div>
+        <div class="hero-streak" id="heroStreak" title="Дни подряд и всего завершённых дней"><span>🔥 <span id="streakNum">0</span></span><span class="hero-streak-sub" id="totalDaysNum"></span></div>
         <div class="hero-date" id="heroDate"></div>
         <div id="heroTrimBadge" style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.35);border-radius:50px;padding:3px 10px;font-size:9px;font-weight:900;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;backdrop-filter:blur(8px)"></div>
         <div class="hero-title" id="heroTitle">Для любимой</div>
@@ -2127,7 +2141,11 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
     <div id="tab-bag" class="tab-c">
       <div style="padding-top:16px">
         <div class="page-h1">Сумка в роддом</div>
-        <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:18px">Отмечай что уже подготовили — вместе соберём всё!</p>
+        <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:14px">Отмечай, редактируй список и добавляй свои вещи — всё сохраняется на телефоне!</p>
+        <div class="bag-toolbar">
+          <button type="button" class="bag-add-btn" onclick="openBagForm(null,false)">＋ Добавить вещь</button>
+          <button type="button" class="bag-add-btn secondary" onclick="openBagForm(null,true)">＋ Раздел</button>
+        </div>
         <div class="card"><div class="cb">
           <div class="bag-prog-head"><span>📦 Прогресс сборки</span><span id="bagProgPct" style="color:var(--rose)">0%</span></div>
           <div class="pg-track"><div class="pg-fill" id="bagProgBar" style="width:0%"></div></div>
@@ -2201,6 +2219,12 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           <div style="font-size:15px;font-weight:800;margin-bottom:8px">Изменить дату родов (ПДР):</div>
           <input type="date" id="newEdd" style="width:100%;font-size:16px;padding:14px;text-align:center;font-weight:800;margin-bottom:10px">
           <button onclick="updateEDD()" style="width:100%;background:var(--bg2);border:2px solid var(--cb);color:var(--t1);font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer;margin-bottom:22px">Обновить дату</button>
+        </div></div>
+
+        <div class="card"><div class="cb">
+          <div class="photo-storage-title">🛡️ Твои данные на телефоне</div>
+          <p class="photo-storage-sub">Фото, лекарства, отметки и сумка хранятся только здесь. Обновление приложения их не стирает — но сделай резервную копию на всякий случай.</p>
+          <div class="data-status-grid" id="dataStatusGrid"></div>
         </div></div>
 
         <div class="card"><div class="cb">
@@ -2302,8 +2326,23 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
   </div>
 </div>
 
+<!-- MODAL: BAG ITEM -->
+<div class="mo" id="bagMo" role="dialog" aria-modal="true" aria-labelledby="bagMoTitle" onclick="if(event.target===this)closeBagForm()">
+  <div class="ms" style="position:relative">
+    <div class="ms-hdl"></div>
+    <button type="button" class="ms-close" onclick="closeBagForm()">✕</button>
+    <div style="font-family:'Playfair Display',serif;font-size:26px;font-style:italic;font-weight:900;color:var(--rose);text-align:center;margin-bottom:6px" id="bagMoTitle">Новая вещь</div>
+    <p style="font-size:12px;font-weight:700;color:var(--t3);text-align:center;margin-bottom:8px;line-height:1.5" id="bagMoSub">Название сохранится в твоём списке</p>
+    <label class="med-form-lbl" id="bagFormLbl">Название</label>
+    <input type="text" class="med-form-inp" id="bagTitleIn" placeholder="Например: Тапочки резиновые" maxlength="120" autocomplete="off">
+    <button type="button" class="lq" style="margin-top:18px" onclick="saveBagForm()">Сохранить 👜</button>
+    <button type="button" class="med-del-btn" id="bagDelBtn" style="display:none" onclick="deleteBagItem()">Удалить</button>
+  </div>
+</div>
+
 <script>
 const V="_v16";
+const APP_DATA_VER='v8';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -2576,7 +2615,7 @@ async function migratePhotosToIndexedDB(){
   let migrated=0;
   const uzi=localStorage.getItem('uziPh');
   if(uzi){await photoDBPut('uzi',dataUrlToBlob(uzi));localStorage.removeItem('uziPh');migrated++;}
-  const phRaw=localStorage.getItem('galPh'+V);
+  const phRaw=localStorage.getItem('galPh'+V)||localStorage.getItem('galPh_v16')||localStorage.getItem('galPh');
   if(phRaw){
     try{
       const ph=JSON.parse(phRaw);
@@ -3833,9 +3872,9 @@ function cloneMeds(arr){return JSON.parse(JSON.stringify(arr));}
 function loadMedRegistry(){
   try{
     const raw=localStorage.getItem(MED_REG_KEY);
-    if(raw){
+    if(raw!==null){
       const parsed=JSON.parse(raw);
-      if(Array.isArray(parsed)&&parsed.length)return parsed;
+      if(Array.isArray(parsed))return parsed;
     }
   }catch(e){}
   const seeded=cloneMeds(DEFAULT_MEDS);
@@ -3956,7 +3995,73 @@ function calcW(edd){
 }
 
 let _appTimersSet=false;
+function migrateLegacyStorage(){
+  if(localStorage.getItem('legacyMigrated_v8')==='1')return 0;
+  const pairs=[
+    ['medReg_v16','medReg'+V],['bagList_v16','bagList'+V],['streak_v16','streak'+V],
+    ['totalFinishedDays_v16','totalFinishedDays'+V],['kickHist_v16','kickHist'+V],
+    ['journalLog_v16','journalLog'+V],['wtH_v16','wtH'+V],['moodH_v16','moodH'+V],
+    ['symptomsLog_v16','symptomsLog'+V],['bpLog_v16','bpLog'+V],['appts_v16','appts'+V],
+    ['waterHist_v16','waterHist'+V],['medHist_v16','medHist'+V],['contrHist_v16','contrHist'+V],
+    ['medReg','medReg'+V],['bagList','bagList'+V],['streak','streak'+V]
+  ];
+  let moved=0;
+  pairs.forEach(([from,to])=>{
+    if(from===to)return;
+    const src=localStorage.getItem(from);
+    if(src==null||src==='')return;
+    if(!localStorage.getItem(to)){localStorage.setItem(to,src);moved++;}
+    else if(from.includes('moodH')||from.includes('wtH')||from.includes('symptoms')||from.includes('bpLog')){
+      try{
+        const a=JSON.parse(localStorage.getItem(to)||'{}');
+        const b=JSON.parse(src);
+        if(typeof a==='object'&&typeof b==='object'&&!Array.isArray(a)){
+          Object.assign(a,b);
+          localStorage.setItem(to,JSON.stringify(a));
+          moved++;
+        }
+      }catch(e){}
+    }
+  });
+  localStorage.setItem('legacyMigrated_v8','1');
+  if(!localStorage.getItem('totalFinishedDays'+V)){
+    const s=parseInt(localStorage.getItem('streak'+V)||'0',10);
+    const b=parseInt(localStorage.getItem('streakBest'+V)||'0',10);
+    const est=Math.max(s,b);
+    if(est>0)localStorage.setItem('totalFinishedDays'+V,String(est));
+  }
+  return moved;
+}
+async function ensureStoragePersisted(){
+  if(navigator.storage&&navigator.storage.persist){
+    try{await navigator.storage.persist();}catch(e){}
+  }
+}
+async function updateDataStatusUI(){
+  const el=document.getElementById('dataStatusGrid');
+  if(!el)return;
+  let photoCount=0;
+  try{
+    const st=await getPhotoStorageStats();
+    photoCount=(st.hasUzi?1:0)+st.galCount;
+  }catch(e){}
+  const meds=getMedRegistry().length;
+  const streak=localStorage.getItem('streak'+V)||'0';
+  const total=localStorage.getItem('totalFinishedDays'+V)||'0';
+  const bag=loadBagList();
+  const bagStats=getBagStats(bag);
+  el.innerHTML=[
+    {b:String(photoCount),t:'фото в приложении'},
+    {b:String(meds),t:'препаратов в списке'},
+    {b:streak,t:'дней подряд 🔥'},
+    {b:total,t:'завершённых дней'},
+    {b:bagStats.done+'/'+bagStats.total,t:'вещей в сумке'},
+    {b:localStorage.getItem('eddDate')?'✓':'—',t:'дата родов сохранена'}
+  ].map(x=>'<div class="data-status-item"><b>'+escapeHtml(x.b)+'</b>'+escapeHtml(x.t)+'</div>').join('');
+}
 function init(){
+  const migrated=migrateLegacyStorage();
+  ensureStoragePersisted();
   checkReset();
   loadMedRegistry();
   if(localStorage.getItem('theme')==='dark'){document.documentElement.classList.add('dark');document.getElementById('thmTog').checked=true}
@@ -3993,6 +4098,11 @@ function init(){
   loadTMsg();
   updateCD(edd);
   checkAnniv();
+  updateDataStatusUI();
+  if(migrated>0)toast('Твои записи и настройки сохранены ✓');
+  else if(localStorage.getItem('dataMigrateToast_v8')!=='1'&&localStorage.getItem('eddDate')){
+    localStorage.setItem('dataMigrateToast_v8','1');
+  }
   document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();}});
   if(!_appTimersSet){
     _appTimersSet=true;
@@ -4623,8 +4733,15 @@ function tTask(id){
   renderSchedule();
 }
 function updateProg(at){const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');const a=at||getScheduleMeds().active;let done=0;a.forEach(t=>{if(s[t.id])done++});const p=a.length?Math.round(done/a.length*100):100;document.getElementById('pgBar').style.width=p+'%';document.getElementById('pgT').textContent=p+'%';const fin=localStorage.getItem('finished'+V)==='true';const fc=document.getElementById('finishC');if(p===100&&a.length>0){fc.style.display='block';document.getElementById('finBtn').style.display=fin?'none':'block';document.getElementById('finMsg').style.display=fin?'block':'none'}else fc.style.display='none';updateTodayDash();}
-function finishDay(){H();localStorage.setItem('finished'+V,'true');let s=parseInt(localStorage.getItem('streak'+V)||'0');s++;localStorage.setItem('streak'+V,s.toString());loadStreak();confetti({particleCount:350,spread:170,origin:{y:.6},colors:['#E8325A','#C44DFF','#FFB347','#43C8E0','#fff']});updateProg();toast("Горжусь тобой! Все витаминки выпиты 🏆")}
-function loadStreak(){document.getElementById('streakNum').textContent=localStorage.getItem('streak'+V)||'0'}
+function finishDay(){H();localStorage.setItem('finished'+V,'true');let s=parseInt(localStorage.getItem('streak'+V)||'0');s++;localStorage.setItem('streak'+V,s.toString());let t=parseInt(localStorage.getItem('totalFinishedDays'+V)||'0');t++;localStorage.setItem('totalFinishedDays'+V,t.toString());const best=parseInt(localStorage.getItem('streakBest'+V)||'0');if(s>best)localStorage.setItem('streakBest'+V,s.toString());loadStreak();confetti({particleCount:350,spread:170,origin:{y:.6},colors:['#E8325A','#C44DFF','#FFB347','#43C8E0','#fff']});updateProg();updateDataStatusUI();toast("Горжусь тобой! Все витаминки выпиты 🏆")}
+function loadStreak(){
+  const s=localStorage.getItem('streak'+V)||'0';
+  const el=document.getElementById('streakNum');
+  if(el)el.textContent=s;
+  const total=localStorage.getItem('totalFinishedDays'+V)||'0';
+  const sub=document.getElementById('totalDaysNum');
+  if(sub)sub.textContent=parseInt(total,10)>0?total+' всего':'';
+}
 
 // ══ PREMIUM UX — dashboard, journal, backup, kick sessions ══
 const JOURNAL_KEY='journalLog'+V;
@@ -5167,12 +5284,10 @@ async function exportBackup(){
   H();
   showImgCompressOverlay('Собираем резервную копию…');
   try{
-    const data={version:4,exportedAt:new Date().toISOString(),local:{},photos:{}};
+    const data={version:5,appDataVer:APP_DATA_VER,exportedAt:new Date().toISOString(),local:{},photos:{}};
     for(let i=0;i<localStorage.length;i++){
       const k=localStorage.key(i);
-      if(!k)continue;
-      if(k.includes(V)||['eddDate','husbandPhone','theme','babyGender','heightCm','diaryEntry','photosInIDB_v1','imgMigrated_v3'].includes(k)||k.startsWith('homeSec_'))
-        data.local[k]=localStorage.getItem(k);
+      if(k)data.local[k]=localStorage.getItem(k);
     }
     const keys=await photoDBKeys();
     for(const k of keys){
@@ -5325,10 +5440,69 @@ function openCoupon(){H();document.getElementById('cpnBody').textContent=coupons
 function closeCoupon(){document.getElementById('couponMo').classList.remove('open')}
 
 // BAG
+function loadBagList(){
+  try{
+    const raw=localStorage.getItem('bagList'+V);
+    if(raw!==null){
+      const bag=JSON.parse(raw);
+      if(Array.isArray(bag))return bag;
+    }
+  }catch(e){}
+  const seeded=JSON.parse(JSON.stringify(defaultBag));
+  localStorage.setItem('bagList'+V,JSON.stringify(seeded));
+  return seeded;
+}
+function saveBagList(bag){localStorage.setItem('bagList'+V,JSON.stringify(bag));}
+let bagEditIdx=null;
+let bagEditIsCat=false;
+function openBagForm(idx,isCat){
+  H();
+  bagEditIdx=idx;
+  bagEditIsCat=!!isCat;
+  const bag=loadBagList();
+  const item=idx!=null?bag[idx]:null;
+  document.getElementById('bagMoTitle').textContent=item?(isCat||item.isC?'Редактировать раздел':'Редактировать вещь'):(isCat?'Новый раздел':'Новая вещь');
+  document.getElementById('bagMoSub').textContent=isCat||item?.isC?'Заголовок раздела в списке сумки':'Название вещи — можно менять когда угодно';
+  document.getElementById('bagFormLbl').textContent=isCat||item?.isC?'Название раздела':'Название вещи';
+  document.getElementById('bagTitleIn').value=item?item.t:'';
+  document.getElementById('bagDelBtn').style.display=item?'block':'none';
+  document.getElementById('bagMo').classList.add('open');
+  setTimeout(()=>document.getElementById('bagTitleIn')?.focus(),200);
+}
+function closeBagForm(){document.getElementById('bagMo').classList.remove('open');bagEditIdx=null;bagEditIsCat=false;}
+function saveBagForm(){
+  H();
+  const title=document.getElementById('bagTitleIn').value.trim();
+  if(!title){toast('Напиши название');return;}
+  const bag=loadBagList();
+  if(bagEditIdx!=null&&bag[bagEditIdx]){
+    bag[bagEditIdx].t=title;
+    if(bagEditIsCat)bag[bagEditIdx].isC=true;
+  }else if(bagEditIsCat){
+    bag.push({isC:true,t:title});
+  }else{
+    bag.push({id:'bag_'+Date.now(),t:title,done:false});
+  }
+  saveBagList(bag);
+  closeBagForm();
+  renderBag();
+  updateDataStatusUI();
+  toast('Список сумки обновлён 👜');
+}
+function deleteBagItem(){
+  H();
+  if(bagEditIdx==null)return;
+  if(!confirm('Удалить эту позицию из списка?'))return;
+  const bag=loadBagList();
+  const removed=bag.splice(bagEditIdx,1)[0];
+  saveBagList(bag);
+  closeBagForm();
+  renderBag();
+  updateDataStatusUI();
+  toast('Удалено: '+removed.t);
+}
 function renderBag(){
-  let bag;
-  try{bag=JSON.parse(localStorage.getItem('bagList'+V));}catch(e){bag=null;}
-  if(!Array.isArray(bag)||!bag.length){bag=defaultBag;localStorage.setItem('bagList'+V,JSON.stringify(bag));}
+  const bag=loadBagList();
   const stats=getBagStats(bag);
   const progEl=document.getElementById('bagProgBar');
   const progTxt=document.getElementById('bagProgTxt');
@@ -5343,17 +5517,16 @@ function renderBag(){
   }else if(stats.pct<100)localStorage.removeItem('bagDone'+V);
   document.getElementById('bagBox').innerHTML=bag.map((item,i)=>{
     if(!item)return'';
-    if(item.isC)return '<div class="bag-cat">'+item.t+'</div>';
-    return '<div class="bag-item" onclick="tBag('+i+')"><div class="bag-chk '+(item.done?'done':'')+'"></div><span class="bag-lbl '+(item.done?'done':'')+'">'+escapeHtml(item.t)+'</span></div>';
+    if(item.isC)return '<div class="bag-cat"><div class="bag-cat-txt">'+escapeHtml(item.t)+'</div><button type="button" class="bag-edit-btn" aria-label="Редактировать раздел" onclick="openBagForm('+i+',true)">✎</button></div>';
+    return '<div class="bag-item"><div class="bag-item-main" onclick="tBag('+i+')"><div class="bag-chk '+(item.done?'done':'')+'"></div><span class="bag-lbl '+(item.done?'done':'')+'">'+escapeHtml(item.t)+'</span></div><button type="button" class="bag-edit-btn" aria-label="Редактировать" onclick="event.stopPropagation();openBagForm('+i+',false)">✎</button></div>';
   }).join('');
 }
 function tBag(i){
   H();
-  let b;
-  try{b=JSON.parse(localStorage.getItem('bagList'+V));}catch(e){b=null;}
-  if(!Array.isArray(b)||!b[i])return;
+  const b=loadBagList();
+  if(!b[i]||b[i].isC)return;
   b[i].done=!b[i].done;
-  localStorage.setItem('bagList'+V,JSON.stringify(b));
+  saveBagList(b);
   if(b[i].done&&navigator.vibrate)navigator.vibrate(8);
   renderBag();
 }
@@ -5467,7 +5640,12 @@ function checkReset(){
         localStorage.setItem('medHist'+V,JSON.stringify(mtrim));
       }
     }
-    if(localStorage.getItem('finished'+V)!=='true'&&localStorage.getItem('lastD'+V))localStorage.setItem('streak'+V,'0');
+    if(localStorage.getItem('finished'+V)!=='true'&&localStorage.getItem('lastD'+V)){
+      const cur=parseInt(localStorage.getItem('streak'+V)||'0',10);
+      const best=parseInt(localStorage.getItem('streakBest'+V)||'0',10);
+      if(cur>best)localStorage.setItem('streakBest'+V,String(cur));
+      localStorage.setItem('streak'+V,'0');
+    }
     localStorage.setItem('tasks'+V,'{}');
     localStorage.setItem('water'+V,'[]');
     localStorage.setItem('mood'+V,'');
@@ -5491,8 +5669,9 @@ function switchTab(id,btn){
   btn.classList.add('act');
   btn.setAttribute('aria-selected','true');
   btn.setAttribute('aria-current','page');
-  if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();}
+  if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();updateDataStatusUI();}
   if(id==='journal'){renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();}
+  if(id==='bag')renderBag();
   if(id==='home'){updateTodayDash();renderWeekWellness();}
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -5690,6 +5869,7 @@ function buildReportText(){
   const kickHist=JSON.parse(localStorage.getItem('kickHist'+V)||'[]').slice(0,5).map(h=>'  '+new Date(h.date).toLocaleDateString('ru-RU')+': '+h.count+' шев. '+(h.ok?'✓':'!'));
   const kicks=localStorage.getItem('kickCount'+V)||'0';
   const streak=localStorage.getItem('streak'+V)||'0';
+  const totalFinished=localStorage.getItem('totalFinishedDays'+V)||'0';
   const appts=loadAppts().filter(a=>!a.done).slice(0,5).map(a=>'  '+a.date+': '+a.title);
   return [
     '═══════════════════════════════',
@@ -5702,6 +5882,7 @@ function buildReportText(){
     ...(medsLines.length?medsLines:['  (нет активных)']),
     ...pausedLines,
     'Дней подряд все препараты: '+streak,
+    'Всего завершённых дней: '+totalFinished,
     '',
     '─── ВЕС И ИМТ ───',
     ...wtLines,
