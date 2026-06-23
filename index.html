@@ -1582,6 +1582,16 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .wellness-score{font-size:11px;font-weight:900;letter-spacing:-.3px}
 .wellness-score-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0}
 .wellness-score-lbl{font-size:8px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.wellness-score-wrap{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.wellness-score[data-level=high]{background:linear-gradient(135deg,#52B882,#2D8A5E)!important;box-shadow:0 4px 14px rgba(82,184,130,.35)!important}
+.wellness-score[data-level=mid]{background:linear-gradient(135deg,#D4A017,#E8A020)!important;box-shadow:0 4px 14px rgba(212,160,23,.35)!important}
+.wellness-score[data-level=low]{background:linear-gradient(135deg,var(--rose),var(--plum))!important}
+.week-stat-click{cursor:pointer;transition:transform .15s,box-shadow .15s}
+.week-stat-click:active{transform:scale(.98)}
+.week-stat-click:focus-visible{outline:2px solid var(--rose);outline-offset:2px}
+.week-wellness-hint{margin-top:10px;padding:10px 12px;border-radius:12px;background:rgba(30,156,176,.08);border:1px solid rgba(30,156,176,.15);font-size:11px;font-weight:800;color:var(--teal2);line-height:1.45;text-align:center}
+
+/* ── 52. PREMIUM v15 — interactive week stats, index colors ── */
 .perfect-day-badge{display:none;margin:0 15px 14px;padding:12px 16px;border-radius:18px;background:linear-gradient(135deg,rgba(82,184,130,.15),rgba(45,122,85,.08));border:1px solid rgba(45,122,85,.25);text-align:center;font-size:13px;font-weight:900;color:var(--sage);animation:cIn .5s ease}
 .perfect-day-badge.show{display:block}
 .trend-block{margin-top:16px;padding-top:14px;border-top:1px solid var(--cb)}
@@ -1895,7 +1905,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           <span class="week-wellness-title">Твоя неделя</span>
           <div class="wellness-head-right">
             <button type="button" class="week-share-btn" onclick="shareWeekSummary()" aria-label="Поделиться сводкой">📤 Сводка</button>
-            <div class="wellness-score-wrap" title="Индекс заботы за 7 дней">
+            <div class="wellness-score-wrap" title="Индекс заботы за 7 дней" onclick="explainWellnessScore()" role="button" tabindex="0" aria-label="Индекс заботы — нажми для пояснения">
               <div class="wellness-score" id="wellnessScore" aria-label="Индекс заботы">—</div>
               <span class="wellness-score-lbl">индекс</span>
             </div>
@@ -1903,6 +1913,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           </div>
         </div>
         <div class="week-wellness-grid" id="weekWellnessGrid"></div>
+        <div class="week-wellness-hint" id="weekWellnessHint" style="display:none"></div>
       </div>
 
       <div class="journey-card" id="journeyCard" role="region" aria-label="Прогресс беременности">
@@ -2448,7 +2459,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v14</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v15</div>
         </div></div>
       </div>
     </div>
@@ -2585,7 +2596,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
 <script>
 const V="_v16";
-const APP_DATA_VER='v14';
+const APP_DATA_VER='v15';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -5124,12 +5135,18 @@ function tTask(id){
 function updateProg(at){const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');const a=at||getScheduleMeds().active;let done=0;a.forEach(t=>{if(s[t.id])done++});const p=a.length?Math.round(done/a.length*100):100;document.getElementById('pgBar').style.width=p+'%';document.getElementById('pgT').textContent=p+'%';const fin=localStorage.getItem('finished'+V)==='true';const fc=document.getElementById('finishC');if(p===100&&a.length>0){fc.style.display='block';document.getElementById('finBtn').style.display=fin?'none':'block';document.getElementById('finMsg').style.display=fin?'block':'none'}else fc.style.display='none';updateTodayDash();renderMedWeekChart();}
 function finishDay(){H();localStorage.setItem('finished'+V,'true');let s=parseInt(localStorage.getItem('streak'+V)||'0');s++;localStorage.setItem('streak'+V,s.toString());let t=parseInt(localStorage.getItem('totalFinishedDays'+V)||'0');t++;localStorage.setItem('totalFinishedDays'+V,t.toString());const best=parseInt(localStorage.getItem('streakBest'+V)||'0');if(s>best)localStorage.setItem('streakBest'+V,s.toString());loadStreak();confetti({particleCount:350,spread:170,origin:{y:.6},colors:['#E8325A','#C44DFF','#FFB347','#43C8E0','#fff']});updateProg();updateDataStatusUI();toast("Горжусь тобой! Все витаминки выпиты 🏆")}
 function loadStreak(){
-  const s=localStorage.getItem('streak'+V)||'0';
+  const n=parseInt(localStorage.getItem('streak'+V)||'0',10);
   const el=document.getElementById('streakNum');
-  if(el)el.textContent=s;
-  const total=localStorage.getItem('totalFinishedDays'+V)||'0';
+  if(el)el.textContent=String(n);
+  const total=parseInt(localStorage.getItem('totalFinishedDays'+V)||'0',10);
   const sub=document.getElementById('totalDaysNum');
-  if(sub)sub.textContent=parseInt(total,10)>0?total+' всего':'';
+  if(sub)sub.textContent=total>0?total+' '+pluralDays(total)+' · всего':'подряд';
+  const hero=document.getElementById('heroStreak');
+  if(hero){
+    const g=localStorage.getItem('babyGender')||'n';
+    const ctx=g==='b'?'забота о сыне':g==='g'?'забота о дочке':'идеальный день';
+    hero.title=n+' '+pluralDays(n)+' подряд · '+total+' '+pluralDays(total)+' всего\n'+ctx;
+  }
 }
 
 // ══ PREMIUM UX — dashboard, journal, backup, kick sessions ══
@@ -5338,8 +5355,53 @@ function formatStreakWeekStat(streak){
   const sub=g==='b'?'забота о сыне':g==='g'?'забота о дочке':'идеальный день заботы';
   return {val:'<b>'+n+'</b> '+d+' подряд',lbl:sub};
 }
-function weekStatHtml(ico,val,lbl){
-  return '<div class="week-stat"><span class="week-stat-ico">'+ico+'</span><span class="week-stat-body"><span class="week-stat-val">'+val+'</span><span class="week-stat-lbl">'+lbl+'</span></span></div>';
+function weekStatHtml(ico,val,lbl,action){
+  const click=action?' onclick="goWeekStat(\''+action+'\')" role="button" tabindex="0" aria-label="'+lbl.replace(/"/g,'')+'"':'';
+  const cls=action?' week-stat-click':'';
+  return '<div class="week-stat'+cls+'"'+click+'><span class="week-stat-ico">'+ico+'</span><span class="week-stat-body"><span class="week-stat-val">'+val+'</span><span class="week-stat-lbl">'+lbl+'</span></span></div>';
+}
+function goWeekStat(action){
+  H();
+  if(action==='meds'){switchTabById('meds');return;}
+  if(action==='mood'){goHomeSection('wellness');return;}
+  if(action==='water'){goHomeSection('daily');return;}
+  if(action==='bp'){
+    switchTabById('journal');
+    setTimeout(()=>document.getElementById('bpLogEl')?.scrollIntoView({behavior:'smooth',block:'center'}),300);
+    return;
+  }
+  if(action==='kick'){
+    goHomeSection('daily');
+    setTimeout(()=>document.getElementById('kickCard')?.scrollIntoView({behavior:'smooth',block:'start'}),350);
+  }
+}
+function explainWellnessScore(){
+  H();
+  const score=getWellnessScore();
+  let msg='Индекс '+score+' из 100 — ';
+  if(score>=70)msg+='отличная неделя заботы! 💚';
+  else if(score>=40)msg+='хорошо, но есть куда расти 💛';
+  else msg+='начни с малого: вода, настроение, препараты 💗';
+  msg+=' Считается по настроению, воде, лекарствам, давлению и серии за 7 дней.';
+  toast(msg);
+}
+function updateWellnessHint(score,moodCount,waterDays,bpCount,kickWeek){
+  const hint=document.getElementById('weekWellnessHint');
+  if(!hint)return;
+  const empty=moodCount===0&&waterDays===0&&bpCount===0&&kickWeek===0;
+  if(empty&&score<15){
+    hint.style.display='block';
+    hint.textContent='Начни с простого: отметь настроение, выпей воды или прими витамины — индекс вырастет сам ✨';
+    return;
+  }
+  if(score>=70){hint.style.display='none';return;}
+  hint.style.display='block';
+  const tips=[];
+  if(moodCount<4)tips.push('настроение');
+  if(waterDays<4)tips.push('вода');
+  if(bpCount<2)tips.push('давление');
+  if(kickWeek<1)tips.push('шевеления');
+  hint.textContent=tips.length?'Подтянуть индекс: '+tips.join(', ')+' — нажми на карточку ниже':'Каждый день понемногу — и индекс растёт 💪';
 }
 function updateMilestoneCard(){
   const card=document.getElementById('milestoneCard');
@@ -5682,18 +5744,21 @@ function renderWeekWellness(){
   const waterDays=keys.filter(k=>(k===todayKey?todayWater:waterHist[k])>=8).length;
   const streakStat=formatStreakWeekStat(streak);
   grid.innerHTML=[
-    weekStatHtml('🔥',streakStat.val,streakStat.lbl),
-    weekStatHtml('😊','<b>'+moodCount+'/7</b> дней','настроение отмечено'),
-    weekStatHtml('💧','<b>'+waterDays+'/7</b> дней','норма воды выполнена'),
-    weekStatHtml('🩺','<b>'+bpCount+'/7</b> '+pluralMeasurements(bpCount),'давление записано'),
-    weekStatHtml('🦶','<b>'+kickWeek+'</b> '+pluralSessions(kickWeek),'подсчёт шевелений')
+    weekStatHtml('🔥',streakStat.val,streakStat.lbl,'meds'),
+    weekStatHtml('😊','<b>'+moodCount+'/7</b> дней','настроение отмечено','mood'),
+    weekStatHtml('💧','<b>'+waterDays+'/7</b> дней','норма воды выполнена','water'),
+    weekStatHtml('🩺','<b>'+bpCount+'/7</b> '+pluralMeasurements(bpCount),'давление записано','bp'),
+    weekStatHtml('🦶','<b>'+kickWeek+'</b> '+pluralSessions(kickWeek),'подсчёт шевелений','kick')
   ].join('');
   const scoreEl=document.getElementById('wellnessScore');
   if(scoreEl){
     const score=getWellnessScore();
     scoreEl.textContent=score;
     scoreEl.setAttribute('aria-label','Индекс заботы: '+score+' из 100');
-    scoreEl.parentElement.title='Индекс заботы за 7 дней: '+score+' из 100';
+    scoreEl.dataset.level=score>=70?'high':score>=40?'mid':'low';
+    const wrap=scoreEl.parentElement;
+    if(wrap)wrap.title='Индекс заботы: '+score+' из 100 · нажми для пояснения';
+    updateWellnessHint(score,moodCount,waterDays,bpCount,kickWeek);
   }
   updateMilestoneCard();
 }
