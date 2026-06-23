@@ -1,0 +1,81 @@
+/* Service Worker — офлайн-кэш для PWA «Для Индиры» */
+const CACHE = 'care-diary-v2';
+const PRECACHE = [
+  './index.html',
+  './manifest.webmanifest',
+  './apple-icon.png',
+  './icon-192.png'
+];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE)
+      .then((cache) => cache.addAll(PRECACHE))
+      .then(() => self.skipWaiting())
+      .catch(() => {})
+  );
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  if (request.method !== 'GET') return;
+
+  const url = new URL(request.url);
+  if (!url.protocol.startsWith('http')) return;
+
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE).then((cache) => cache.put('./index.html', copy));
+          return response;
+        })
+        .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
+
+  if (url.origin === self.location.origin) {
+    event.respondWith(staleWhileRevalidate(request));
+    return;
+  }
+
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
+    event.respondWith(cacheFirst(request));
+  }
+});
+
+function staleWhileRevalidate(request) {
+  return caches.open(CACHE).then(async (cache) => {
+    const cached = await cache.match(request);
+    const network = fetch(request)
+      .then((response) => {
+        if (response.ok) cache.put(request, response.clone());
+        return response;
+      })
+      .catch(() => null);
+    return cached || network || caches.match('./index.html');
+  });
+}
+
+function cacheFirst(request) {
+  return caches.open(CACHE).then(async (cache) => {
+    const cached = await cache.match(request);
+    if (cached) return cached;
+    return fetch(request)
+      .then((response) => {
+        if (response.ok) cache.put(request, response.clone());
+        return response;
+      })
+      .catch(() => cached);
+  });
+}

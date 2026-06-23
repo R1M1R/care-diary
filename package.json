@@ -1,0 +1,9 @@
+{
+  "name": "care-diary",
+  "private": true,
+  "description": "Дневник заботы для Индиры — PWA",
+  "scripts": {
+    "start": "npx --yes serve . -p 4173",
+    "preview": "npm run start"
+  }
+}

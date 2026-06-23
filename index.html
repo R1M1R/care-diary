@@ -4,10 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Для Индиры 🤍</title>
-<link rel="apple-touch-icon" href="apple-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-icon.png" sizes="180x180">
+<meta name="theme-color" content="#E8325A">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Для Индиры">
+<meta name="description" content="Дневник беременности: забота, фото, витамины и послания от мужа">
+<link rel="apple-touch-startup-image" href="splash-iphone.png" media="(orientation: portrait)">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Lora:ital,wght@0,500;0,600;1,500;1,600&family=Nunito:wght@400;600;700;800;900&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <script>
 // Inline confetti - no Web Worker (avoids blob: security error in previews)
@@ -347,6 +353,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opa
 /* Номер текущей недели — выделен */
 .gal-item.current-week{border-color:rgba(212,160,23,.7);box-shadow:0 0 0 2px rgba(212,160,23,.3),0 8px 24px rgba(212,160,23,.2)}
 .gal-item.current-week .gal-wk{background:linear-gradient(transparent,rgba(100,60,0,.8))}
+.gal-section-head{display:flex;justify-content:flex-end;margin-bottom:12px}
+.gal-count{font-size:11px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:var(--t3);background:var(--bg2);border:1px solid rgba(232,50,90,.12);padding:8px 12px;border-radius:999px}
+.gal-item:not(.hp){background:linear-gradient(145deg,rgba(255,255,255,.55),rgba(232,50,90,.04));box-shadow:inset 0 0 0 1px rgba(232,50,90,.08)}
+.gal-item:not(.hp)::after{content:'';position:absolute;inset:8px;border-radius:14px;border:1px dashed rgba(232,50,90,.14);pointer-events:none}
+#galMo.is-compressing .gal-btn,#galMo.is-compressing .gal-btn-danger{opacity:.55;pointer-events:none;filter:grayscale(.15)}
 
 /* ══ WATER ══ */
 .water-row{display:flex;justify-content:space-between;align-items:flex-end}
@@ -443,9 +454,42 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opa
 @keyframes lqA{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 
 /* ══ PHOTO ══ */
-.pf{width:100%;height:270px;border-radius:24px;border:3px dashed rgba(232,50,90,.3);background:rgba(232,50,90,.04);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;transition:transform .2s}
-.pf:active{transform:scale(.98)}
-.pf img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.pf{width:100%;height:300px;border-radius:28px;background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(255,240,245,.75));display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .35s;box-shadow:0 18px 50px rgba(232,50,90,.12),inset 0 1px 0 rgba(255,255,255,.85);isolation:isolate}
+.pf::before{content:'';position:absolute;inset:0;border-radius:28px;padding:2px;background:linear-gradient(135deg,rgba(232,50,90,.55),rgba(196,78,232,.45),rgba(255,184,200,.35));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.85}
+.pf::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.55),transparent 55%);pointer-events:none;mix-blend-mode:soft-light}
+.pf:active{transform:scale(.985)}
+.pf.has-photo{box-shadow:0 22px 60px rgba(232,50,90,.22),0 0 0 1px rgba(255,255,255,.5) inset}
+.pf img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;z-index:1;transition:transform .6s cubic-bezier(.22,1,.36,1)}
+.pf.has-photo:hover img{transform:scale(1.03)}
+.pf-ph{position:relative;z-index:2;text-align:center;padding:20px}
+.pf-ph-ico{font-size:58px;margin-bottom:12px;display:block;filter:drop-shadow(0 8px 18px rgba(232,50,90,.18));animation:pfFloat 4s ease-in-out infinite}
+.pf-ph-txt{font-size:14px;font-weight:900;color:var(--t3);letter-spacing:.2px}
+.pf-ph-sub{font-size:11px;font-weight:700;color:var(--t3);opacity:.75;margin-top:6px}
+.pf-badge{position:absolute;top:14px;right:14px;z-index:3;background:rgba(255,255,255,.88);backdrop-filter:blur(12px);border:1px solid rgba(232,50,90,.18);color:var(--rose);font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;padding:7px 12px;border-radius:999px;box-shadow:0 8px 24px rgba(232,50,90,.15);display:none}
+.pf.has-photo .pf-badge{display:block}
+.pf-local-load{position:absolute;inset:0;z-index:4;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:rgba(255,248,250,.82);backdrop-filter:blur(10px)}
+.pf.is-loading .pf-local-load{display:flex}
+.pf.is-loading .pf-ph,.pf.is-loading img{opacity:.35}
+.pf.is-loading{pointer-events:none}
+@keyframes pfFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.gal-prev-wrap{width:100%;height:300px;border-radius:24px;overflow:hidden;background:linear-gradient(160deg,var(--bg2),rgba(255,255,255,.95));display:flex;align-items:center;justify-content:center;margin-bottom:18px;position:relative;box-shadow:inset 0 0 0 1px rgba(232,50,90,.1),0 16px 40px rgba(232,50,90,.1)}
+.gal-prev-wrap img{width:100%;height:100%;object-fit:cover}
+.gal-prev-empty{font-size:54px;color:var(--t3);filter:drop-shadow(0 6px 16px rgba(232,50,90,.12))}
+.gal-prev-badge{position:absolute;bottom:14px;left:14px;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);color:#fff;font-size:11px;font-weight:900;padding:8px 12px;border-radius:999px;letter-spacing:.4px}
+.gal-actions{display:grid;gap:10px;margin-bottom:10px}
+.gal-btn{width:100%;border:none;border-radius:18px;padding:16px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.gal-btn:active{transform:scale(.98)}
+.gal-btn-primary{background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;box-shadow:0 10px 28px rgba(232,50,90,.34)}
+.gal-btn-secondary{background:var(--bg2);color:var(--t2);border:2px solid rgba(232,50,90,.16)}
+.gal-btn-danger{width:100%;background:none;border:2px solid #EF4444;color:#EF4444;border-radius:18px;padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;display:none}
+.gal-btn-danger.show{display:block}
+.img-compress-overlay{position:fixed;inset:0;z-index:950;display:none;align-items:center;justify-content:center;padding:24px;padding-bottom:max(24px,env(safe-area-inset-bottom));background:rgba(12,4,8,.45);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.img-compress-overlay.show{display:flex}
+.img-compress-card{background:rgba(255,252,253,.96);border:1px solid rgba(232,50,90,.16);border-radius:28px;padding:28px 32px;max-width:320px;width:100%;text-align:center;box-shadow:0 24px 70px rgba(232,50,90,.22)}
+.img-compress-spin{width:52px;height:52px;border-radius:50%;border:3px solid rgba(232,50,90,.15);border-top-color:var(--rose);margin:0 auto 16px;animation:imgSpin .85s linear infinite}
+.img-compress-txt{font-size:15px;font-weight:900;color:var(--t2);line-height:1.45}
+.img-compress-sub{font-size:12px;font-weight:700;color:var(--t3);margin-top:8px}
+@keyframes imgSpin{to{transform:rotate(360deg)}}
 
 /* ══ KICK ══ */
 .kick-big{font-family:'Playfair Display',serif;font-size:80px;font-weight:900;color:var(--rose);text-align:center;line-height:1;text-shadow:0 4px 24px rgba(232,50,90,.28);animation:kA .3s ease}
@@ -483,6 +527,21 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opa
 .tog-sl::before{content:'';position:absolute;width:24px;height:24px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 2px 6px rgba(0,0,0,.15)}
 input:checked+.tog-sl{background:var(--rose)}
 input:checked+.tog-sl::before{transform:translateX(22px)}
+
+/* ══ PHOTO STORAGE (settings) ══ */
+.photo-storage-card{background:linear-gradient(145deg,rgba(255,255,255,.85),rgba(255,240,245,.55));border:1px solid rgba(232,50,90,.14);border-radius:22px;padding:18px;margin-bottom:18px}
+.photo-storage-title{font-size:15px;font-weight:900;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.photo-storage-sub{font-size:12px;font-weight:700;color:var(--t3);line-height:1.55;margin-bottom:14px}
+.photo-storage-meta{font-size:13px;font-weight:800;color:var(--t2);margin-bottom:10px}
+.photo-storage-track{height:10px;border-radius:999px;background:rgba(232,50,90,.1);overflow:hidden;margin-bottom:16px;box-shadow:inset 0 1px 3px rgba(0,0,0,.06)}
+.photo-storage-bar{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--rose),var(--plum2));transition:width .6s cubic-bezier(.34,1.56,.64,1)}
+.photo-storage-bar.warn{background:linear-gradient(90deg,#F59E0B,#EF4444)}
+.photo-storage-actions{display:grid;gap:10px}
+.photo-storage-btn{width:100%;border-radius:16px;padding:14px 16px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;cursor:pointer;transition:transform .2s,opacity .2s}
+.photo-storage-btn:active{transform:scale(.98)}
+.photo-storage-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.photo-storage-btn-secondary{background:var(--bg2);border:2px solid rgba(232,50,90,.16);color:var(--t2)}
+.photo-storage-btn-danger{background:none;border:2px solid #EF4444;color:#EF4444}
 
 /* ══ NAV ══ */
 #nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--nav);backdrop-filter:blur(36px);-webkit-backdrop-filter:blur(36px);border-top:1px solid var(--cb);display:flex;justify-content:space-around;padding:10px 8px 32px;border-radius:28px 28px 0 0;box-shadow:0 -10px 44px rgba(232,50,90,.08)}
@@ -1433,6 +1492,13 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 <canvas id="cvs"></canvas>
 <div class="gb gb1"></div><div class="gb gb2"></div><div class="gb gb3"></div>
 <div id="toast"></div>
+<div class="img-compress-overlay" id="imgCompressOverlay" aria-live="polite" aria-busy="false">
+  <div class="img-compress-card">
+    <div class="img-compress-spin" aria-hidden="true"></div>
+    <div class="img-compress-txt" id="imgCompressTxt">Сжимаем фото…</div>
+    <div class="img-compress-sub">Это займёт пару секунд — так приложение не перегрузит память</div>
+  </div>
+</div>
 <div class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
 
 <!-- SETUP -->
@@ -1673,12 +1739,21 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
       <div class="card">
         <div class="cb">
           <div class="sh">📸 Наше чудо</div>
-          <div class="ssub">Сохрани здесь наше любимое фото УЗИ</div>
-          <div class="pf" id="photoF" onclick="document.getElementById('uziI').click()">
-            <div id="photoPlaceholder" style="text-align:center"><div style="font-size:64px;margin-bottom:10px">👼</div><div style="font-size:14px;font-weight:800;color:var(--t3)">Добавить фото</div></div>
+          <div class="ssub">Сохрани здесь наше любимое фото УЗИ — приложение автоматически сожмёт его для телефона</div>
+          <div class="pf" id="photoF" onclick="openUziPhotoPicker()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openUziPhotoPicker()}" role="button" tabindex="0" aria-label="Добавить фото УЗИ">
+            <div class="pf-local-load" id="uziLoad" aria-hidden="true">
+              <div class="img-compress-spin"></div>
+              <span class="img-compress-txt" style="font-size:13px">Сжимаем фото…</span>
+            </div>
+            <span class="pf-badge">Сохранено ✨</span>
+            <div class="pf-ph" id="photoPlaceholder">
+              <span class="pf-ph-ico">👼</span>
+              <span class="pf-ph-txt">Добавить фото УЗИ</span>
+              <span class="pf-ph-sub">Нажми — выбери из галереи</span>
+            </div>
             <img id="uziImg" src="" alt="Наш малыш" style="display:none">
           </div>
-          <input type="file" id="uziI" accept="image/*" style="display:none" onchange="loadUziPhoto(event)">
+          <input type="file" id="uziI" accept="image/jpeg,image/png,image/heic,image/heif,image/webp,.heic,.heif" style="display:none" onchange="loadUziPhoto(event)">
         </div>
       </div>
 
@@ -1789,7 +1864,8 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         </div>
         <div class="card"><div class="cb">
           <div class="sh">📷 Животик по неделям</div>
-          <div class="ssub">Тапни на ячейку — добавь фото. Галерея с 19 по 40 неделю! Текущая неделя выделена ✨</div>
+          <div class="ssub">Тапни на ячейку — сними животик или выбери из галереи. Фото сжимаются автоматически ✨</div>
+          <div class="gal-section-head"><span class="gal-count" id="galCount">0 / 22</span></div>
           <div class="gal-grid" id="galGrid"></div>
         </div></div>
       </div>
@@ -1828,6 +1904,27 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
             <div id="genderMsg" style="margin-top:14px;font-family:'Caveat',cursive;font-size:19px;color:var(--rose);text-align:center;line-height:1.45;display:none;padding:12px;background:rgba(232,50,90,.07);border-radius:14px"></div>
           </div>
         </div>
+
+        <div class="card"><div class="cb">
+          <div class="photo-storage-card">
+            <div class="photo-storage-title">📸 Память для фото</div>
+            <p class="photo-storage-sub">Фото хранятся на телефоне и сжимаются автоматически. Если приложение тормозит — очисти или оптимизируй альбом.</p>
+            <div class="photo-storage-meta" id="photoStorageInfo">Загрузка…</div>
+            <div class="photo-storage-sub" id="photoStorageQuota" style="margin-top:-6px;margin-bottom:10px;min-height:18px"></div>
+            <div class="photo-storage-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Заполнение памяти фото">
+              <div class="photo-storage-bar" id="photoStorageBar"></div>
+            </div>
+            <div class="photo-storage-actions">
+              <button type="button" class="photo-storage-btn photo-storage-btn-secondary" id="recompressPhotosBtn" onclick="recompressAllPhotosManual()">Оптимизировать все фото ✨</button>
+              <button type="button" class="photo-storage-btn photo-storage-btn-danger" id="clearPhotosBtn" onclick="clearAllPhotos()">Удалить все фото</button>
+            </div>
+          </div>
+          <div class="photo-storage-card" style="margin-bottom:0">
+            <div class="photo-storage-title">📱 Установка на iPhone</div>
+            <p class="photo-storage-sub" id="pwaStatusInfo">Проверяем режим приложения…</p>
+            <button type="button" class="photo-storage-btn photo-storage-btn-secondary" style="margin-top:12px" onclick="checkForAppUpdate()">Проверить обновления приложения</button>
+          </div>
+        </div></div>
 
         <div class="card"><div class="cb">
           <div class="tog-w"><span style="font-size:15px;font-weight:800">Тёмная тема 🌙</span><label class="tog"><input type="checkbox" id="thmTog" onchange="toggleTheme()"><span class="tog-sl"></span></label></div>
@@ -1891,10 +1988,18 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
     <div class="ms-hdl"></div>
     <button class="ms-close" onclick="closeGal()">✕</button>
     <div style="font-family:'Playfair Display',serif;font-size:24px;font-style:italic;font-weight:900;text-align:center;margin-bottom:16px" id="galMoT"></div>
-    <div id="galPrev" style="width:100%;height:285px;border-radius:22px;overflow:hidden;background:var(--bg2);display:flex;align-items:center;justify-content:center;margin-bottom:16px;position:relative"><div style="font-size:50px">👼</div></div>
-    <button onclick="document.getElementById('galIn').click()" style="width:100%;background:var(--rose);color:#fff;border:none;border-radius:18px;padding:16px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 8px 26px rgba(232,50,90,.32);margin-bottom:10px">Добавить фото 📷</button>
-    <button id="galDel" onclick="deleteGalPhoto()" style="width:100%;background:none;border:2px solid #EF4444;color:#EF4444;border-radius:18px;padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;display:none">Удалить фото</button>
-    <input type="file" id="galIn" accept="image/*" style="display:none" onchange="loadGalPhoto(event)">
+    <div class="gal-prev-wrap" id="galPrev">
+      <div class="gal-prev-empty" id="galPrevEmpty">👼</div>
+      <img id="galPrevImg" src="" alt="" style="display:none">
+      <span class="gal-prev-badge" id="galPrevBadge" style="display:none">Неделя сохранена ✨</span>
+    </div>
+    <div class="gal-actions">
+      <button type="button" class="gal-btn gal-btn-primary" onclick="if(imgProcessing)return;document.getElementById('galInCam').click()">Снять животик 📷</button>
+      <button type="button" class="gal-btn gal-btn-secondary" onclick="if(imgProcessing)return;document.getElementById('galInLib').click()">Выбрать из галереи 🖼️</button>
+    </div>
+    <button type="button" id="galDel" class="gal-btn-danger" onclick="deleteGalPhoto()">Удалить фото</button>
+    <input type="file" id="galInCam" accept="image/jpeg,image/png,image/heic,image/heif,image/webp,.heic,.heif" capture="environment" style="display:none" onchange="loadGalPhoto(event)">
+    <input type="file" id="galInLib" accept="image/jpeg,image/png,image/heic,image/heif,image/webp,.heic,.heif" style="display:none" onchange="loadGalPhoto(event)">
   </div>
 </div>
 
@@ -1951,6 +2056,371 @@ const H=()=>{if(navigator.vibrate)navigator.vibrate(9)};
 // ══ TOAST ══
 let tT;
 const toast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),3500)};
+
+// ══ IMAGE COMPRESSION (Canvas — без тяжёлого FileReader/base64 до сжатия) ══
+// Альтернатива с npm: npm install browser-image-compression
+const IMG_COMPRESS_PRESETS={
+  uzi:{maxDim:1920,maxBytes:1.5*1024*1024,startQuality:.86,minQuality:.5},
+  gallery:{maxDim:1400,maxBytes:700*1024,startQuality:.82,minQuality:.45}
+};
+let imgCompressCount=0;
+let imgProcessing=false;
+let uziPreviewBlobUrl=null;
+let heic2anyPromise=null;
+
+function isHeicFile(file){
+  return /heic|heif/i.test(file.type||'')||/\.(heic|heif)$/i.test(file.name||'');
+}
+function loadHeic2Any(){
+  if(window.heic2any)return Promise.resolve(window.heic2any);
+  if(heic2anyPromise)return heic2anyPromise;
+  heic2anyPromise=new Promise((resolve,reject)=>{
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
+    s.onload=()=>resolve(window.heic2any);
+    s.onerror=()=>{heic2anyPromise=null;reject(new Error('HEIC_LIB_FAILED'));};
+    document.head.appendChild(s);
+  });
+  return heic2anyPromise;
+}
+async function normalizeImageFile(file){
+  if(!isHeicFile(file))return file;
+  try{
+    const heic2any=await loadHeic2Any();
+    const out=await heic2any({blob:file,toType:'image/jpeg',quality:0.92});
+    const blob=Array.isArray(out)?out[0]:out;
+    return blob instanceof Blob?blob:file;
+  }catch(e){
+    return file;
+  }
+}
+function getScaledDimensions(w,h,maxDim){
+  const scale=Math.min(1,maxDim/Math.max(w,h,1));
+  return{w:Math.max(1,Math.round(w*scale)),h:Math.max(1,Math.round(h*scale))};
+}
+function releaseImageSource(source){
+  if(!source)return;
+  if(typeof ImageBitmap!=='undefined'&&source instanceof ImageBitmap)source.close();
+  else if(source.src!==undefined)source.src='';
+}
+function shrinkCanvas(canvas,factor){
+  const w=Math.max(480,Math.round(canvas.width*factor));
+  const h=Math.max(480,Math.round(canvas.height*factor));
+  const next=document.createElement('canvas');
+  next.width=w;next.height=h;
+  next.getContext('2d',{alpha:false}).drawImage(canvas,0,0,w,h);
+  canvas.width=0;canvas.height=0;
+  return next;
+}
+function drawScaledImage(source,maxDim){
+  let w,h;
+  if(typeof ImageBitmap!=='undefined'&&source instanceof ImageBitmap){
+    w=source.width;h=source.height;
+  }else{
+    w=source.naturalWidth||source.width;
+    h=source.naturalHeight||source.height;
+    ({w,h}=getScaledDimensions(w,h,maxDim));
+  }
+  const canvas=document.createElement('canvas');
+  canvas.width=w;canvas.height=h;
+  const ctx=canvas.getContext('2d',{alpha:false});
+  ctx.fillStyle='#fff';
+  ctx.fillRect(0,0,w,h);
+  ctx.drawImage(source,0,0,w,h);
+  return canvas;
+}
+async function decodeImageBlob(blob,maxDim){
+  if(typeof createImageBitmap==='function'){
+    try{
+      const probeUrl=URL.createObjectURL(blob);
+      const probe=await loadImageFromBlobUrl(probeUrl);
+      URL.revokeObjectURL(probeUrl);
+      const sw=probe.naturalWidth||probe.width;
+      const sh=probe.naturalHeight||probe.height;
+      probe.src='';
+      const {w,h}=getScaledDimensions(sw,sh,maxDim);
+      return await createImageBitmap(blob,{resizeWidth:w,resizeHeight:h,resizeQuality:'medium'});
+    }catch(e){}
+  }
+  const blobUrl=URL.createObjectURL(blob);
+  const img=await loadImageFromBlobUrl(blobUrl);
+  URL.revokeObjectURL(blobUrl);
+  return img;
+}
+function compressFromCanvas(canvas,preset){
+  let quality=preset.startQuality;
+  let dataUrl=canvasToJpegDataUrl(canvas,quality);
+  while(estimateDataUrlBytes(dataUrl)>preset.maxBytes&&quality>preset.minQuality){
+    quality=Math.max(preset.minQuality,quality-0.07);
+    dataUrl=canvasToJpegDataUrl(canvas,quality);
+  }
+  let shrinkAttempts=0;
+  while(estimateDataUrlBytes(dataUrl)>preset.maxBytes&&shrinkAttempts<4){
+    shrinkAttempts++;
+    canvas=shrinkCanvas(canvas,0.82-shrinkAttempts*0.08);
+    quality=preset.startQuality;
+    dataUrl=canvasToJpegDataUrl(canvas,quality);
+    while(estimateDataUrlBytes(dataUrl)>preset.maxBytes&&quality>preset.minQuality){
+      quality=Math.max(preset.minQuality,quality-0.07);
+      dataUrl=canvasToJpegDataUrl(canvas,quality);
+    }
+  }
+  canvas.width=0;canvas.height=0;
+  return dataUrl;
+}
+function compressFromImage(source,preset){
+  const canvas=drawScaledImage(source,preset.maxDim);
+  releaseImageSource(source);
+  return compressFromCanvas(canvas,preset);
+}
+async function compressImageFile(file,presetKey='uzi'){
+  const preset=IMG_COMPRESS_PRESETS[presetKey]||IMG_COMPRESS_PRESETS.uzi;
+  if(!file)throw new Error('NO_FILE');
+  const isImage=file.type.startsWith('image/')||/\.(jpe?g|png|webp|heic|heif)$/i.test(file.name||'');
+  if(!isImage)throw new Error('NOT_IMAGE');
+  try{
+    const normalized=await normalizeImageFile(file);
+    const source=await decodeImageBlob(normalized,preset.maxDim);
+    return compressFromImage(source,preset);
+  }catch(err){
+    if(isHeicFile(file)&&err.message==='LOAD_FAILED'){
+      throw new Error('HEIC_UNSUPPORTED');
+    }
+    throw err;
+  }
+}
+async function recompressDataUrl(dataUrl,presetKey){
+  const preset=IMG_COMPRESS_PRESETS[presetKey]||IMG_COMPRESS_PRESETS.uzi;
+  const img=await loadImageFromBlobUrl(dataUrl);
+  const out=compressFromImage(img,preset);
+  img.src='';
+  return out;
+}
+async function migrateStoredPhotos(){
+  if(localStorage.getItem('imgMigrated_v2')==='1')return;
+  let changed=false;
+  const uzi=localStorage.getItem('uziPh');
+  if(uzi&&estimateDataUrlBytes(uzi)>IMG_COMPRESS_PRESETS.uzi.maxBytes){
+    try{
+      localStorage.setItem('uziPh',await recompressDataUrl(uzi,'uzi'));
+      changed=true;
+    }catch(e){}
+  }
+  const phRaw=localStorage.getItem('galPh'+V);
+  if(phRaw){
+    try{
+      const ph=JSON.parse(phRaw);
+      for(const w of Object.keys(ph)){
+        if(ph[w]&&estimateDataUrlBytes(ph[w])>IMG_COMPRESS_PRESETS.gallery.maxBytes){
+          ph[w]=await recompressDataUrl(ph[w],'gallery');
+          changed=true;
+        }
+      }
+      if(changed)localStorage.setItem('galPh'+V,JSON.stringify(ph));
+    }catch(e){}
+  }
+  localStorage.setItem('imgMigrated_v2','1');
+  if(changed){
+    loadUziPh();
+    renderGallery(localStorage.getItem('eddDate'));
+  }
+  updatePhotoStorageUI();
+}
+function formatPhotoBytes(bytes){
+  if(!bytes)return '0 B';
+  if(bytes<1024)return bytes+' B';
+  if(bytes<1024*1024)return (bytes/1024).toFixed(1)+' KB';
+  return (bytes/(1024*1024)).toFixed(1)+' MB';
+}
+function getPhotoStorageStats(){
+  let uziBytes=0,galBytes=0,galCount=0;
+  const uzi=localStorage.getItem('uziPh');
+  if(uzi)uziBytes=estimateDataUrlBytes(uzi);
+  try{
+    const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');
+    Object.keys(ph).forEach(w=>{if(ph[w]){galBytes+=estimateDataUrlBytes(ph[w]);galCount++;}});
+  }catch(e){}
+  return{uziBytes,galBytes,totalBytes:uziBytes+galBytes,galCount,hasUzi:!!uzi};
+}
+function updatePhotoStorageUI(){
+  const info=document.getElementById('photoStorageInfo');
+  const bar=document.getElementById('photoStorageBar');
+  const quotaEl=document.getElementById('photoStorageQuota');
+  const track=bar?bar.parentElement:null;
+  const clearBtn=document.getElementById('clearPhotosBtn');
+  const recompBtn=document.getElementById('recompressPhotosBtn');
+  if(!info)return;
+  const s=getPhotoStorageStats();
+  const limit=4.5*1024*1024;
+  const pct=s.totalBytes?Math.min(100,Math.round(s.totalBytes/limit*100)):0;
+  info.textContent=s.totalBytes
+    ?`${formatPhotoBytes(s.totalBytes)} · УЗИ: ${s.hasUzi?1:0} · животик: ${s.galCount}/22`
+    :'Фото пока нет — можно добавить на главной и в дневнике';
+  if(bar){
+    bar.style.width=pct+'%';
+    bar.classList.toggle('warn',pct>=75);
+  }
+  if(track)track.setAttribute('aria-valuenow',String(pct));
+  if(clearBtn)clearBtn.disabled=!s.totalBytes;
+  if(recompBtn)recompBtn.disabled=!s.totalBytes;
+  if(quotaEl&&navigator.storage&&navigator.storage.estimate){
+    navigator.storage.estimate().then(est=>{
+      const used=est.usage||0;
+      const quota=est.quota||0;
+      quotaEl.textContent=quota?`Браузер: ${formatPhotoBytes(used)} из ~${formatPhotoBytes(quota)} на этом сайте`:'';
+    }).catch(()=>{if(quotaEl)quotaEl.textContent='';});
+  }else if(quotaEl){quotaEl.textContent='';}
+}
+function updatePWAStatusUI(){
+  const el=document.getElementById('pwaStatusInfo');
+  if(!el)return;
+  const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+  const ios=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  if(standalone){
+    el.textContent='Приложение на экране «Домой» — офлайн-режим и уведомления работают лучше всего 📱';
+  }else if(ios){
+    el.textContent='Safari → Поделиться ↑ → «На экран Домой». Так фото с камеры не будут перегружать вкладку браузера.';
+  }else{
+    el.textContent='Добавь сайт на главный экран — будет открываться как отдельное приложение.';
+  }
+}
+function checkForAppUpdate(){
+  H();
+  if(!('serviceWorker' in navigator)){toast('Обновления недоступны в этом браузере');return;}
+  navigator.serviceWorker.getRegistration().then(reg=>{
+    if(!reg){toast('Приложение ещё не установлено как PWA');return;}
+    reg.update().then(()=>toast('Проверяем обновления…')).catch(()=>toast('Не удалось проверить обновления'));
+  });
+}
+function resetUziPhotoUI(){
+  if(uziPreviewBlobUrl){URL.revokeObjectURL(uziPreviewBlobUrl);uziPreviewBlobUrl=null;}
+  const pf=document.getElementById('photoF');
+  const ph=document.getElementById('photoPlaceholder');
+  const img=document.getElementById('uziImg');
+  if(pf)pf.classList.remove('has-photo','is-loading');
+  if(ph)ph.style.display='';
+  if(img){img.removeAttribute('src');img.style.display='none';}
+}
+async function recompressAllPhotosForce(){
+  let changed=false;
+  const uzi=localStorage.getItem('uziPh');
+  if(uzi){
+    try{
+      localStorage.setItem('uziPh',await recompressDataUrl(uzi,'uzi'));
+      changed=true;
+    }catch(e){}
+  }
+  const phRaw=localStorage.getItem('galPh'+V);
+  if(phRaw){
+    try{
+      const ph=JSON.parse(phRaw);
+      for(const w of Object.keys(ph)){
+        if(!ph[w])continue;
+        ph[w]=await recompressDataUrl(ph[w],'gallery');
+        changed=true;
+      }
+      if(changed)localStorage.setItem('galPh'+V,JSON.stringify(ph));
+    }catch(e){}
+  }
+  return changed;
+}
+async function recompressAllPhotosManual(){
+  H();
+  if(imgProcessing){toast('Подожди — идёт обработка фото');return;}
+  if(!getPhotoStorageStats().totalBytes){toast('Нет фото для оптимизации');return;}
+  imgProcessing=true;
+  showImgCompressOverlay('Оптимизируем все фото…');
+  try{
+    await recompressAllPhotosForce();
+    loadUziPh();
+    renderGallery(localStorage.getItem('eddDate'));
+    updatePhotoStorageUI();
+    toast('Фото оптимизированы! Память обновлена ✨');
+  }catch(e){
+    toast('Не удалось оптимизировать все фото');
+  }finally{
+    imgProcessing=false;
+    hideImgCompressOverlay();
+  }
+}
+function clearAllPhotos(){
+  H();
+  const s=getPhotoStorageStats();
+  if(!s.totalBytes){toast('Фото уже удалены');return;}
+  if(!confirm('Удалить все фото ('+formatPhotoBytes(s.totalBytes)+')? Дневник, лекарства и настройки останутся.'))return;
+  localStorage.removeItem('uziPh');
+  localStorage.removeItem('galPh'+V);
+  localStorage.removeItem('imgMigrated_v2');
+  resetUziPhotoUI();
+  renderGallery(localStorage.getItem('eddDate'));
+  updatePhotoStorageUI();
+  toast('Все фото удалены — память освобождена ✨');
+}
+function openUziPhotoPicker(){
+  if(imgProcessing)return;
+  document.getElementById('uziI').click();
+}
+function setGalMoLoading(on){
+  const mo=document.getElementById('galMo');
+  if(mo)mo.classList.toggle('is-compressing',!!on);
+}
+function updateGalPreview(src){
+  const imgEl=document.getElementById('galPrevImg');
+  const emptyEl=document.getElementById('galPrevEmpty');
+  const badgeEl=document.getElementById('galPrevBadge');
+  const delBtn=document.getElementById('galDel');
+  if(!imgEl||!emptyEl)return;
+  imgEl.src=src;
+  imgEl.style.display='block';
+  emptyEl.style.display='none';
+  if(badgeEl)badgeEl.style.display='inline-flex';
+  if(delBtn)delBtn.classList.add('show');
+}
+
+function showImgCompressOverlay(msg){
+  imgCompressCount++;
+  const o=document.getElementById('imgCompressOverlay');
+  const t=document.getElementById('imgCompressTxt');
+  if(t&&msg)t.textContent=msg;
+  if(o){o.classList.add('show');o.setAttribute('aria-busy','true');}
+}
+function hideImgCompressOverlay(){
+  imgCompressCount=Math.max(0,imgCompressCount-1);
+  if(imgCompressCount===0){
+    const o=document.getElementById('imgCompressOverlay');
+    if(o){o.classList.remove('show');o.setAttribute('aria-busy','false');}
+  }
+}
+function setPfLoading(on){
+  const pf=document.getElementById('photoF');
+  if(pf)pf.classList.toggle('is-loading',!!on);
+}
+function estimateDataUrlBytes(dataUrl){
+  const b64=(dataUrl.split(',')[1]||'');
+  return Math.ceil(b64.length*0.75);
+}
+function loadImageFromBlobUrl(blobUrl){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=()=>reject(new Error('LOAD_FAILED'));
+    img.src=blobUrl;
+  });
+}
+function canvasToJpegDataUrl(canvas,quality){
+  return canvas.toDataURL('image/jpeg',quality);
+}
+function resetFileInput(input){
+  if(input)input.value='';
+}
+function compressErrorMessage(err){
+  if(!err)return 'Не удалось обработать фото';
+  if(err.message==='NOT_IMAGE')return 'Выбери файл изображения (JPEG, PNG, HEIC или WebP)';
+  if(err.message==='NO_FILE')return 'Файл не выбран';
+  if(err.message==='LOAD_FAILED')return 'Не удалось открыть фото. Попробуй другое или снимок через «Снять животик»';
+  if(err.message==='HEIC_UNSUPPORTED')return 'HEIC не открылся — выбери JPEG/PNG или сними через камеру 📷';
+  return 'Не удалось сжать фото — попробуй ещё раз или выбери другое';
+}
 
 // ══════════════════════════════════
 // DATA
@@ -3072,6 +3542,7 @@ function init(){
   renderMoodHist();
   renderWtChart();
   renderGallery(edd);
+  migrateStoredPhotos().catch(()=>{}).finally(()=>{updatePhotoStorageUI();updatePWAStatusUI();});
   loadTMsg();
   updateCD(edd);
   checkAnniv();
@@ -3409,63 +3880,125 @@ function renderGallery(edd){
   const{week}=calcW(edd||localStorage.getItem('eddDate'));
   const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');
   const gr=document.getElementById('galGrid');if(!gr)return;
+  const count=Object.keys(ph).filter(k=>ph[k]).length;
+  const cntEl=document.getElementById('galCount');
+  if(cntEl)cntEl.textContent=count+' / 22';
   let html='';
   for(let w=19;w<=40;w++){
     const p=ph[w];
     const isCur=w===week;
     const inner=p
-      ?`<div class="gal-img-wrap"><img src="${p}" alt=""></div>`
+      ?`<div class="gal-img-wrap"><img src="${p}" alt="Неделя ${w}" loading="lazy" decoding="async"></div>`
       :`<div class="gal-plus">+</div>`;
     html+=`<div class="gal-item ${p?'hp':''} ${isCur?'current-week':''}" onclick="openGal(${w})">${inner}<div class="gal-wk">${w} нед.${isCur?' ✨':''}</div></div>`;
   }
   gr.innerHTML=html;
 }
-function openGal(w){H();curGW=w;document.getElementById('galMoT').textContent='📷 Неделя '+w;const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');const pr=document.getElementById('galPrev');const db=document.getElementById('galDel');if(ph[w]){pr.innerHTML=`<img src="${ph[w]}" style="width:100%;height:100%;object-fit:cover">`;db.style.display='block'}else{pr.innerHTML='<div style="font-size:50px;color:var(--t3)">👼</div>';db.style.display='none'}document.getElementById('galMo').classList.add('open')}
-function closeGal(){document.getElementById('galMo').classList.remove('open')}
-function loadGalPhoto(ev){
-  const f=ev.target.files[0];
-  if(!f)return;
-  // Compress image before saving to localStorage
-  const img=new Image();
-  const reader=new FileReader();
-  reader.onload=re=>{
-    img.onload=()=>{
-      const canvas=document.createElement('canvas');
-      const MAX=600; // max dimension
-      let w=img.width,h=img.height;
-      if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}
-      else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
-      canvas.width=w;canvas.height=h;
-      const ctx=canvas.getContext('2d');
-      ctx.drawImage(img,0,0,w,h);
-      const compressed=canvas.toDataURL('image/jpeg',0.75);
-      const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');
-      ph[curGW]=compressed;
-      try{
-        localStorage.setItem('galPh'+V,JSON.stringify(ph));
-        renderGallery(localStorage.getItem('eddDate'));
-        closeGal();
-        toast("Фото недели "+curGW+" сохранено! 📷");
-      }catch(err){
-        // Try to save just this week's photo separately
-        try{
-          const solo={};solo[curGW]=compressed;
-          localStorage.setItem('galPh'+V,JSON.stringify(solo));
-          toast("Память заполнена, другие фото очищены. 📷 "+curGW+" сохранено.");
-          renderGallery(localStorage.getItem('eddDate'));closeGal();
-        }catch(e2){toast("Фото не сохранилось — память переполнена 😔");}
-      }
-    };
-    img.src=re.target.result;
-  };
-  reader.readAsDataURL(f);
+function openGal(w){
+  H();
+  curGW=w;
+  document.getElementById('galMoT').textContent='📷 Неделя '+w;
+  const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');
+  const imgEl=document.getElementById('galPrevImg');
+  const emptyEl=document.getElementById('galPrevEmpty');
+  const badgeEl=document.getElementById('galPrevBadge');
+  const delBtn=document.getElementById('galDel');
+  if(ph[w]){
+    imgEl.src=ph[w];
+    imgEl.style.display='block';
+    emptyEl.style.display='none';
+    badgeEl.style.display='inline-flex';
+    delBtn.classList.add('show');
+  }else{
+    imgEl.removeAttribute('src');
+    imgEl.style.display='none';
+    emptyEl.style.display='block';
+    badgeEl.style.display='none';
+    delBtn.classList.remove('show');
+  }
+  document.getElementById('galMo').classList.add('open');
 }
-function deleteGalPhoto(){H();if(curGW==null)return;const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');delete ph[curGW];localStorage.setItem('galPh'+V,JSON.stringify(ph));renderGallery(localStorage.getItem('eddDate'));closeGal();toast("Фото удалено")}
+function closeGal(){document.getElementById('galMo').classList.remove('open')}
+async function loadGalPhoto(ev){
+  const input=ev.target;
+  const f=input&&input.files&&input.files[0];
+  resetFileInput(document.getElementById('galInCam'));
+  resetFileInput(document.getElementById('galInLib'));
+  if(!f||curGW==null)return;
+  imgProcessing=true;
+  setGalMoLoading(true);
+  showImgCompressOverlay('Сжимаем фото…');
+  try{
+    const compressed=await compressImageFile(f,'gallery');
+    const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');
+    ph[curGW]=compressed;
+    try{
+      localStorage.setItem('galPh'+V,JSON.stringify(ph));
+      updateGalPreview(compressed);
+      renderGallery(localStorage.getItem('eddDate'));
+      updatePhotoStorageUI();
+      toast('Фото недели '+curGW+' сохранено! 📷');
+    }catch(err){
+      try{
+        const solo={};solo[curGW]=compressed;
+        localStorage.setItem('galPh'+V,JSON.stringify(solo));
+        updateGalPreview(compressed);
+        toast('Память заполнена — другие фото очищены. 📷 '+curGW+' сохранено.');
+        renderGallery(localStorage.getItem('eddDate'));
+        updatePhotoStorageUI();
+      }catch(e2){
+        toast('Фото не сохранилось — память переполнена 😔');
+      }
+    }
+  }catch(err){
+    console.error('loadGalPhoto',err);
+    toast(compressErrorMessage(err));
+  }finally{
+    imgProcessing=false;
+    setGalMoLoading(false);
+    hideImgCompressOverlay();
+    resetFileInput(input);
+  }
+}
+function deleteGalPhoto(){H();if(curGW==null)return;const ph=JSON.parse(localStorage.getItem('galPh'+V)||'{}');delete ph[curGW];localStorage.setItem('galPh'+V,JSON.stringify(ph));renderGallery(localStorage.getItem('eddDate'));updatePhotoStorageUI();closeGal();toast("Фото удалено")}
 
 // UZI PHOTO
-function loadUziPhoto(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{localStorage.setItem('uziPh',e.target.result)}catch(er){}showUziPh(e.target.result);toast("Фото нашего малыша сохранено! 💕")};r.readAsDataURL(f)}
+async function loadUziPhoto(ev){
+  const input=ev.target;
+  const f=input&&input.files&&input.files[0];
+  if(!f)return;
+  imgProcessing=true;
+  setPfLoading(true);
+  showImgCompressOverlay('Сжимаем фото УЗИ…');
+  try{
+    const compressed=await compressImageFile(f,'uzi');
+    try{localStorage.setItem('uziPh',compressed)}catch(er){
+      toast('Не хватает места для сохранения фото 😔');
+      return;
+    }
+    showUziPh(compressed);
+    updatePhotoStorageUI();
+    toast('Фото нашего малыша сохранено! 💕');
+  }catch(err){
+    console.error('loadUziPhoto',err);
+    toast(compressErrorMessage(err));
+  }finally{
+    imgProcessing=false;
+    setPfLoading(false);
+    hideImgCompressOverlay();
+    resetFileInput(input);
+  }
+}
 function loadUziPh(){const p=localStorage.getItem('uziPh');if(p)showUziPh(p)}
-function showUziPh(src){document.getElementById('photoPlaceholder').style.display='none';const img=document.getElementById('uziImg');img.src=src;img.style.display='block'}
+function showUziPh(src){
+  if(uziPreviewBlobUrl){URL.revokeObjectURL(uziPreviewBlobUrl);uziPreviewBlobUrl=null;}
+  const pf=document.getElementById('photoF');
+  const ph=document.getElementById('photoPlaceholder');
+  const img=document.getElementById('uziImg');
+  if(ph)ph.style.display='none';
+  if(pf)pf.classList.add('has-photo');
+  if(img){img.src=src;img.style.display='block';}
+}
 
 // BREATHE — upgraded with ripples, floating dots, rings
 let brInt=null,brPh=0,brS=0,brRippleInt=null,brDotAngle=0;
@@ -3636,7 +4169,7 @@ function checkNotifs(){if(Notification.permission!=="granted")return;const now=n
 function checkReset(){const d=new Date().toDateString();if(localStorage.getItem('lastD'+V)!==d){if(localStorage.getItem('finished'+V)!=='true'&&localStorage.getItem('lastD'+V))localStorage.setItem('streak'+V,'0');localStorage.setItem('tasks'+V,'{}');localStorage.setItem('water'+V,'[]');localStorage.setItem('mood'+V,'');localStorage.setItem('kickCount'+V,'0');localStorage.setItem('finished'+V,'false');localStorage.setItem('lastD'+V,d)}}
 function savePhone(){H();const p=document.getElementById('phoneIn').value;if(p){localStorage.setItem('husbandPhone',p);document.getElementById('callBtn').href='tel:'+p;toast("Мой номер сохранён!")}}
 function saveDiary(){H();localStorage.setItem('diaryEntry',document.getElementById('diaryT').value);toast("Письмо сохранено в сердце! 💖")}
-function switchTab(id,btn){H();document.querySelectorAll('.tab-c').forEach(e=>e.classList.remove('act'));document.getElementById('tab-'+id).classList.add('act');document.querySelectorAll('.nb').forEach(e=>e.classList.remove('act'));btn.classList.add('act');window.scrollTo({top:0,behavior:'smooth'})}
+function switchTab(id,btn){H();document.querySelectorAll('.tab-c').forEach(e=>e.classList.remove('act'));document.getElementById('tab-'+id).classList.add('act');document.querySelectorAll('.nb').forEach(e=>e.classList.remove('act'));btn.classList.add('act');if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();}window.scrollTo({top:0,behavior:'smooth'})}
 function toggleTheme(){H();const d=document.getElementById('thmTog').checked;if(d){document.documentElement.classList.add('dark');localStorage.setItem('theme','dark')}else{document.documentElement.classList.remove('dark');localStorage.setItem('theme','light')}}
 function resetAll(){
   H();
@@ -3645,7 +4178,7 @@ function resetAll(){
   const toDelete=[];
   for(let i=0;i<localStorage.length;i++){
     const k=localStorage.key(i);
-    if(k&&(k.includes(V)||['eddDate','husbandPhone','diaryEntry','theme','babyGender','heightCm','uziPh'].indexOf(k)>=0)){
+    if(k&&(k.includes(V)||['eddDate','husbandPhone','diaryEntry','theme','babyGender','heightCm','uziPh','imgMigrated_v2'].indexOf(k)>=0)){
       toDelete.push(k);
     }
   }
@@ -3929,6 +4462,29 @@ window.addEventListener('scroll',()=>{
   const btn=document.getElementById('scrollTopBtn');
   if(btn)btn.classList.toggle('vis',window.scrollY>300);
 },{passive:true});
+
+// ══ PWA / OFFLINE ══
+(function registerPWA(){
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('./sw.js',{scope:'./'}).then(reg=>{
+        reg.addEventListener('updatefound',()=>{
+          const worker=reg.installing;
+          if(!worker)return;
+          worker.addEventListener('statechange',()=>{
+            if(worker.state==='installed'&&navigator.serviceWorker.controller){
+              toast('Доступно обновление — закрой и открой приложение снова ✨');
+            }
+          });
+        });
+      }).catch(()=>{});
+    });
+  }
+  let offlineNotified=false;
+  window.addEventListener('offline',()=>{
+    if(!offlineNotified){offlineNotified=true;toast('Офлайн — приложение работает без интернета 📱');}
+  });
+})();
 
 init();
 </script>
