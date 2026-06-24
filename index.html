@@ -2488,7 +2488,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v29</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v30</div>
         </div></div>
       </div>
     </div>
@@ -2634,7 +2634,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v29';
+const APP_DATA_VER='v30';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -2879,6 +2879,7 @@ function photoSaveErrorMessage(err){
   if(m==='NO_FILE')return 'Файл пустой — попробуй ещё раз';
   if(m==='NO_IDB')return 'Память недоступна — перезапусти приложение';
   if(m==='IDB_PUT'||n==='QuotaExceededError'||/quota/i.test(m))return 'Мало места — удали старые фото';
+  if(/IDBObjectStore|transaction|DataClone|IndexedDB/i.test(m+n))return 'Ошибка памяти — обнови до v30 и нажми «Проверить загрузку фото»';
   if(m==='LOAD_FAILED')return 'Снимок не открылся (шаг '+step+') — «Снять животик 📷»';
   if(m==='CANVAS_FAILED')return 'Не обработался (шаг '+step+') — снимай камерой';
   if(m==='SAVE_FAILED')return 'Не сохранился (шаг '+step+') — «Снять животик 📷»';
@@ -3023,13 +3024,11 @@ function openPhotoDB(){
   });
   return photoDbPromise;
 }
-function idbTx(store,mode){
-  return openPhotoDB().then(db=>db.transaction(PHOTO_STORE,mode).objectStore(PHOTO_STORE));
-}
 function photoRecordToBlob(rec){
   if(!rec)return null;
   if(rec instanceof Blob)return rec;
   if(rec instanceof ArrayBuffer&&rec.byteLength>0)return new Blob([rec],{type:'image/jpeg'});
+  if(rec instanceof Uint8Array&&rec.byteLength>0)return new Blob([rec],{type:'image/jpeg'});
   if(rec&&rec.v===29&&rec.data!=null){
     let data=rec.data;
     if(data instanceof Uint8Array)data=data.buffer.slice(data.byteOffset,data.byteOffset+data.byteLength);
@@ -3037,51 +3036,75 @@ function photoRecordToBlob(rec){
   }
   return null;
 }
-async function photoDBPut(key,blob){
-  let ab;
-  try{
-    ab=typeof blob.arrayBuffer==='function'?await blob.arrayBuffer():await fileToArrayBuffer(blob);
-  }catch(e){
-    throw new Error('IDB_PUT');
+async function blobForPhotoStore(blob){
+  const type=(blob&&blob.type)||'image/jpeg';
+  if(blob instanceof Blob&&blob.size>0){
+    try{
+      const ab=await blob.arrayBuffer();
+      return new Blob([ab],{type});
+    }catch(e){
+      if(typeof blob.slice==='function')return blob.slice(0,blob.size,type);
+    }
   }
-  if(!ab||ab.byteLength<1)throw new Error('IDB_PUT');
-  const store=await idbTx('readwrite');
+  const ab=await fileToArrayBuffer(blob);
+  if(!ab||!ab.byteLength)throw new Error('IDB_PUT');
+  return new Blob([ab],{type});
+}
+async function photoDBPut(key,blob){
+  const toStore=await blobForPhotoStore(blob);
+  const db=await openPhotoDB();
   return new Promise((resolve,reject)=>{
-    const req=store.put(ab,key);
+    const tx=db.transaction(PHOTO_STORE,'readwrite');
+    const store=tx.objectStore(PHOTO_STORE);
+    const req=store.put(toStore,key);
     req.onsuccess=()=>resolve();
-    req.onerror=()=>reject(new Error('IDB_PUT'));
+    req.onerror=()=>reject(req.error||new Error('IDB_PUT'));
+    tx.onerror=()=>reject(tx.error||new Error('IDB_PUT'));
+    tx.onabort=()=>reject(tx.error||new Error('IDB_PUT'));
   });
 }
 async function photoDBGet(key){
-  const store=await idbTx('readonly');
+  const db=await openPhotoDB();
   return new Promise((resolve,reject)=>{
+    const tx=db.transaction(PHOTO_STORE,'readonly');
+    const store=tx.objectStore(PHOTO_STORE);
     const req=store.get(key);
     req.onsuccess=()=>resolve(photoRecordToBlob(req.result)||req.result||null);
     req.onerror=()=>reject(req.error||new Error('IDB_GET'));
+    tx.onerror=()=>reject(req.error||new Error('IDB_GET'));
   });
 }
 async function photoDBDelete(key){
-  const store=await idbTx('readwrite');
+  const db=await openPhotoDB();
   return new Promise((resolve,reject)=>{
+    const tx=db.transaction(PHOTO_STORE,'readwrite');
+    const store=tx.objectStore(PHOTO_STORE);
     const req=store.delete(key);
     req.onsuccess=()=>resolve();
     req.onerror=()=>reject(req.error||new Error('IDB_DEL'));
+    tx.onerror=()=>reject(tx.error||new Error('IDB_DEL'));
   });
 }
 async function photoDBClear(){
-  const store=await idbTx('readwrite');
+  const db=await openPhotoDB();
   return new Promise((resolve,reject)=>{
+    const tx=db.transaction(PHOTO_STORE,'readwrite');
+    const store=tx.objectStore(PHOTO_STORE);
     const req=store.clear();
     req.onsuccess=()=>resolve();
     req.onerror=()=>reject(req.error||new Error('IDB_CLEAR'));
+    tx.onerror=()=>reject(req.error||new Error('IDB_CLEAR'));
   });
 }
 async function photoDBKeys(){
-  const store=await idbTx('readonly');
+  const db=await openPhotoDB();
   return new Promise((resolve,reject)=>{
+    const tx=db.transaction(PHOTO_STORE,'readonly');
+    const store=tx.objectStore(PHOTO_STORE);
     const req=store.getAllKeys();
     req.onsuccess=()=>resolve(req.result||[]);
     req.onerror=()=>reject(req.error||new Error('IDB_KEYS'));
+    tx.onerror=()=>reject(req.error||new Error('IDB_KEYS'));
   });
 }
 function revokePhotoUrl(key){
