@@ -2148,7 +2148,6 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
             </div>
             <img id="uziImg" src="" alt="Наш малыш" style="display:none">
           </div>
-          <input type="file" id="uziI" accept="image/jpeg,image/png,image/heic,image/heif,image/webp,.heic,.heif" style="display:none" onchange="loadUziPhoto(event)">
         </div>
       </div>
 
@@ -2480,7 +2479,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v18</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v19</div>
         </div></div>
       </div>
     </div>
@@ -2533,16 +2532,14 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
       <span class="gal-prev-badge" id="galPrevBadge" style="display:none">Неделя сохранена ✨</span>
     </div>
     <div class="gal-actions">
-      <button type="button" class="gal-btn gal-btn-primary" onclick="if(imgProcessing)return;document.getElementById('galInCam').click()">Снять животик 📷</button>
-      <button type="button" class="gal-btn gal-btn-secondary" onclick="if(imgProcessing)return;document.getElementById('galInLib').click()">Выбрать из галереи 🖼️</button>
+      <button type="button" class="gal-btn gal-btn-primary" onclick="triggerGalCamera()">Снять животик 📷</button>
+      <button type="button" class="gal-btn gal-btn-secondary" onclick="triggerGalLibrary()">Выбрать из галереи 🖼️</button>
     </div>
     <div class="gal-share-row" id="galShareRow" style="display:none">
       <button type="button" class="gal-btn gal-btn-secondary" onclick="shareGalPhoto()">📤 Поделиться</button>
     </div>
     <p class="photo-storage-sub" id="galModeHint" style="text-align:center;margin:10px 0 0">Превью в приложении · оригинал остаётся в галерее телефона 📱</p>
     <button type="button" id="galDel" class="gal-btn-danger" onclick="deleteGalPhoto()">Удалить фото</button>
-    <input type="file" id="galInCam" accept="image/jpeg,image/png,image/heic,image/heif,image/webp,.heic,.heif" capture="environment" style="display:none" onchange="loadGalPhoto(event)">
-    <input type="file" id="galInLib" accept="image/jpeg,image/png,image/heic,image/heif,image/webp,.heic,.heif" style="display:none" onchange="loadGalPhoto(event)">
   </div>
 </div>
 
@@ -2621,7 +2618,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
 <script>
 const V="_v16";
-const APP_DATA_VER='v18';
+const APP_DATA_VER='v19';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -2694,15 +2691,14 @@ function loadHeic2Any(){
   return heic2anyPromise;
 }
 async function normalizeImageFile(file){
-  if(!isHeicFile(file))return file;
-  try{
-    const heic2any=await loadHeic2Any();
-    const out=await heic2any({blob:file,toType:'image/jpeg',quality:0.92});
-    const blob=Array.isArray(out)?out[0]:out;
-    return blob instanceof Blob?blob:file;
-  }catch(e){
-    return file;
-  }
+  return file;
+}
+async function convertHeicToJpeg(file){
+  const heic2any=await loadHeic2Any();
+  const out=await heic2any({blob:file,toType:'image/jpeg',quality:0.92});
+  const blob=Array.isArray(out)?out[0]:out;
+  if(!(blob instanceof Blob))throw new Error('HEIC_UNSUPPORTED');
+  return blob;
 }
 function getScaledDimensions(w,h,maxDim){
   const scale=Math.min(1,maxDim/Math.max(w,h,1));
@@ -2786,17 +2782,23 @@ function compressFromImage(source,preset){
 async function compressImageFile(file,presetKey='uzi'){
   const preset=IMG_COMPRESS_PRESETS[presetKey]||IMG_COMPRESS_PRESETS.uzi;
   if(!file)throw new Error('NO_FILE');
-  const isImage=file.type.startsWith('image/')||/\.(jpe?g|png|webp|heic|heif)$/i.test(file.name||'');
+  const isImage=file.type.startsWith('image/')||(!file.type&&file.size>0)||/\.(jpe?g|png|webp|heic|heif)$/i.test(file.name||'');
   if(!isImage)throw new Error('NOT_IMAGE');
   try{
-    const normalized=await normalizeImageFile(file);
-    const source=await decodeImageBlob(normalized,preset.maxDim);
+    const source=await decodeImageBlob(file,preset.maxDim);
     return compressFromImage(source,preset);
-  }catch(err){
-    if(isHeicFile(file)&&err.message==='LOAD_FAILED'){
+  }catch(firstErr){
+    if(!isHeicFile(file))throw firstErr;
+    try{
+      const o=document.getElementById('imgCompressTxt');
+      if(o)o.textContent='Конвертируем HEIC…';
+      const jpegBlob=await convertHeicToJpeg(file);
+      const source=await decodeImageBlob(jpegBlob,preset.maxDim);
+      return compressFromImage(source,preset);
+    }catch(e2){
+      if(e2&&e2.message==='HEIC_LIB_FAILED')throw e2;
       throw new Error('HEIC_UNSUPPORTED');
     }
-    throw err;
   }
 }
 async function recompressDataUrl(dataUrl,presetKey){
@@ -3215,6 +3217,31 @@ async function clearAllPhotos(){
   updatePhotoStorageUI();
   toast('Все фото удалены ✨');
 }
+async function ensurePhotoDBReady(){
+  try{
+    await openPhotoDB();
+    return true;
+  }catch(e){
+    toast('Хранилище фото недоступно — закрой и открой приложение заново');
+    return false;
+  }
+}
+function triggerGalCamera(){
+  if(imgProcessing){toast('Подожди — идёт обработка фото');return;}
+  const inp=document.getElementById('galInFile');
+  if(!inp)return;
+  resetFileInput(inp);
+  inp.setAttribute('capture','environment');
+  inp.click();
+}
+function triggerGalLibrary(){
+  if(imgProcessing){toast('Подожди — идёт обработка фото');return;}
+  const inp=document.getElementById('galInFile');
+  if(!inp)return;
+  resetFileInput(inp);
+  inp.removeAttribute('capture');
+  inp.click();
+}
 function openUziPhotoPicker(){
   if(imgProcessing)return;
   document.getElementById('uziI').click();
@@ -3276,11 +3303,14 @@ function resetFileInput(input){
 }
 function compressErrorMessage(err){
   if(!err)return 'Не удалось обработать фото';
-  if(err.message==='NOT_IMAGE')return 'Выбери файл изображения (JPEG, PNG, HEIC или WebP)';
-  if(err.message==='NO_FILE')return 'Файл не выбран';
-  if(err.message==='LOAD_FAILED')return 'Не удалось открыть фото. Попробуй другое или снимок через «Снять животик»';
-  if(err.message==='HEIC_UNSUPPORTED')return 'HEIC не открылся — выбери JPEG/PNG или сними через камеру 📷';
-  return 'Не удалось сжать фото — попробуй ещё раз или выбери другое';
+  if(err.message==='NOT_IMAGE')return 'Выбери файл изображения (JPEG, PNG или снимок через камеру)';
+  if(err.message==='NO_FILE')return 'Файл не выбран — попробуй ещё раз';
+  if(err.message==='NO_IDB')return 'Хранилище фото недоступно — перезапусти приложение';
+  if(err.message==='IDB_PUT')return 'Не удалось сохранить — попробуй «Оптимизировать все фото» в настройках';
+  if(err.message==='LOAD_FAILED')return 'Не удалось открыть фото. Попробуй «Снять животик» или другое фото';
+  if(err.message==='HEIC_LIB_FAILED')return 'HEIC: нужен интернет на минуту — или iPhone → Настройки → Камера → Форматы → «Наиболее совместимые»';
+  if(err.message==='HEIC_UNSUPPORTED')return 'Формат HEIC не открылся — сними через «Снять животик» или выбери JPEG в галерее';
+  return 'Не удалось обработать фото — попробуй другое или перезапусти приложение';
 }
 
 // ══════════════════════════════════
@@ -4951,14 +4981,13 @@ function closeGal(){document.getElementById('galMo').classList.remove('open')}
 async function loadGalPhoto(ev){
   const input=ev.target;
   const f=input&&input.files&&input.files[0];
-  resetFileInput(document.getElementById('galInCam'));
-  resetFileInput(document.getElementById('galInLib'));
-  if(!f||curGW==null)return;
+  if(!f)return;
+  if(curGW==null){toast('Сначала выбери неделю — нажми на квадрат в сетке');return;}
+  if(!(await ensurePhotoDBReady()))return;
   imgProcessing=true;
   setGalMoLoading(true);
   showImgCompressOverlay('Сжимаем фото…');
   try{
-    const compressed=await compressImageFile(f,'gallery');
     await savePhotoFromFile('gal_'+curGW,f,'gallery');
     updateGalPreview(await getPhotoUrl('gal_'+curGW,true)||await getPhotoUrl('gal_'+curGW,false));
     await renderGallery(localStorage.getItem('eddDate'));
@@ -4966,7 +4995,7 @@ async function loadGalPhoto(ev){
     toast(getPhotoMode()==='full'?'Фото недели '+curGW+' сохранено! 📷':'Превью сохранено — оригинал остаётся в галерее 📱');
   }catch(err){
     console.error('loadGalPhoto',err);
-    if(err&&err.message==='IDB_PUT')toast('Не удалось сохранить фото — попробуй «Оптимизировать все фото» в настройках');
+    if(err&&err.message==='IDB_PUT')toast(compressErrorMessage({message:'IDB_PUT'}));
     else toast(compressErrorMessage(err));
   }finally{
     imgProcessing=false;
@@ -5002,14 +5031,14 @@ async function loadUziPhoto(ev){
   const input=ev.target;
   const f=input&&input.files&&input.files[0];
   if(!f)return;
+  if(!(await ensurePhotoDBReady()))return;
   imgProcessing=true;
   setPfLoading(true);
   showImgCompressOverlay('Сжимаем фото УЗИ…');
   try{
-    const compressed=await compressImageFile(f,'uzi');
     await savePhotoFromFile('uzi',f,'uzi');
     const prev=await getPhotoUrl('uzi',true)||await getPhotoUrl('uzi',false);
-    showUziPh(prev||compressed);
+    showUziPh(prev);
     updatePhotoStorageUI();
     toast('Фото нашего малыша сохранено! 💕');
   }catch(err){
@@ -7103,5 +7132,8 @@ window.addEventListener('scroll',()=>{
 
 init();
 </script>
+<!-- File inputs вне модалок — на iPhone PWA иначе галерея может не открыться -->
+<input type="file" id="galInFile" accept="image/*" tabindex="-1" aria-hidden="true" style="position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0.01;overflow:hidden" onchange="loadGalPhoto(event)">
+<input type="file" id="uziI" accept="image/*" tabindex="-1" aria-hidden="true" style="position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0.01;overflow:hidden" onchange="loadUziPhoto(event)">
 </body>
 </html>
