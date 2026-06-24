@@ -2488,7 +2488,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v27</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v28</div>
         </div></div>
       </div>
     </div>
@@ -2625,10 +2625,16 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
   </div>
 </div>
 
+<!-- Фото: input вне модалок — иначе iPhone PWA не отдаёт файл -->
+<input type="file" id="galInCam" accept="image/jpeg" capture="environment" tabindex="-1" aria-hidden="true" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0.01">
+<input type="file" id="galInLib" accept="image/jpeg,image/png,image/webp" tabindex="-1" aria-hidden="true" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0.01">
+<input type="file" id="uziInCam" accept="image/jpeg" capture="environment" tabindex="-1" aria-hidden="true" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0.01">
+<input type="file" id="uziInLib" accept="image/jpeg,image/png,image/webp" tabindex="-1" aria-hidden="true" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0.01">
+
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v27';
+const APP_DATA_VER='v28';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -2769,7 +2775,8 @@ function loadHeic2Any(){
   return heic2anyPromise;
 }
 function isLikelyImageFile(file){
-  return file.type.startsWith('image/')||(!file.type&&file.size>0)||/\.(jpe?g|png|webp|heic|heif)$/i.test(file.name||'');
+  const t=file.type||'';
+  return t.startsWith('image/')||(!t&&file.size>0)||/\.(jpe?g|png|webp|heic|heif)$/i.test(file.name||'');
 }
 async function convertHeicToJpeg(file){
   const heic2any=await loadHeic2Any();
@@ -2883,10 +2890,18 @@ async function fileToPhotoBlob(file,presetKey){
       return await fileToPhotoBlob(wrapBlobAsFile(jpeg,'photo.jpg'),presetKey);
     }catch(e){lastErr=e;}
   }
-  if(isDisplayableRaster(file)&&file.size<=Math.max(preset.maxBytes*4,900*1024)){
+  if(isDisplayableRaster(file)&&file.size<=5*1024*1024){
     return ensureJpegBlob(file);
   }
   throw lastErr||new Error('SAVE_FAILED');
+}
+async function readFileAsDataUrl(file){
+  return new Promise((resolve,reject)=>{
+    const fr=new FileReader();
+    fr.onload=()=>resolve(fr.result);
+    fr.onerror=()=>reject(new Error('READ_FAILED'));
+    fr.readAsDataURL(file);
+  });
 }
 async function prepareFileForSave(file){
   if(isHeicFile(file)){
@@ -2897,25 +2912,59 @@ async function prepareFileForSave(file){
     const head=await readFileHead(file);
     if(isHeicBytes(head))return wrapBlobAsFile(await convertHeicToJpeg(file),'photo.jpg');
   }catch(e){console.warn('HEIC head',e);}
-  if(isDisplayableRaster(file)&&!isHeicFile(file)){
-    if(isIOSDevice()&&/Lib$/i.test(lastPhotoPickSource)){
-      if(await canDecodeImageFile(file))return file;
-      try{return wrapBlobAsFile(await convertHeicToJpeg(file),'photo.jpg');}
-      catch(e){console.warn('HEIC decode-fallback',e);}
-    }else return file;
-  }
   return file;
 }
+async function photoBlobViaDataUrl(file,presetKey,maxDim){
+  const preset=IMG_COMPRESS_PRESETS[presetKey]||IMG_COMPRESS_PRESETS.galleryThumb;
+  const dim=maxDim||preset.maxDim;
+  const dataUrl=await readFileAsDataUrl(file);
+  const img=await loadImageFromBlobUrl(dataUrl);
+  try{
+    const canvas=drawScaledImage(img,dim);
+    const blob=await compressFromCanvasToBlob(canvas,preset);
+    if(blob&&blob.size>512)return blob;
+    throw new Error('CANVAS_FAILED');
+  }finally{img.src='';}
+}
+async function photoBlobViaObjectUrl(file,presetKey,maxDim){
+  const preset=IMG_COMPRESS_PRESETS[presetKey]||IMG_COMPRESS_PRESETS.galleryThumb;
+  const dim=maxDim||preset.maxDim;
+  const url=URL.createObjectURL(file);
+  try{
+    const img=await loadImageFromBlobUrl(url);
+    try{
+      const canvas=drawScaledImage(img,dim);
+      const blob=await compressFromCanvasToBlob(canvas,preset);
+      if(blob&&blob.size>512)return blob;
+      throw new Error('CANVAS_FAILED');
+    }finally{img.src='';}
+  }finally{URL.revokeObjectURL(url);}
+}
 async function fileToPhotoBlobSafe(file,presetKey){
+  if(!file||!file.size)throw new Error('NO_FILE');
   const preset=IMG_COMPRESS_PRESETS[presetKey]||IMG_COMPRESS_PRESETS.uzi;
   file=await prepareFileForSave(file);
-  try{return await fileToPhotoBlob(file,presetKey);}
-  catch(e){console.warn('fileToPhotoBlob',presetKey,e);}
-  for(const dim of [640,480,360,280]){
-    try{return await imageFileToJpegBlob(file,dim,preset);}catch(e){}
-    try{return await bitmapToJpegBlob(file,dim,preset);}catch(e){}
+  const dims=[preset.maxDim,960,720,640,480,360,280];
+  const tryPaths=[
+    ()=>photoBlobViaObjectUrl(file,presetKey,dims[0]),
+    ()=>photoBlobViaDataUrl(file,presetKey,dims[0])
+  ];
+  for(const dim of dims){
+    tryPaths.push(()=>photoBlobViaObjectUrl(file,presetKey,dim));
+    tryPaths.push(()=>photoBlobViaDataUrl(file,presetKey,dim));
+    if(!isIOSDevice()){
+      tryPaths.push(()=>bitmapToJpegBlob(file,dim,preset));
+    }
   }
-  if(isDisplayableRaster(file)&&file.size<=8*1024*1024)return ensureJpegBlob(file);
+  for(const fn of tryPaths){
+    try{
+      const b=await fn();
+      if(b&&b.size>512)return b;
+    }catch(e){}
+  }
+  if(file.size<=5*1024*1024){
+    try{return ensureJpegBlob(file);}catch(e){}
+  }
   try{return await rawImageFallbackBlob(file);}catch(e){console.warn('rawImageFallback',e);}
   throw new Error('SAVE_FAILED');
 }
@@ -2924,7 +2973,7 @@ function pickPhotoFile(opts,onFile){
   lastPhotoPickSource=opts.source||'pick';
   const inp=document.createElement('input');
   inp.type='file';
-  inp.accept=opts.accept||'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png';
+  inp.accept=opts.accept||'image/jpeg,image/png,image/webp';
   if(opts.capture){
     inp.accept='image/jpeg';
     inp.setAttribute('capture',opts.capture);
@@ -2937,7 +2986,36 @@ function pickPhotoFile(opts,onFile){
     cleanup();
     if(f&&onFile)onFile(f);
   },{once:true});
-  setTimeout(()=>{try{inp.click();}catch(e){cleanup();toast('Не удалось открыть выбор фото');}},30);
+  try{inp.click();}
+  catch(e){cleanup();toast('Не удалось открыть выбор фото');}
+}
+function initPhotoPickers(){
+  const bind=(id,handler)=>{
+    const el=document.getElementById(id);
+    if(!el||el.dataset.bound==='1')return;
+    el.dataset.bound='1';
+    el.addEventListener('change',ev=>{
+      const f=ev.target.files&&ev.target.files[0];
+      lastPhotoPickSource=id;
+      resetFileInput(ev.target);
+      if(f)handler(f);
+    });
+  };
+  bind('galInCam',handleGalPhotoFile);
+  bind('galInLib',handleGalPhotoFile);
+  bind('uziInCam',handleUziPhotoFile);
+  bind('uziInLib',handleUziPhotoFile);
+}
+function clickPhotoInput(id,fallback){
+  if(imgProcessing){toast('Подожди — идёт обработка фото');return;}
+  lastPhotoPickSource=id;
+  const inp=document.getElementById(id);
+  if(inp){
+    resetFileInput(inp);
+    try{inp.click();return;}
+    catch(e){console.warn('clickPhotoInput',e);}
+  }
+  if(typeof fallback==='function')fallback();
 }
 async function blobToDataUrl(blob){
   return new Promise((resolve,reject)=>{
@@ -2951,16 +3029,17 @@ async function compressImageFile(file,presetKey='uzi'){
   return blobToDataUrl(await fileToPhotoBlobSafe(file,presetKey));
 }
 function photoSaveErrorMessage(err){
-  if(!err)return 'Не удалось сохранить фото — обнови приложение до v27';
-  const m=String(err.message||err||'');
+  if(!err)return 'Не удалось сохранить фото — обнови до v28';
+  const m=String((err&&err.message)||err||'');
+  const n=String((err&&err.name)||'');
   if(m==='NOT_IMAGE')return 'Выбери снимок (JPEG или PNG)';
   if(m==='NO_FILE')return 'Файл не выбран';
   if(m==='NO_IDB')return 'Хранилище недоступно — перезапусти приложение';
-  if(m==='IDB_PUT')return 'Не удалось записать в память телефона — освободи место';
-  if(m==='SAVE_FAILED'||m==='LOAD_FAILED'||m==='READ_FAILED')return 'Снимок не открылся — попробуй «Снять животик 📷» (камера надёжнее)';
-  if(m==='CANVAS_FAILED')return 'Снимок слишком большой — сними новое фото камерой';
-  if(m==='HEIC_UNSUPPORTED'||m==='HEIC_LIB_FAILED')return 'Формат HEIC: Настройки → Камера → «Наиболее совместимые», или снимай камерой';
-  return 'Не удалось сохранить фото — «Снять животик 📷» или проверка в настройках';
+  if(m==='IDB_PUT'||n==='QuotaExceededError'||/quota/i.test(m))return 'Мало места на телефоне — удали старые фото';
+  if(m==='SAVE_FAILED'||m==='LOAD_FAILED'||m==='READ_FAILED')return 'Снимок не открылся — нажми «Снять животик 📷»';
+  if(m==='CANVAS_FAILED')return 'Не удалось обработать — попробуй камеру, не галерею';
+  if(m==='HEIC_UNSUPPORTED'||m==='HEIC_LIB_FAILED')return 'HEIC: Настройки → Камера → «Наиболее совместимые»';
+  return 'Не удалось сохранить — обнови до v28 и нажми «Снять животик 📷»';
 }
 function compressErrorMessage(err){return photoSaveErrorMessage(err);}
 async function ensurePhotosPersisted(){
@@ -2980,8 +3059,8 @@ function releaseImageSource(source){
   else if(source.src!==undefined)source.src='';
 }
 function shrinkCanvas(canvas,factor){
-  const w=Math.max(480,Math.round(canvas.width*factor));
-  const h=Math.max(480,Math.round(canvas.height*factor));
+  const w=Math.max(120,Math.round(canvas.width*factor));
+  const h=Math.max(120,Math.round(canvas.height*factor));
   const next=document.createElement('canvas');
   next.width=w;next.height=h;
   next.getContext('2d',{alpha:false}).drawImage(canvas,0,0,w,h);
@@ -3104,9 +3183,15 @@ function idbTx(store,mode){
   return openPhotoDB().then(db=>db.transaction(PHOTO_STORE,mode).objectStore(PHOTO_STORE));
 }
 async function photoDBPut(key,blob){
+  const type=(blob&&blob.type)||'image/jpeg';
+  let toStore=blob;
+  try{
+    const ab=typeof blob.arrayBuffer==='function'?await blob.arrayBuffer():await fileToArrayBuffer(blob);
+    if(ab&&ab.byteLength>0)toStore=new Blob([ab],{type});
+  }catch(e){console.warn('photoDBPut normalize',e);}
   const store=await idbTx('readwrite');
   return new Promise((resolve,reject)=>{
-    const req=store.put(blob,key);
+    const req=store.put(toStore,key);
     req.onsuccess=()=>resolve();
     req.onerror=()=>reject(new Error('IDB_PUT'));
   });
@@ -3206,15 +3291,24 @@ async function verifyPhotoStored(key){
   return blob.size>512;
 }
 async function savePhotoFromFile(key,file,presetKey){
+  file=await prepareFileForSave(file);
   const isUzi=key==='uzi';
   const thumbPreset=isUzi?'uziThumb':'galleryThumb';
-  let thumbBlob;
-  try{
-    thumbBlob=await fileToPhotoBlobSafe(file,thumbPreset);
-  }catch(e){
-    console.error('savePhotoFromFile compress',e);
-    throw e;
+  let thumbBlob=null;
+  const attempts=[
+    ()=>fileToPhotoBlobSafe(file,thumbPreset),
+    ()=>photoBlobViaObjectUrl(file,thumbPreset),
+    ()=>photoBlobViaDataUrl(file,thumbPreset),
+    ()=>ensureJpegBlob(file),
+    ()=>rawImageFallbackBlob(file)
+  ];
+  for(const fn of attempts){
+    try{
+      thumbBlob=await fn();
+      if(thumbBlob&&thumbBlob.size>512)break;
+    }catch(e){console.warn('savePhotoFromFile try',e);}
   }
+  if(!thumbBlob||thumbBlob.size<=512)throw new Error('SAVE_FAILED');
   await photoDBPut(key,thumbBlob);
   const stored=await photoDBGet(key);
   if(!stored||!stored.size)throw new Error('IDB_PUT');
@@ -3335,6 +3429,7 @@ async function migratePhotosToIndexedDB(){
   return migrated>0;
 }
 async function initPhotoStorage(edd){
+  initPhotoPickers();
   try{
     if(!window.indexedDB)throw new Error('NO_IDB');
     await ensurePhotosPersisted();
@@ -3600,16 +3695,16 @@ async function ensurePhotoDBReady(){
   }
 }
 function triggerGalCamera(){
-  pickPhotoFile({source:'galInCam',capture:'environment'},f=>handleGalPhotoFile(f));
+  clickPhotoInput('galInCam',()=>pickPhotoFile({source:'galInCam',capture:'environment'},f=>handleGalPhotoFile(f)));
 }
 function triggerGalLibrary(){
-  pickPhotoFile({source:'galInLib',accept:'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png'},f=>handleGalPhotoFile(f));
+  clickPhotoInput('galInLib',()=>pickPhotoFile({source:'galInLib',accept:'image/jpeg,image/png,image/webp'},f=>handleGalPhotoFile(f)));
 }
 function openUziPhotoPicker(){
-  pickPhotoFile({source:'uziInLib',accept:'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png'},f=>handleUziPhotoFile(f));
+  clickPhotoInput('uziInLib',()=>pickPhotoFile({source:'uziInLib',accept:'image/jpeg,image/png,image/webp'},f=>handleUziPhotoFile(f)));
 }
 function openUziCamera(){
-  pickPhotoFile({source:'uziInCam',capture:'environment'},f=>handleUziPhotoFile(f));
+  clickPhotoInput('uziInCam',()=>pickPhotoFile({source:'uziInCam',capture:'environment'},f=>handleUziPhotoFile(f)));
 }
 function openUziFullscreen(){
   const src=document.getElementById('uziImg')?.src;
@@ -5352,8 +5447,7 @@ async function handleGalPhotoFile(f){
   try{
     await savePhotoFromFile('gal_'+curGW,f,'gallery');
     const previewUrl=await resolvePhotoPreviewUrl('gal_'+curGW);
-    if(!previewUrl)throw new Error('IDB_PUT');
-    updateGalPreview(previewUrl);
+    if(previewUrl)updateGalPreview(previewUrl);
     await renderGallery(localStorage.getItem('eddDate'));
     updatePhotoStorageUI();
     if(typeof confetti==='function')confetti({particleCount:60,spread:70,origin:{y:.72},colors:['#E8325A','#FFD700','#fff']});
@@ -5405,8 +5499,7 @@ async function handleUziPhotoFile(f){
   try{
     await savePhotoFromFile('uzi',f,'uzi');
     const prev=await resolvePhotoPreviewUrl('uzi');
-    if(!prev)throw new Error('IDB_PUT');
-    showUziPh(prev);
+    if(prev)showUziPh(prev);
     updatePhotoStorageUI();
     if(typeof confetti==='function')confetti({particleCount:80,spread:90,origin:{y:.55},colors:['#E8325A','#FFD700','#43C8E0','#fff']});
     toast('Фото нашего малыша сохранено! 💕');
