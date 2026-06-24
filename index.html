@@ -2422,7 +2422,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <div class="card"><div class="cb">
           <div class="photo-storage-card">
             <div class="photo-storage-title">📸 Память для фото</div>
-            <p class="photo-storage-sub">По умолчанию храним только лёгкие превью (~100 КБ) — оригиналы остаются в галерее iPhone. Так все 22 недели животика помещаются без проблем.</p>
+            <p class="photo-storage-sub">Фото хранятся на телефоне и <b>не удаляются</b> при обновлении приложения — только если сама нажмёшь «Удалить». Можно добавлять и старые снимки из галереи.</p>
             <div class="tog-w" style="margin-bottom:14px;padding:12px 14px;border-radius:14px;background:var(--bg2);border:1px solid var(--cb)">
               <span style="font-size:14px;font-weight:800">Полные копии в приложении</span>
               <label class="tog"><input type="checkbox" id="photoModeTog" onchange="togglePhotoMode()"><span class="tog-sl"></span></label>
@@ -2438,7 +2438,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
               <button type="button" class="photo-storage-btn photo-storage-btn-secondary" id="photoSelfTestBtn" onclick="runPhotoSelfTest()">Проверить загрузку фото</button>
               <button type="button" class="photo-storage-btn photo-storage-btn-danger" id="clearPhotosBtn" onclick="clearAllPhotos()">Удалить все фото</button>
             </div>
-            <div class="photo-ios-tip" id="photoIosTip" style="display:none">📱 <b>iPhone:</b> для животика надёжнее «Снять животик 📷». Если из галереи не грузится — Настройки → Камера → Форматы → «Наиболее совместимые».</div>
+            <div class="photo-ios-tip" id="photoIosTip" style="display:none">📱 <b>Галерея iPhone:</b> можно выбрать и старые снимки — приложение само сожмёт их. Если не открывается HEIC: Настройки → Камера → Форматы → «Наиболее совместимые».</div>
           </div>
           <div class="photo-storage-card" style="margin-bottom:0">
             <div class="photo-storage-title">📱 Установка на iPhone</div>
@@ -2488,7 +2488,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v23</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v24</div>
         </div></div>
       </div>
     </div>
@@ -2547,7 +2547,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
     <div class="gal-share-row" id="galShareRow" style="display:none">
       <button type="button" class="gal-btn gal-btn-secondary" onclick="shareGalPhoto()">📤 Поделиться</button>
     </div>
-    <p class="photo-storage-sub" id="galModeHint" style="text-align:center;margin:10px 0 0">Превью в приложении · оригинал остаётся в галерее телефона 📱</p>
+    <p class="photo-storage-sub" id="galModeHint" style="text-align:center;margin:10px 0 0">Можно выбрать любой снимок из галереи — и старый, и новый 📱</p>
     <button type="button" id="galDel" class="gal-btn-danger" onclick="deleteGalPhoto()">Удалить фото</button>
   </div>
 </div>
@@ -2627,7 +2627,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
 <script>
 const V="_v16";
-const APP_DATA_VER='v23';
+const APP_DATA_VER='v24';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -2677,7 +2677,12 @@ const IMG_COMPRESS_PRESETS={
   galleryThumb:{maxDim:640,maxBytes:110*1024,startQuality:.76,minQuality:.38}
 };
 const PHOTO_MODE_KEY='photoMode'+V;
-function getPhotoMode(){return localStorage.getItem(PHOTO_MODE_KEY)||'compact';}
+let lastPhotoPickSource='';
+function getPhotoMode(){
+  const v=localStorage.getItem(PHOTO_MODE_KEY);
+  if(v==='compact'||v==='full')return v;
+  return 'full';
+}
 function photoFullKey(key){return key+'_full';}
 let imgCompressCount=0;
 let imgProcessing=false;
@@ -2728,14 +2733,32 @@ async function convertHeicToJpeg(file){
   return blob;
 }
 async function buildCompressionBlobCandidates(file){
-  const out=[file];
-  if(!isIOSDevice()&&isHeicFile(file)){
-    try{
-      const jpeg=await convertHeicToJpeg(file);
-      if(jpeg&&jpeg.size)out.unshift(jpeg);
-    }catch(e){}
+  const out=[];
+  const seen=new Set();
+  const add=b=>{
+    if(!b||!b.size)return;
+    const k=b.size+':'+(b.type||'');
+    if(seen.has(k))return;
+    seen.add(k);
+    out.push(b);
+  };
+  const fromLibrary=/Lib$/i.test(lastPhotoPickSource);
+  const tryHeic=isHeicFile(file)||!file.type||fromLibrary||(isIOSDevice()&&fromLibrary);
+  if(tryHeic){
+    try{add(await convertHeicToJpeg(file));}catch(e){}
   }
-  return out;
+  add(file);
+  if(!isIOSDevice()&&isHeicFile(file)){
+    try{add(await convertHeicToJpeg(file));}catch(e){}
+  }
+  return out.length?out:[file];
+}
+async function ensurePhotosPersisted(){
+  if(!navigator.storage||!navigator.storage.persist)return false;
+  try{
+    if(await navigator.storage.persisted())return true;
+    return await navigator.storage.persist();
+  }catch(e){return false;}
 }
 function getScaledDimensions(w,h,maxDim){
   const scale=Math.min(1,maxDim/Math.max(w,h,1));
@@ -2948,6 +2971,13 @@ async function emergencyPhotoBlob(file,preset){
     return file.type===t?file:new Blob([file],{type:t});
   }
   const tiny={maxDim:Math.min(preset.maxDim,520),maxBytes:preset.maxBytes,startQuality:.58,minQuality:.32};
+  if(isHeicFile(file)||!file.type||/Lib$/i.test(lastPhotoPickSource)){
+    try{
+      const jpeg=await convertHeicToJpeg(file);
+      try{return await compressViaImageElement(jpeg,tiny);}catch(e){}
+      try{return await compressViaImageBitmap(jpeg,tiny);}catch(e){}
+    }catch(e){}
+  }
   try{return await compressViaImageElement(file,tiny);}catch(e){}
   try{return await compressViaImageBitmap(file,tiny);}catch(e){}
   if(isIOSDevice())try{return await compressViaDataUrlToBlob(file,tiny);}catch(e){}
@@ -2961,7 +2991,7 @@ async function compressImageToBlobWithFallback(file,presetKey){
     try{return await emergencyPhotoBlob(file,preset);}
     catch(e2){
       console.warn('emergencyPhotoBlob',presetKey,e2);
-      if(file.size<=5*1024*1024&&!isHeicFile(file)&&!/heic|heif/i.test(file.type||'')){
+      if(file.size<=8*1024*1024&&!isHeicFile(file)&&!/heic|heif/i.test(file.type||'')){
         const t=(file.type&&file.type.startsWith('image/'))?file.type:'image/jpeg';
         return new Blob([file],{type:t});
       }
@@ -3121,9 +3151,10 @@ async function savePhotoFromFile(key,file,presetKey){
   const thumbPreset=isUzi?'uziThumb':'galleryThumb';
   const thumbBlob=await compressImageToBlobWithFallback(file,thumbPreset);
   await photoDBPut(key,thumbBlob);
+  const stored=await photoDBGet(key);
+  if(!stored||!stored.size)throw new Error('IDB_PUT');
   if(!(await verifyPhotoStored(key))){
-    try{await photoDBDelete(key);}catch(e){}
-    throw new Error('IDB_VERIFY');
+    console.warn('Photo saved; soft verify failed — keeping blob',key);
   }
   if(getPhotoMode()==='full'){
     const fullPreset=presetKey||(isUzi?'uzi':'gallery');
@@ -3177,16 +3208,24 @@ async function purgeFullPhotoCopies(){
 }
 function togglePhotoMode(){
   H();
-  const full=document.getElementById('photoModeTog').checked;
-  localStorage.setItem(PHOTO_MODE_KEY,full?'full':'compact');
+  const tog=document.getElementById('photoModeTog');
+  const full=tog&&tog.checked;
   if(!full){
+    if(!confirm('Выключить полные копии? Превью в приложении останутся — удалятся только большие дубликаты внутри приложения (не из галереи телефона).')){
+      if(tog)tog.checked=true;
+      return;
+    }
+    localStorage.setItem(PHOTO_MODE_KEY,'compact');
     purgeFullPhotoCopies().then(freed=>{
       if(freed>0){
         updatePhotoStorageUI();
-        toast('Освобождено '+formatPhotoBytes(freed)+' — остались превью, оригиналы в галерее 📱');
-      }else toast('Режим «из галереи» — храним только лёгкие превью ✨');
+        toast('Освобождено '+formatPhotoBytes(freed)+' — превью на месте 📱');
+      }else toast('Режим «только превью» — фото в сетке остаются ✨');
     });
-  }else toast('Будем хранить и полные копии в приложении');
+  }else{
+    localStorage.setItem(PHOTO_MODE_KEY,'full');
+    toast('Будем хранить полные копии — фото не пропадут при обновлении ✨');
+  }
   updatePhotoModeUI();
 }
 function updatePhotoModeUI(){
@@ -3195,11 +3234,11 @@ function updatePhotoModeUI(){
   if(tog)tog.checked=getPhotoMode()==='full';
   if(hint){
     hint.textContent=getPhotoMode()==='full'
-      ?'Полные копии сохраняются в приложении — занимает больше места.'
-      :'Рекомендуется: в приложении только превью (~100 КБ). Оригиналы остаются в галерее iPhone — выбирай «Из галереи» 🖼️';
+      ?'Полные копии в приложении — фото сохраняются надёжнее, занимают больше места.'
+      :'Только превью в приложении (~100 КБ). Полные копии не храним — но превью не удаляются сами.';
   }
   const galHint=document.getElementById('galModeHint');
-  if(galHint)galHint.textContent=getPhotoMode()==='full'?'Полная копия сохранится в приложении.':'Превью в приложении · оригинал остаётся в галерее телефона 📱';
+  if(galHint)galHint.textContent=getPhotoMode()==='full'?'Сохраним полную копию — можно выбрать старый снимок из галереи 🖼️':'Превью в приложении · можно выбрать любой снимок из галереи 📱';
 }
 async function migratePhotosToIndexedDB(){
   if(localStorage.getItem('photosInIDB_v1')==='1')return false;
@@ -3222,8 +3261,8 @@ async function migratePhotosToIndexedDB(){
 async function initPhotoStorage(edd){
   try{
     if(!window.indexedDB)throw new Error('NO_IDB');
+    await ensurePhotosPersisted();
     const migrated=await migratePhotosToIndexedDB();
-    if(navigator.storage&&navigator.storage.persist){try{await navigator.storage.persist();}catch(e){}}
     await migrateStoredPhotos();
     const v10=await migratePhotosV10();
     await loadUziPh();
@@ -3486,6 +3525,7 @@ async function ensurePhotoDBReady(){
 }
 function triggerGalCamera(){
   if(imgProcessing){toast('Подожди — идёт обработка фото');return;}
+  lastPhotoPickSource='galInCam';
   const inp=document.getElementById('galInCam');
   if(!inp)return;
   resetFileInput(inp);
@@ -3493,6 +3533,8 @@ function triggerGalCamera(){
 }
 function triggerGalLibrary(){
   if(imgProcessing){toast('Подожди — идёт обработка фото');return;}
+  lastPhotoPickSource='galInLib';
+  if(isIOSDevice())loadHeic2Any().catch(()=>{});
   const inp=document.getElementById('galInLib');
   if(!inp)return;
   resetFileInput(inp);
@@ -3500,6 +3542,8 @@ function triggerGalLibrary(){
 }
 function openUziPhotoPicker(){
   if(imgProcessing)return;
+  lastPhotoPickSource='uziInLib';
+  if(isIOSDevice())loadHeic2Any().catch(()=>{});
   const inp=document.getElementById('uziInLib');
   if(!inp)return;
   resetFileInput(inp);
@@ -3507,6 +3551,7 @@ function openUziPhotoPicker(){
 }
 function openUziCamera(){
   if(imgProcessing){toast('Подожди — идёт обработка фото');return;}
+  lastPhotoPickSource='uziInCam';
   const inp=document.getElementById('uziInCam');
   if(!inp)return;
   resetFileInput(inp);
@@ -5230,6 +5275,7 @@ function openGalCurrentWeek(){
 }
 async function openGal(w){
   H();
+  if(isIOSDevice())loadHeic2Any().catch(()=>{});
   curGW=w;
   document.getElementById('galMoT').textContent='📷 Неделя '+w;
   updatePhotoModeUI();
@@ -5261,20 +5307,22 @@ async function loadGalPhoto(ev){
   const input=ev.target;
   const f=input&&input.files&&input.files[0];
   if(!f)return;
+  lastPhotoPickSource=(input&&input.id)||lastPhotoPickSource;
   if(curGW==null){toast('Сначала выбери неделю — нажми на квадрат в сетке');return;}
   if(!(await ensurePhotoDBReady()))return;
   imgProcessing=true;
   setGalMoLoading(true);
-  showImgCompressOverlay('Сжимаем фото…');
+  showImgCompressOverlay(/Lib$/i.test(lastPhotoPickSource)?'Обрабатываем снимок из галереи…':'Сжимаем фото…');
   try{
     await savePhotoFromFile('gal_'+curGW,f,'gallery');
+    revokePhotoUrl('gal_'+curGW);
     const previewUrl=await getPhotoUrl('gal_'+curGW,true)||await getPhotoUrl('gal_'+curGW,false);
-    if(!previewUrl)throw new Error('IDB_VERIFY');
+    if(!previewUrl)throw new Error('IDB_PUT');
     updateGalPreview(previewUrl);
     await renderGallery(localStorage.getItem('eddDate'));
     updatePhotoStorageUI();
     if(typeof confetti==='function')confetti({particleCount:60,spread:70,origin:{y:.72},colors:['#E8325A','#FFD700','#fff']});
-    toast(getPhotoMode()==='full'?'Фото недели '+curGW+' сохранено! 📷':'Превью сохранено — оригинал остаётся в галерее 📱');
+    toast('Неделя '+curGW+' сохранена! Фото останется в приложении 📷');
   }catch(err){
     console.error('loadGalPhoto',err);
     if(err&&err.message==='IDB_PUT')toast(compressErrorMessage({message:'IDB_PUT'}));
@@ -5313,14 +5361,16 @@ async function loadUziPhoto(ev){
   const input=ev.target;
   const f=input&&input.files&&input.files[0];
   if(!f)return;
+  lastPhotoPickSource=(input&&input.id)||lastPhotoPickSource;
   if(!(await ensurePhotoDBReady()))return;
   imgProcessing=true;
   setPfLoading(true);
-  showImgCompressOverlay('Сжимаем фото УЗИ…');
+  showImgCompressOverlay(/Lib$/i.test(lastPhotoPickSource)?'Обрабатываем снимок из галереи…':'Сжимаем фото УЗИ…');
   try{
     await savePhotoFromFile('uzi',f,'uzi');
+    revokePhotoUrl('uzi');
     const prev=await getPhotoUrl('uzi',true)||await getPhotoUrl('uzi',false);
-    if(!prev)throw new Error('IDB_VERIFY');
+    if(!prev)throw new Error('IDB_PUT');
     showUziPh(prev);
     updatePhotoStorageUI();
     if(typeof confetti==='function')confetti({particleCount:80,spread:90,origin:{y:.55},colors:['#E8325A','#FFD700','#43C8E0','#fff']});
@@ -7420,8 +7470,8 @@ init();
 </script>
 <!-- File inputs вне модалок — на iPhone PWA иначе галерея может не открыться -->
 <input type="file" id="galInCam" accept="image/jpeg" capture="environment" tabindex="-1" aria-hidden="true" style="position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0.01;overflow:hidden" onchange="loadGalPhoto(event)">
-<input type="file" id="galInLib" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" tabindex="-1" aria-hidden="true" style="position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0.01;overflow:hidden" onchange="loadGalPhoto(event)">
+<input type="file" id="galInLib" accept="image/*,.heic,.heif,.jpg,.jpeg,.png,.webp" tabindex="-1" aria-hidden="true" style="position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0.01;overflow:hidden" onchange="loadGalPhoto(event)">
 <input type="file" id="uziInCam" accept="image/jpeg" capture="environment" tabindex="-1" aria-hidden="true" style="position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0.01;overflow:hidden" onchange="loadUziPhoto(event)">
-<input type="file" id="uziInLib" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" tabindex="-1" aria-hidden="true" style="position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0.01;overflow:hidden" onchange="loadUziPhoto(event)">
+<input type="file" id="uziInLib" accept="image/*,.heic,.heif,.jpg,.jpeg,.png,.webp" tabindex="-1" aria-hidden="true" style="position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0.01;overflow:hidden" onchange="loadUziPhoto(event)">
 </body>
 </html>
