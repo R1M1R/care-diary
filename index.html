@@ -2479,7 +2479,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v19</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v20</div>
         </div></div>
       </div>
     </div>
@@ -2618,7 +2618,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
 <script>
 const V="_v16";
-const APP_DATA_VER='v19';
+const APP_DATA_VER='v20';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -2683,22 +2683,28 @@ function loadHeic2Any(){
   if(heic2anyPromise)return heic2anyPromise;
   heic2anyPromise=new Promise((resolve,reject)=>{
     const s=document.createElement('script');
-    s.src='https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
-    s.onload=()=>resolve(window.heic2any);
+    s.src='./heic2any.min.js';
+    s.onload=()=>window.heic2any?resolve(window.heic2any):(heic2anyPromise=null,reject(new Error('HEIC_LIB_FAILED')));
     s.onerror=()=>{heic2anyPromise=null;reject(new Error('HEIC_LIB_FAILED'));};
     document.head.appendChild(s);
   });
   return heic2anyPromise;
 }
-async function normalizeImageFile(file){
-  return file;
+function isLikelyImageFile(file){
+  return file.type.startsWith('image/')||(!file.type&&file.size>0)||/\.(jpe?g|png|webp|heic|heif)$/i.test(file.name||'');
 }
 async function convertHeicToJpeg(file){
   const heic2any=await loadHeic2Any();
-  const out=await heic2any({blob:file,toType:'image/jpeg',quality:0.92});
+  const out=await heic2any({blob:file,toType:'image/jpeg',quality:0.88});
   const blob=Array.isArray(out)?out[0]:out;
   if(!(blob instanceof Blob))throw new Error('HEIC_UNSUPPORTED');
   return blob;
+}
+async function prepareImageBlobForDecode(file){
+  if(isHeicFile(file)||(!file.type&&file.size>0)){
+    try{return await convertHeicToJpeg(file);}catch(e){if(isHeicFile(file))throw e;}
+  }
+  return file;
 }
 function getScaledDimensions(w,h,maxDim){
   const scale=Math.min(1,maxDim/Math.max(w,h,1));
@@ -2738,24 +2744,26 @@ function drawScaledImage(source,maxDim){
 async function decodeImageBlob(blob,maxDim){
   if(typeof createImageBitmap==='function'){
     try{
-      const probeUrl=URL.createObjectURL(blob);
-      const probe=await loadImageFromBlobUrl(probeUrl);
-      URL.revokeObjectURL(probeUrl);
-      const sw=probe.naturalWidth||probe.width;
-      const sh=probe.naturalHeight||probe.height;
-      probe.src='';
+      const probe=await createImageBitmap(blob);
+      const sw=probe.width,sh=probe.height;
       const {w,h}=getScaledDimensions(sw,sh,maxDim);
+      if(w===sw&&h===sh){return probe;}
+      probe.close();
       return await createImageBitmap(blob,{resizeWidth:w,resizeHeight:h,resizeQuality:'medium'});
     }catch(e){}
   }
   const blobUrl=URL.createObjectURL(blob);
-  const img=await loadImageFromBlobUrl(blobUrl);
-  URL.revokeObjectURL(blobUrl);
-  return img;
+  try{
+    return await loadImageFromBlobUrl(blobUrl);
+  }finally{
+    URL.revokeObjectURL(blobUrl);
+  }
 }
 function compressFromCanvas(canvas,preset){
   let quality=preset.startQuality;
-  let dataUrl=canvasToJpegDataUrl(canvas,quality);
+  let dataUrl;
+  try{dataUrl=canvasToJpegDataUrl(canvas,quality);}
+  catch(e){throw new Error('CANVAS_FAILED');}
   while(estimateDataUrlBytes(dataUrl)>preset.maxBytes&&quality>preset.minQuality){
     quality=Math.max(preset.minQuality,quality-0.07);
     dataUrl=canvasToJpegDataUrl(canvas,quality);
@@ -2782,24 +2790,30 @@ function compressFromImage(source,preset){
 async function compressImageFile(file,presetKey='uzi'){
   const preset=IMG_COMPRESS_PRESETS[presetKey]||IMG_COMPRESS_PRESETS.uzi;
   if(!file)throw new Error('NO_FILE');
-  const isImage=file.type.startsWith('image/')||(!file.type&&file.size>0)||/\.(jpe?g|png|webp|heic|heif)$/i.test(file.name||'');
-  if(!isImage)throw new Error('NOT_IMAGE');
-  try{
-    const source=await decodeImageBlob(file,preset.maxDim);
+  if(!isLikelyImageFile(file))throw new Error('NOT_IMAGE');
+  const o=document.getElementById('imgCompressTxt');
+  let lastErr;
+  const tryDecode=async blob=>{
+    const source=await decodeImageBlob(blob,preset.maxDim);
     return compressFromImage(source,preset);
-  }catch(firstErr){
-    if(!isHeicFile(file))throw firstErr;
+  };
+  try{
+    const prepared=await prepareImageBlobForDecode(file);
+    if(prepared!==file&&o)o.textContent='Конвертируем HEIC…';
+    return await tryDecode(prepared);
+  }catch(e1){
+    lastErr=e1;
+  }
+  if(!isHeicFile(file)){
     try{
-      const o=document.getElementById('imgCompressTxt');
       if(o)o.textContent='Конвертируем HEIC…';
       const jpegBlob=await convertHeicToJpeg(file);
-      const source=await decodeImageBlob(jpegBlob,preset.maxDim);
-      return compressFromImage(source,preset);
+      return await tryDecode(jpegBlob);
     }catch(e2){
-      if(e2&&e2.message==='HEIC_LIB_FAILED')throw e2;
-      throw new Error('HEIC_UNSUPPORTED');
+      lastErr=e2;
     }
   }
+  throw lastErr||new Error('LOAD_FAILED');
 }
 async function recompressDataUrl(dataUrl,presetKey){
   const preset=IMG_COMPRESS_PRESETS[presetKey]||IMG_COMPRESS_PRESETS.uzi;
@@ -3014,6 +3028,7 @@ async function initPhotoStorage(edd){
     await migrateStoredPhotos();
     const v10=await migratePhotosV10();
     await loadUziPh();
+    if(/iPhone|iPad|iPod/i.test(navigator.userAgent||''))loadHeic2Any().catch(()=>{});
     if(migrated)toast('Старые фото перенесены — теперь места для снимков больше ✨');
     else if(v10)toast('Фото оптимизированы — теперь влезет гораздо больше недель 📷');
   }catch(e){
@@ -3302,15 +3317,16 @@ function resetFileInput(input){
   if(input)input.value='';
 }
 function compressErrorMessage(err){
-  if(!err)return 'Не удалось обработать фото';
+  if(!err)return 'Не удалось сжать фото — попробуй ещё раз';
   if(err.message==='NOT_IMAGE')return 'Выбери файл изображения (JPEG, PNG или снимок через камеру)';
   if(err.message==='NO_FILE')return 'Файл не выбран — попробуй ещё раз';
   if(err.message==='NO_IDB')return 'Хранилище фото недоступно — перезапусти приложение';
   if(err.message==='IDB_PUT')return 'Не удалось сохранить — попробуй «Оптимизировать все фото» в настройках';
-  if(err.message==='LOAD_FAILED')return 'Не удалось открыть фото. Попробуй «Снять животик» или другое фото';
-  if(err.message==='HEIC_LIB_FAILED')return 'HEIC: нужен интернет на минуту — или iPhone → Настройки → Камера → Форматы → «Наиболее совместимые»';
+  if(err.message==='LOAD_FAILED')return 'Не удалось открыть фото — попробуй «Снять животик» или другое фото';
+  if(err.message==='CANVAS_FAILED')return 'Фото слишком большое — попробуй снимок через «Снять животик» (не из галереи)';
+  if(err.message==='HEIC_LIB_FAILED')return 'HEIC не конвертировался — iPhone: Настройки → Камера → Форматы → «Наиболее совместимые»';
   if(err.message==='HEIC_UNSUPPORTED')return 'Формат HEIC не открылся — сними через «Снять животик» или выбери JPEG в галерее';
-  return 'Не удалось обработать фото — попробуй другое или перезапусти приложение';
+  return 'Не удалось сжать фото — попробуй другое или перезапусти приложение';
 }
 
 // ══════════════════════════════════

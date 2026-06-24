@@ -1,9 +1,10 @@
 /* Service Worker — офлайн-кэш для PWA «Для Индиры» */
-const CACHE = 'care-diary-v19';
+const CACHE = 'care-diary-v20';
 const PRECACHE = [
   './index.html',
   './manifest.webmanifest',
-  './apple-icon.png'
+  './apple-icon.png',
+  './heic2any.min.js'
 ];
 
 self.addEventListener('message', (event) => {
