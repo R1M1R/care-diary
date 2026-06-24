@@ -2488,7 +2488,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v26</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v27</div>
         </div></div>
       </div>
     </div>
@@ -2628,7 +2628,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v26';
+const APP_DATA_VER='v27';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -2692,6 +2692,52 @@ let heic2anyPromise=null;
 function isHeicFile(file){
   return /heic|heif/i.test(file.type||'')||/\.(heic|heif)$/i.test(file.name||'');
 }
+async function fileToArrayBuffer(file){
+  if(!file)throw new Error('NO_FILE');
+  if(typeof file.arrayBuffer==='function')return file.arrayBuffer();
+  return new Promise((resolve,reject)=>{
+    const fr=new FileReader();
+    fr.onload=()=>resolve(fr.result);
+    fr.onerror=()=>reject(new Error('READ_FAILED'));
+    fr.readAsArrayBuffer(file);
+  });
+}
+async function readFileHead(file,n=16){
+  if(file.slice){
+    const part=file.slice(0,n);
+    if(typeof part.arrayBuffer==='function')return part.arrayBuffer();
+  }
+  const ab=await fileToArrayBuffer(file);
+  return ab.slice(0,Math.min(n,ab.byteLength));
+}
+function isHeicBytes(ab){
+  if(!ab||ab.byteLength<12)return false;
+  const u8=new Uint8Array(ab);
+  if(String.fromCharCode(u8[4],u8[5],u8[6],u8[7])!=='ftyp')return false;
+  const brand=String.fromCharCode(u8[8],u8[9],u8[10],u8[11]).toLowerCase();
+  return /heic|heix|hevc|hevx|mif1|msf1/.test(brand);
+}
+async function canDecodeImageFile(file){
+  const url=URL.createObjectURL(file);
+  try{
+    if(typeof createImageBitmap==='function'){
+      try{
+        const bmp=await createImageBitmap(file);
+        const ok=bmp.width>0&&bmp.height>0;
+        bmp.close();
+        if(ok)return true;
+      }catch(e){}
+    }
+    const img=await loadImageFromBlobUrl(url);
+    const ok=(img.naturalWidth||img.width)>0;
+    img.src='';
+    return ok;
+  }catch(e){
+    return false;
+  }finally{
+    URL.revokeObjectURL(url);
+  }
+}
 function isIOSDevice(){
   return /iPhone|iPad|iPod/i.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 }
@@ -2738,9 +2784,29 @@ function isDisplayableRaster(file){
 }
 function ensureJpegBlob(file){
   const mime=(file.type||'').toLowerCase();
+  if(/^image\/jpe?g$/i.test(mime)&&file.size>0){
+    if(typeof file.slice==='function')return file.slice(0,file.size,'image/jpeg');
+    return file;
+  }
   const t=mime.startsWith('image/')?mime:'image/jpeg';
-  if(file.type===t||file.type==='image/jpeg')return file;
-  return new Blob([file],{type:t==='image/png'||t==='image/webp'?t:'image/jpeg'});
+  const outType=t==='image/png'||t==='image/webp'?t:'image/jpeg';
+  if(typeof file.slice==='function')return file.slice(0,file.size,outType);
+  return new Blob([file],{type:outType});
+}
+async function rawImageFallbackBlob(file){
+  if(!file||!file.size)throw new Error('NO_FILE');
+  if(file.size>8*1024*1024)throw new Error('SAVE_FAILED');
+  const mime=(file.type||'').toLowerCase();
+  if(/^image\//i.test(mime)&&typeof file.slice==='function')return file.slice(0,file.size,mime);
+  try{
+    const ab=await fileToArrayBuffer(file);
+    const type=isHeicBytes(ab)?'image/jpeg':(/^image\//i.test(mime)?mime:'image/jpeg');
+    if(ab.byteLength<=512)throw new Error('SAVE_FAILED');
+    return new Blob([ab],{type});
+  }catch(e){
+    if(e&&e.message==='SAVE_FAILED')throw e;
+    throw new Error('READ_FAILED');
+  }
 }
 function wrapBlobAsFile(blob,name){
   try{return new File([blob],name,{type:blob.type||'image/jpeg'});}
@@ -2823,12 +2889,20 @@ async function fileToPhotoBlob(file,presetKey){
   throw lastErr||new Error('SAVE_FAILED');
 }
 async function prepareFileForSave(file){
-  if(isDisplayableRaster(file)&&!isHeicFile(file))return file;
-  if(isHeicFile(file)||(!file.type&&file.size>0)||/Lib$/i.test(lastPhotoPickSource)){
-    try{
-      const jpeg=await convertHeicToJpeg(file);
-      return wrapBlobAsFile(jpeg,'photo.jpg');
-    }catch(e){console.warn('HEIC convert',e);}
+  if(isHeicFile(file)){
+    try{return wrapBlobAsFile(await convertHeicToJpeg(file),'photo.jpg');}
+    catch(e){console.warn('HEIC convert',e);}
+  }
+  try{
+    const head=await readFileHead(file);
+    if(isHeicBytes(head))return wrapBlobAsFile(await convertHeicToJpeg(file),'photo.jpg');
+  }catch(e){console.warn('HEIC head',e);}
+  if(isDisplayableRaster(file)&&!isHeicFile(file)){
+    if(isIOSDevice()&&/Lib$/i.test(lastPhotoPickSource)){
+      if(await canDecodeImageFile(file))return file;
+      try{return wrapBlobAsFile(await convertHeicToJpeg(file),'photo.jpg');}
+      catch(e){console.warn('HEIC decode-fallback',e);}
+    }else return file;
   }
   return file;
 }
@@ -2837,16 +2911,12 @@ async function fileToPhotoBlobSafe(file,presetKey){
   file=await prepareFileForSave(file);
   try{return await fileToPhotoBlob(file,presetKey);}
   catch(e){console.warn('fileToPhotoBlob',presetKey,e);}
-  for(const dim of [480,360,280]){
+  for(const dim of [640,480,360,280]){
     try{return await imageFileToJpegBlob(file,dim,preset);}catch(e){}
     try{return await bitmapToJpegBlob(file,dim,preset);}catch(e){}
   }
   if(isDisplayableRaster(file)&&file.size<=8*1024*1024)return ensureJpegBlob(file);
-  try{
-    const ab=await file.arrayBuffer();
-    const b=new Blob([ab],{type:file.type||'image/jpeg'});
-    if(b.size>512)return b;
-  }catch(e){}
+  try{return await rawImageFallbackBlob(file);}catch(e){console.warn('rawImageFallback',e);}
   throw new Error('SAVE_FAILED');
 }
 function pickPhotoFile(opts,onFile){
@@ -2854,7 +2924,7 @@ function pickPhotoFile(opts,onFile){
   lastPhotoPickSource=opts.source||'pick';
   const inp=document.createElement('input');
   inp.type='file';
-  inp.accept=opts.accept||'image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif';
+  inp.accept=opts.accept||'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png';
   if(opts.capture){
     inp.accept='image/jpeg';
     inp.setAttribute('capture',opts.capture);
@@ -2881,16 +2951,16 @@ async function compressImageFile(file,presetKey='uzi'){
   return blobToDataUrl(await fileToPhotoBlobSafe(file,presetKey));
 }
 function photoSaveErrorMessage(err){
-  if(!err)return 'Не удалось сохранить фото';
-  const m=err.message||'';
+  if(!err)return 'Не удалось сохранить фото — обнови приложение до v27';
+  const m=String(err.message||err||'');
   if(m==='NOT_IMAGE')return 'Выбери снимок (JPEG или PNG)';
   if(m==='NO_FILE')return 'Файл не выбран';
   if(m==='NO_IDB')return 'Хранилище недоступно — перезапусти приложение';
-  if(m==='IDB_PUT')return 'Не удалось записать в память телефона — освободи место или удали старые фото';
-  if(m==='SAVE_FAILED'||m==='LOAD_FAILED'||m==='READ_FAILED')return 'Не удалось открыть снимок — попробуй «Снять животик 📷» (камера надёжнее галереи)';
-  if(m==='CANVAS_FAILED')return 'Снимок слишком большой — используй «Снять животик 📷»';
-  if(m==='HEIC_UNSUPPORTED'||m==='HEIC_LIB_FAILED')return 'Формат HEIC — iPhone: Настройки → Камера → «Наиболее совместимые», или «Снять животик 📷»';
-  return 'Не удалось сохранить фото — настройки → «Проверить загрузку фото»';
+  if(m==='IDB_PUT')return 'Не удалось записать в память телефона — освободи место';
+  if(m==='SAVE_FAILED'||m==='LOAD_FAILED'||m==='READ_FAILED')return 'Снимок не открылся — попробуй «Снять животик 📷» (камера надёжнее)';
+  if(m==='CANVAS_FAILED')return 'Снимок слишком большой — сними новое фото камерой';
+  if(m==='HEIC_UNSUPPORTED'||m==='HEIC_LIB_FAILED')return 'Формат HEIC: Настройки → Камера → «Наиболее совместимые», или снимай камерой';
+  return 'Не удалось сохранить фото — «Снять животик 📷» или проверка в настройках';
 }
 function compressErrorMessage(err){return photoSaveErrorMessage(err);}
 async function ensurePhotosPersisted(){
@@ -2935,7 +3005,11 @@ function canvasToJpegBlob(canvas,quality){
   return new Promise((resolve,reject)=>{
     if(!canvas||!canvas.width){reject(new Error('CANVAS_FAILED'));return;}
     if(typeof canvas.toBlob==='function'){
-      canvas.toBlob(b=>b&&b.size?resolve(b):reject(new Error('CANVAS_FAILED')),'image/jpeg',quality);
+      canvas.toBlob(b=>{
+        if(b&&b.size){resolve(b);return;}
+        try{resolve(dataUrlToBlob(canvas.toDataURL('image/jpeg',quality)));}
+        catch(e){reject(new Error('CANVAS_FAILED'));}
+      },'image/jpeg',quality);
     }else{
       try{resolve(dataUrlToBlob(canvas.toDataURL('image/jpeg',quality)));}
       catch(e){reject(new Error('CANVAS_FAILED'));}
@@ -3145,10 +3219,6 @@ async function savePhotoFromFile(key,file,presetKey){
   const stored=await photoDBGet(key);
   if(!stored||!stored.size)throw new Error('IDB_PUT');
   revokePhotoUrl(key);
-  const previewUrl=await getPhotoUrl(key,false);
-  if(!previewUrl&&!(await verifyPhotoBlobReadable(thumbBlob))){
-    throw new Error('SAVE_FAILED');
-  }
   if(getPhotoMode()==='full'){
     const fullPreset=presetKey||(isUzi?'uzi':'gallery');
     try{
@@ -3161,6 +3231,19 @@ async function savePhotoFromFile(key,file,presetKey){
     try{await photoDBDelete(photoFullKey(key));}catch(e){}
   }
   revokePhotoUrl(key);
+}
+async function resolvePhotoPreviewUrl(key){
+  let url=await getPhotoUrl(key,true)||await getPhotoUrl(key,false);
+  if(url)return url;
+  revokePhotoUrl(key);
+  url=await getPhotoUrl(key,false);
+  if(url)return url;
+  const blob=await photoDBGet(key);
+  if(blob&&blob.size){
+    url=URL.createObjectURL(blob);
+    photoUrlCache.set(key+':t',url);
+  }
+  return url||null;
 }
 async function migratePhotosV10(){
   if(localStorage.getItem('photosMigrated_v10')==='1')return false;
@@ -3520,10 +3603,10 @@ function triggerGalCamera(){
   pickPhotoFile({source:'galInCam',capture:'environment'},f=>handleGalPhotoFile(f));
 }
 function triggerGalLibrary(){
-  pickPhotoFile({source:'galInLib',accept:'image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif,.jpg,.jpeg,.png'},f=>handleGalPhotoFile(f));
+  pickPhotoFile({source:'galInLib',accept:'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png'},f=>handleGalPhotoFile(f));
 }
 function openUziPhotoPicker(){
-  pickPhotoFile({source:'uziInLib',accept:'image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif,.jpg,.jpeg,.png'},f=>handleUziPhotoFile(f));
+  pickPhotoFile({source:'uziInLib',accept:'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png'},f=>handleUziPhotoFile(f));
 }
 function openUziCamera(){
   pickPhotoFile({source:'uziInCam',capture:'environment'},f=>handleUziPhotoFile(f));
@@ -5268,9 +5351,8 @@ async function handleGalPhotoFile(f){
   showImgCompressOverlay(/Lib$/i.test(lastPhotoPickSource)?'Сохраняем снимок из галереи…':'Сохраняем фото…');
   try{
     await savePhotoFromFile('gal_'+curGW,f,'gallery');
-    revokePhotoUrl('gal_'+curGW);
-    const previewUrl=await getPhotoUrl('gal_'+curGW,true)||await getPhotoUrl('gal_'+curGW,false);
-    if(!previewUrl)throw new Error('SAVE_FAILED');
+    const previewUrl=await resolvePhotoPreviewUrl('gal_'+curGW);
+    if(!previewUrl)throw new Error('IDB_PUT');
     updateGalPreview(previewUrl);
     await renderGallery(localStorage.getItem('eddDate'));
     updatePhotoStorageUI();
@@ -5322,9 +5404,8 @@ async function handleUziPhotoFile(f){
   showImgCompressOverlay(/Lib$/i.test(lastPhotoPickSource)?'Сохраняем снимок из галереи…':'Сохраняем фото УЗИ…');
   try{
     await savePhotoFromFile('uzi',f,'uzi');
-    revokePhotoUrl('uzi');
-    const prev=await getPhotoUrl('uzi',true)||await getPhotoUrl('uzi',false);
-    if(!prev)throw new Error('SAVE_FAILED');
+    const prev=await resolvePhotoPreviewUrl('uzi');
+    if(!prev)throw new Error('IDB_PUT');
     showUziPh(prev);
     updatePhotoStorageUI();
     if(typeof confetti==='function')confetti({particleCount:80,spread:90,origin:{y:.55},colors:['#E8325A','#FFD700','#43C8E0','#fff']});
