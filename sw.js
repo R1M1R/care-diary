@@ -1,5 +1,5 @@
 /* Service Worker — офлайн-кэш для PWA «Для Индиры» */
-const CACHE = 'care-diary-v28';
+const CACHE = 'care-diary-v29';
 const PRECACHE = [
   './index.html',
   './manifest.webmanifest',
