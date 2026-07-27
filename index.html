@@ -2098,6 +2098,14 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         </div>
       </div>
 
+      <div class="card">
+        <div class="cb">
+          <div class="sh">🎲 Идеи для игр и занятий</div>
+          <div class="ssub">Простые занятия для развития — по возрасту малыша</div>
+          <div id="babyActivitiesBox"></div>
+        </div>
+      </div>
+
       </div><!-- /sec-baby -->
 
       <button type="button" class="home-sec-h" onclick="toggleHomeSec('support')"><span>💌 Поддержка и душа</span><span class="home-sec-chev" id="chev-support">▾</span></button>
@@ -2308,8 +2316,8 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           <div id="visitPrepList"></div>
         </div></div>
         <div class="card"><div class="cb">
-          <div class="sh">📓 Записи по дням</div>
-          <div class="ssub">Мысли, события и воспоминания — с датой и неделей беременности</div>
+          <div class="sh" id="journalCardTitle">📓 Записи по дням</div>
+          <div class="ssub" id="journalCardSub">Мысли, события и воспоминания — с датой и неделей беременности</div>
           <input type="search" class="journal-search" id="journalSearch" placeholder="🔍 Искать в записях…" oninput="renderJournalLog()" aria-label="Поиск по дневнику">
           <div class="journal-export-row">
             <button type="button" class="journal-export-btn primary" onclick="printJournal()">🖨️ Экспорт дневника</button>
@@ -2629,7 +2637,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v32</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v33</div>
         </div></div>
       </div>
     </div>
@@ -2775,7 +2783,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v32';
+const APP_DATA_VER='v33';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -4893,6 +4901,12 @@ const BABY_STAGES=[
       'Автокресло группы 0+ для поездок',
       'Термометр, аспиратор для носа, ножницы с округлыми кончиками',
       'Средства для пупочной ранки — по назначению педиатра'
+    ],
+    activities:[
+      'Тихие разговоры и зрительный контакт — глаза видят чётко на 20–30 см',
+      'Контрастные чёрно-белые карточки/картинки для тренировки зрения',
+      '«Тумми-тайм» на животике по 1–3 минуты несколько раз в день',
+      'Лёгкий массаж ручек и ножек во время смены подгузника'
     ]},
   {id:'m2',fromMo:2,label:'2–4 месяца',
     milestones:[
@@ -4906,6 +4920,12 @@ const BABY_STAGES=[
       'Прорезыватели — начинается активное слюноотделение',
       'Подгузники размера 2, одежда на рост 62–68',
       'Развивающий коврик с подвесками'
+    ],
+    activities:[
+      'Яркие погремушки со звуком — тренируют слух и хватание',
+      'Песенки и потешки во время игр и одевания',
+      'Зеркало — малышу интересно рассматривать своё отражение',
+      'Больше времени на животике для укрепления шеи и спины'
     ]},
   {id:'m4',fromMo:4,label:'4–6 месяцев',
     milestones:[
@@ -4919,6 +4939,12 @@ const BABY_STAGES=[
       'Силиконовые щётки/прорезыватели для первых зубов',
       'Мягкие книжки и кольца-игрушки',
       'Мягкие накладки на углы мебели — малыш скоро активно задвигается'
+    ],
+    activities:[
+      'Игра «ку-ку» — закрывать и открывать лицо ладошками',
+      'Книжки с крупными яркими картинками — рассматривать вместе',
+      'Прорезыватели разной текстуры для облегчения зуда десён',
+      'Лёгкий массаж стоп и ладошек'
     ]},
   {id:'m6',fromMo:6,label:'6–9 месяцев',
     milestones:[
@@ -4932,6 +4958,12 @@ const BABY_STAGES=[
       'Заглушки на розетки, блокираторы на шкафы — малыш ползает',
       'Манеж или безопасная зона для игр на полу',
       'Свободное пространство для ползания важнее ходунков'
+    ],
+    activities:[
+      'Стучать ложкой по мисочке, перекладывать предметы из руки в руку',
+      'Прятать игрушку под платком и искать вместе — учит причинности',
+      'Сенсорные мешочки/ткани разной текстуры для ощупывания',
+      'Разложить игрушки чуть впереди — стимул ползти к ним'
     ]},
   {id:'m9',fromMo:9,label:'9–12 месяцев',
     milestones:[
@@ -4945,6 +4977,12 @@ const BABY_STAGES=[
       'Чашка-непроливайка вместо бутылочки',
       'Блокиратор на лестницу',
       'Игрушки для мелкой моторики: пирамидки, кубики'
+    ],
+    activities:[
+      'Пирамидки и кубики — складывать, стучать, катать',
+      'Простые песенки с движениями рук («ладушки»)',
+      'Игра «дай мне — на» с обменом предметами',
+      'Прогулки с рассматриванием и называнием предметов вокруг'
     ]},
   {id:'m12',fromMo:12,label:'1–1,5 года',
     milestones:[
@@ -4958,6 +4996,12 @@ const BABY_STAGES=[
       'Столовые приборы для самостоятельной еды',
       'Книжки с яркими картинками — расширяем словарный запас',
       'Безопасное место для активных игр — малыш уже бегает'
+    ],
+    activities:[
+      'Сортеры форм и простые пазлы из 2–3 крупных деталей',
+      'Картонные книжки — учимся сами переворачивать страницы',
+      'Догонялки и ходьба за ручку на улице',
+      'Пальчиковые краски и каракули карандашом'
     ]},
   {id:'m18',fromMo:18,label:'1,5–2 года',
     milestones:[
@@ -4971,6 +5015,12 @@ const BABY_STAGES=[
       'Простые пазлы и сортеры форм',
       'Угловые накладки и блокираторы, если ещё не установлены',
       'Ложка и вилка для самостоятельной еды'
+    ],
+    activities:[
+      'Ролевые игры: покормить куклу, «приготовить» на игрушечной кухне',
+      'Простые пазлы из 2–4 деталей',
+      'Танцы и музыка — развивают чувство ритма и координацию',
+      'Катать и пинать мяч вместе'
     ]},
   {id:'m24',fromMo:24,label:'2–3 года',
     milestones:[
@@ -4984,6 +5034,12 @@ const BABY_STAGES=[
       'Мелки, пластилин, материалы для творчества',
       'Беговел или трёхколёсный велосипед',
       'Режим дня перед садом, если планируется'
+    ],
+    activities:[
+      'Настольные игры для малышей (лото с картинками, простое домино)',
+      'Рисование мелками и пластилин — развивают мелкую моторику',
+      'Ролевые игры с посудой, машинками, куклами',
+      'Простые вопросы «что это?», «какого цвета?» — развивают речь'
     ]}
 ];
 function getBabyBirthDate(){return localStorage.getItem('babyBirthDate')||null;}
@@ -5042,6 +5098,10 @@ function applyAppMode(){
   document.querySelectorAll('.pregnancy-only').forEach(el=>{el.style.display=born?'none':'';});
   const clearBtn=document.getElementById('babyBirthClearBtn');
   if(clearBtn)clearBtn.style.display=born?'block':'none';
+  const jTitle=document.getElementById('journalCardTitle');
+  if(jTitle)jTitle.textContent=born?'📓 Дневник малыша':'📓 Записи по дням';
+  const jSub=document.getElementById('journalCardSub');
+  if(jSub)jSub.textContent=born?'Мысли, события и первые «впервые» — с датой':'Мысли, события и воспоминания — с датой и неделей беременности';
   if(born){
     renderBabyHero();renderBabySection();
     try{renderBabyJournalTrackers();}catch(e){}
@@ -5098,6 +5158,14 @@ function renderBabySection(){
         const isDone=!!doneNeeds[id];
         return '<div class="bag-item"><div class="bag-item-main" onclick="toggleBabyNeed(\''+id+'\')"><div class="bag-chk '+(isDone?'done':'')+'"></div><span class="bag-lbl '+(isDone?'done':'')+'">'+escapeHtml(t)+'</span></div></div>';
       }).join('');
+      return head+items;
+    }).join('');
+  }
+  const actBox=document.getElementById('babyActivitiesBox');
+  if(actBox){
+    actBox.innerHTML=stagesToShow.map((s,si)=>{
+      const head='<div class="baby-milestone-cat">'+(si===0?'✨ Сейчас — ':'🔜 Скоро — ')+s.label+'</div>';
+      const items='<ul style="margin:0 0 4px;padding-left:20px;list-style:disc">'+(s.activities||[]).map(t=>'<li style="font-size:13px;font-weight:700;color:var(--t2);line-height:1.6;margin-bottom:6px">'+escapeHtml(t)+'</li>').join('')+'</ul>';
       return head+items;
     }).join('');
   }
@@ -6692,20 +6760,54 @@ function setComparePos(val){
 }
 function buildJournalText(){
   const log=loadJournalLog();
-  const edd=localStorage.getItem('eddDate');
-  const{week}=calcW(edd||'');
-  let text='ДНЕВНИК БЕРЕМЕННОСТИ — Для Индиры\n';
-  text+='Экспорт: '+new Date().toLocaleString('ru-RU')+'\n';
-  text+='Срок: '+week+' нед.\n';
-  text+='Записей: '+log.length+'\n';
-  text+='═'.repeat(36)+'\n\n';
+  const born=hasBabyBorn();
+  let text;
+  if(born){
+    const age=calcBabyAge(getBabyBirthDate());
+    const name=(localStorage.getItem('babyName')||'малыш').trim()||'малыш';
+    text='ДНЕВНИК МАЛЫША — Для Индиры\n';
+    text+='Экспорт: '+new Date().toLocaleString('ru-RU')+'\n';
+    text+='Возраст '+name+': '+formatBabyAge(age)+'\n';
+    text+='Записей: '+log.length+'\n';
+    text+='═'.repeat(36)+'\n\n';
+    text+=buildBabySummaryText()+'\n'+'═'.repeat(36)+'\n\n';
+  }else{
+    const edd=localStorage.getItem('eddDate');
+    const{week}=calcW(edd||'');
+    text='ДНЕВНИК БЕРЕМЕННОСТИ — Для Индиры\n';
+    text+='Экспорт: '+new Date().toLocaleString('ru-RU')+'\n';
+    text+='Срок: '+week+' нед.\n';
+    text+='Записей: '+log.length+'\n';
+    text+='═'.repeat(36)+'\n\n';
+  }
   if(!log.length){text+='(Пока нет записей)\n';return text;}
   log.slice().reverse().forEach(e=>{
     const d=new Date(e.date);
-    text+=d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' · '+e.week+' нед.\n';
+    text+=d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+(born?'':' · '+e.week+' нед.')+'\n';
     text+=e.text+'\n\n';
   });
   return text;
+}
+function buildBabySummaryText(){
+  let h;try{h=JSON.parse(localStorage.getItem('babyGrowthH'+V)||'{}');}catch(e){h={};}
+  const gk=Object.keys(h).sort();
+  const lastG=gk.length?h[gk[gk.length-1]]:null;
+  let t='ПОСЛЕДНИЕ ЗАМЕРЫ:\n';
+  if(lastG){
+    t+='Дата: '+gk[gk.length-1]+'\n';
+    if(lastG.w)t+='Вес: '+lastG.w+' г\n';
+    if(lastG.h)t+='Рост: '+lastG.h+' см\n';
+    if(lastG.hc)t+='Окружность головы: '+lastG.hc+' см\n';
+  }else t+='(пока нет замеров)\n';
+  const feeds=loadBabyFeed().filter(f=>isToday(f.ts));
+  const diapers=loadBabyDiaper().filter(d=>isToday(d.ts));
+  const sleeps=loadBabySleep().filter(s=>isToday(s.start));
+  const sleepMin=sleeps.reduce((sum,s)=>sum+Math.round(((s.end||Date.now())-s.start)/60000),0);
+  t+='\nСЕГОДНЯ:\n';
+  t+='Кормлений: '+feeds.length+'\n';
+  t+='Подгузников: '+diapers.length+'\n';
+  t+='Сон: '+fmtDurMin(sleepMin)+' ('+sleeps.length+' раз)\n';
+  return t;
 }
 function printJournal(){
   H();
@@ -6713,7 +6815,8 @@ function printJournal(){
   const w=window.open('','_blank');
   if(!w){navigator.clipboard?.writeText(text).then(()=>toast('Дневник скопирован 📋')).catch(()=>toast('Разреши всплывающие окна'));return;}
   const safe=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  w.document.write('<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Дневник — Для Индиры</title><style>@page{margin:18mm}body{font-family:Georgia,serif;padding:24px;line-height:1.65;color:#111;max-width:720px;margin:0 auto}h1{font-size:18px;margin-bottom:16px;color:#E8325A}pre{white-space:pre-wrap;font-family:Nunito,sans-serif;font-size:13px}</style></head><body><h1>📓 Дневник беременности</h1><pre>'+safe+'</pre></body></html>');
+  const h1=hasBabyBorn()?'📓 Дневник малыша':'📓 Дневник беременности';
+  w.document.write('<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Дневник — Для Индиры</title><style>@page{margin:18mm}body{font-family:Georgia,serif;padding:24px;line-height:1.65;color:#111;max-width:720px;margin:0 auto}h1{font-size:18px;margin-bottom:16px;color:#E8325A}pre{white-space:pre-wrap;font-family:Nunito,sans-serif;font-size:13px}</style></head><body><h1>'+h1+'</h1><pre>'+safe+'</pre></body></html>');
   w.document.close();
   w.focus();
   setTimeout(()=>w.print(),400);
@@ -6862,6 +6965,18 @@ function updateNextActionCard(){
   if(appt&&appt.date===today){
     setNextAction('🗓️','Сегодня визит',appt.title,()=>switchTabById('journal'),true);
     return;
+  }
+  if(hasBabyBorn()){
+    const feeds=loadBabyFeed();
+    const lastFeed=feeds[feeds.length-1];
+    if(lastFeed){
+      const hSince=(now.getTime()-lastFeed.ts)/3600000;
+      if(hSince>=2.5){
+        const hh=Math.floor(hSince),mm=Math.round((hSince-hh)*60);
+        setNextAction('🍼',hSince>=4?'Пора покормить малыша!':'Скоро кормление?',hh+' ч '+mm+' мин с последнего кормления',()=>switchTabById('journal'),hSince>=4);
+        return;
+      }
+    }
   }
   const w=JSON.parse(localStorage.getItem('water'+V)||'[]');
   const h=now.getHours();
