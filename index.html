@@ -507,7 +507,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1;opa
 .kick-btn:active{transform:scale(.86)}
 
 /* ══ TOAST ══ */
-#toast{position:fixed;bottom:132px;left:50%;transform:translateX(-50%) translateY(24px);background:rgba(16,4,10,.96);color:#fff;padding:14px 26px;border-radius:50px;font-size:14px;font-weight:800;backdrop-filter:blur(24px);z-index:999;opacity:0;pointer-events:none;transition:all .38s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;max-width:90vw;border:1px solid rgba(232,50,90,.25);letter-spacing:.3px}
+#toast{position:fixed;bottom:132px;left:50%;transform:translateX(-50%) translateY(24px);background:rgba(16,4,10,.96);color:#fff;padding:14px 22px;border-radius:22px;font-size:14px;font-weight:800;backdrop-filter:blur(24px);z-index:999;opacity:0;pointer-events:none;transition:all .38s cubic-bezier(.34,1.56,.64,1);white-space:normal;max-width:86vw;width:max-content;text-align:center;line-height:1.4;border:1px solid rgba(232,50,90,.25);letter-spacing:.3px}
 .dark #toast{background:rgba(255,248,250,.97);color:#12040A}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
@@ -755,8 +755,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .med-toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
 .med-add-btn{flex:1;min-width:140px;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 18px;border:none;border-radius:18px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;color:#fff;background:linear-gradient(135deg,var(--rose),var(--rose2));box-shadow:0 8px 26px rgba(232,50,90,.32);transition:transform .2s,box-shadow .2s;}
 .med-add-btn:active{transform:scale(.96);}
-.med-next-pill{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:16px;background:rgba(212,160,23,.12);border:1.5px solid rgba(212,160,23,.28);font-size:12px;font-weight:800;color:var(--t2);flex:1;min-width:0;}
-.med-next-pill b{color:var(--rose);white-space:nowrap;}
+.med-next-pill{display:flex;align-items:center;gap:5px;padding:10px 14px;border-radius:16px;background:rgba(212,160,23,.12);border:1.5px solid rgba(212,160,23,.28);font-size:12px;font-weight:800;color:var(--t2);flex:1;min-width:0;}
+.med-next-pill .mnp-lbl{flex-shrink:0;white-space:nowrap}
+.med-next-pill b{color:var(--rose);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;display:block;flex:1}
 .sc-actions{display:flex;gap:6px;flex-shrink:0;}
 .sc-edit{width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(232,50,90,.22);background:rgba(255,255,255,.55);backdrop-filter:blur(8px);color:var(--rose);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s;}
 .sc-edit:active{transform:scale(.88);}
@@ -1464,7 +1465,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .mood-row{gap:4px!important;}
 
 /* ── 37. TOAST ── */
-#toast{border-radius:50px!important;}
+#toast{border-radius:22px!important;}
 
 /* ── 38. MH-DOT: настроение история ── */
 .mh-dot{border-radius:12px!important;}
@@ -1499,9 +1500,12 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .home-sec-b{display:none;margin:0 15px 4px}
 .home-sec-b.open{display:block}
 /* ── POSTPARTUM MODE ── */
-/* Видимость .pregnancy-only/.postpartum-only переключается через JS (applyAppMode),
-   инлайн-стилями — так сохраняется корректный display (flex/block) у разных элементов. */
+/* Видимость переключается через класс body.mode-postpartum/.mode-pregnancy.
+   display:revert возвращает элементу его «родной» display (block/flex/span…),
+   поэтому не важно, какой тип display нужен конкретному элементу. */
 .postpartum-only{display:none}
+body.mode-postpartum .postpartum-only{display:revert}
+body.mode-postpartum .pregnancy-only{display:none!important}
 .postpartum-hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#E8325A,#FF8FA3,#C44DFF);border-radius:28px;padding:32px 22px 26px;margin:0 15px 18px;text-align:center;color:#fff;box-shadow:0 16px 38px rgba(232,50,90,.32)}
 .postpartum-hero-day{position:absolute;top:16px;right:16px;z-index:3;background:rgba(255,255,255,.22);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.4);border-radius:50px;padding:5px 13px;font-size:11px;font-weight:900;color:#fff;white-space:nowrap}
 .postpartum-hero-emoji{position:relative;z-index:2;font-size:54px;margin-bottom:8px;display:block;filter:drop-shadow(0 4px 18px rgba(0,0,0,.18));animation:gbEmojiFloat 3.2s ease-in-out infinite}
@@ -1575,6 +1579,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .notif-status.warn{color:var(--rose);background:rgba(232,50,90,.06);border-color:rgba(232,50,90,.15)}
 .appt-form{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .appt-inp{flex:1;min-width:120px;padding:12px;border:2px solid var(--cb);border-radius:14px;background:var(--bg2);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--t1)}
+.appt-date-inp{flex:1 1 100%;max-width:100%;min-width:0}
 .appt-list{display:flex;flex-direction:column;gap:8px}
 .appt-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:16px;background:var(--bg2);border:1px solid var(--cb);cursor:pointer;transition:transform .2s}
 .appt-item.done{opacity:.55}
@@ -2283,7 +2288,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:18px">Отмечай приём, добавляй и редактируй препараты — всё сохраняется на телефоне 💊</p>
         <div class="med-toolbar">
           <button type="button" class="med-add-btn" onclick="openMedForm(null)">＋ Добавить препарат</button>
-          <div class="med-next-pill" id="medNextPill">Следующий приём: <b>—</b></div>
+          <div class="med-next-pill" id="medNextPill"><span class="mnp-lbl">Следующий:</span> <b>—</b></div>
         </div>
         <div class="card"><div class="cb">
           <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin-bottom:10px">
@@ -2353,7 +2358,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           <div class="sh">🗓️ Визиты к врачу</div>
           <div class="ssub">Скрининг, УЗИ, анализы — отмечай и не пропусти</div>
           <div class="appt-form">
-            <input type="date" class="appt-inp" id="apptDate" style="max-width:140px">
+            <input type="date" class="appt-inp appt-date-inp" id="apptDate">
             <input type="text" class="appt-inp" id="apptTitle" placeholder="Скрининг, УЗИ…" maxlength="80">
             <button type="button" class="wt-save-btn" style="flex:0 0 auto;padding:12px 16px" onclick="addAppt()">＋</button>
           </div>
@@ -2499,7 +2504,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
             </div>
           </div>
         </div>
-        <div class="card"><div class="cb">
+        <div class="card pregnancy-only"><div class="cb">
           <div class="sh">📷 Животик по неделям</div>
           <div class="ssub">Фото с 19 по 40 неделю — одно на каждую неделю беременности</div>
           <div class="gal-howto" id="galHowto">
@@ -2663,7 +2668,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v36</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v37</div>
         </div></div>
       </div>
     </div>
@@ -2809,7 +2814,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v36';
+const APP_DATA_VER='v37';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -4814,7 +4819,7 @@ function updateMedNextPill(){
   const nowM=now.getHours()*60+now.getMinutes();
   const pending=active.filter(t=>!state[t.id]);
   if(!pending.length){
-    el.innerHTML=active.length?'На сегодня всё принято <b>✓</b>':'Добавь препараты <b>＋</b>';
+    el.innerHTML=active.length?'<span class="mnp-lbl">На сегодня всё принято</span> <b>✓</b>':'<span class="mnp-lbl">Добавь препараты</span> <b>＋</b>';
     return;
   }
   pending.sort((a,b)=>{
@@ -4826,8 +4831,10 @@ function updateMedNextPill(){
   });
   const pick=pending[0];
   const tm=minsFromTime(pick.time);
-  const label=tm>=nowM-15&&tm<=nowM+45?'Сейчас: '+pick.name:pick.time+' — '+pick.name;
-  el.innerHTML='Следующий: <b>'+escapeHtml(label)+'</b>';
+  const isNow=tm>=nowM-15&&tm<=nowM+45;
+  const lbl=isNow?'Сейчас:':'Следующий:';
+  const val=isNow?pick.name:pick.time+' — '+pick.name;
+  el.innerHTML='<span class="mnp-lbl">'+lbl+'</span> <b title="'+escapeHtml(val)+'">'+escapeHtml(val)+'</b>';
 }
 function initMedEmojiRow(sel){
   const row=document.getElementById('medEmojiRow');
@@ -5157,8 +5164,6 @@ function toggleBabyNeed(id){
 function applyAppMode(){
   const born=hasBabyBorn();
   document.body.classList.toggle('mode-postpartum',born);
-  document.querySelectorAll('.postpartum-only').forEach(el=>{el.style.display=born?'':'none';});
-  document.querySelectorAll('.pregnancy-only').forEach(el=>{el.style.display=born?'none':'';});
   const clearBtn=document.getElementById('babyBirthClearBtn');
   if(clearBtn)clearBtn.style.display=born?'block':'none';
   const jTitle=document.getElementById('journalCardTitle');
