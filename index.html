@@ -2334,9 +2334,9 @@ body.mode-postpartum .pregnancy-only{display:none!important}
           <p id="finMsg" style="display:none;text-align:center;font-size:18px;font-weight:900;color:var(--rose);margin-top:14px;padding:18px;background:rgba(232,50,90,.09);border-radius:20px;border:1px solid rgba(232,50,90,.18)">Умничка! Я так тобой горжусь ❤️</p>
         </div>
         <div style="margin-top:30px">
-          <div style="font-family:'Playfair Display',serif;font-size:30px;font-style:italic;font-weight:900;margin-bottom:14px">Письмо малышу 📝</div>
+          <div style="font-family:'Playfair Display',serif;font-size:30px;font-style:italic;font-weight:900;margin-bottom:14px" id="diaryTitle">Письмо малышу 📝</div>
           <div class="card"><div class="cb">
-            <p style="font-size:13px;font-weight:700;color:var(--t3);margin-bottom:12px;line-height:1.6">Запиши свои мысли. Потом будет так здорово это перечитать вместе!</p>
+            <p style="font-size:13px;font-weight:700;color:var(--t3);margin-bottom:12px;line-height:1.6" id="diarySub">Запиши свои мысли. Потом будет так здорово это перечитать вместе!</p>
             <textarea id="diaryT" class="d-area" placeholder="Сегодня ты так сильно пинался, когда папа гладил животик..."></textarea>
             <button class="lq" style="margin-top:12px" onclick="saveDiary()">Сохранить в сердце 💖</button>
           </div></div>
@@ -2495,7 +2495,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         <div class="card">
           <div class="cb" style="padding:20px 20px 16px">
             <div class="sh">⚖️ Весовой трекер</div>
-            <div class="ssub" style="margin-bottom:14px">Следим за прибавкой вместе — это важно!</div>
+            <div class="ssub" id="wtTrackerSub" style="margin-bottom:14px">Следим за прибавкой вместе — это важно!</div>
 
             <!-- INPUT ROW -->
             <div class="wt-input-row">
@@ -2515,10 +2515,10 @@ body.mode-postpartum .pregnancy-only{display:none!important}
             <div class="wt-stats-v2" id="wtStats"></div>
 
             <!-- BMI TOGGLE BUTTON -->
-            <button class="bmi-toggle-btn" onclick="toggleBMI()" id="bmiToggleBtn">📊 Показать коридор ВОЗ</button>
+            <button class="bmi-toggle-btn pregnancy-only" onclick="toggleBMI()" id="bmiToggleBtn">📊 Показать коридор ВОЗ</button>
 
             <!-- BMI SECTION -->
-            <div class="bmi-section-v2" id="bmiSection" style="display:none">
+            <div class="bmi-section-v2 pregnancy-only" id="bmiSection" style="display:none">
               <div class="bmi-header">
                 <span class="bmi-title">ИМТ до беременности</span>
                 <span class="bmi-val" id="bmiVal">—</span>
@@ -2669,9 +2669,11 @@ body.mode-postpartum .pregnancy-only{display:none!important}
           <div style="font-size:15px;font-weight:800;margin-bottom:8px">Мой номер телефона:</div>
           <input type="text" id="phoneIn" placeholder="+7 (999) 123-45-67 / +996 777 123 456" style="width:100%;font-size:15px;padding:14px;margin-bottom:10px">
           <button class="lq" style="margin-bottom:22px;font-size:16px" onclick="savePhone()">Сохранить номер</button>
-          <div style="font-size:15px;font-weight:800;margin-bottom:8px">Изменить дату родов (ПДР):</div>
-          <input type="date" id="newEdd" style="width:100%;font-size:16px;padding:14px;text-align:center;font-weight:800;margin-bottom:10px">
-          <button onclick="updateEDD()" style="width:100%;background:var(--bg2);border:2px solid var(--cb);color:var(--t1);font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer;margin-bottom:22px">Обновить дату</button>
+          <div class="pregnancy-only">
+            <div style="font-size:15px;font-weight:800;margin-bottom:8px">Изменить дату родов (ПДР):</div>
+            <input type="date" id="newEdd" style="width:100%;font-size:16px;padding:14px;text-align:center;font-weight:800;margin-bottom:10px">
+            <button onclick="updateEDD()" style="width:100%;background:var(--bg2);border:2px solid var(--cb);color:var(--t1);font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer;margin-bottom:22px">Обновить дату</button>
+          </div>
         </div></div>
 
         <div class="card"><div class="cb">
@@ -2695,7 +2697,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v39</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v40</div>
         </div></div>
       </div>
     </div>
@@ -2860,7 +2862,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v39';
+const APP_DATA_VER='v40';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -5216,6 +5218,20 @@ function applyAppMode(){
   if(jTitle)jTitle.textContent=born?'📓 Дневник малыша':'📓 Записи по дням';
   const jSub=document.getElementById('journalCardSub');
   if(jSub)jSub.textContent=born?'Мысли, события и первые «впервые» — с датой':'Мысли, события и воспоминания — с датой и неделей беременности';
+  const dSub=document.getElementById('diarySub');
+  if(dSub)dSub.textContent=born?'Запиши, что чувствуешь как мама. Малыш прочитает это, когда подрастёт!':'Запиши свои мысли. Потом будет так здорово это перечитать вместе!';
+  const dArea=document.getElementById('diaryT');
+  if(dArea)dArea.placeholder=born?'Сегодня ты первый раз улыбнулся(лась) мне...':'Сегодня ты так сильно пинался, когда папа гладил животик...';
+  const jArea=document.getElementById('journalNewT');
+  if(jArea)jArea.placeholder=born?'Сегодня малыш впервые удержал(а) головку...':'Сегодня малыш так сильно пинался, когда папа гладил животик…';
+  const wtSub=document.getElementById('wtTrackerSub');
+  if(wtSub)wtSub.textContent=born?'Отслеживай восстановление после родов — в своём темпе 💛':'Следим за прибавкой вместе — это важно!';
+  if(born){
+    const bmiSection=document.getElementById('bmiSection');
+    const bmiBtn=document.getElementById('bmiToggleBtn');
+    if(bmiSection)bmiSection.style.display='none';
+    if(bmiBtn){bmiBtn.textContent='📊 Показать коридор ВОЗ';bmiBtn.classList.remove('open');}
+  }
   if(born){
     renderBabyHero();renderBabySection();
     try{renderBabyJournalTrackers();}catch(e){}
@@ -6115,23 +6131,34 @@ function renderWtChart(){
   }
   const v=k.map(k2=>h[k2]);
   const firstWt=v[0];
+  const born=hasBabyBorn();
   const edd=localStorage.getItem('eddDate');
   const {week}=calcW(edd||'');
-  const corridor=typeof getExpectedWeightRange==='function'?getExpectedWeightRange(firstWt,week):{minW:firstWt-0.5,maxW:firstWt+2,label:'ВОЗ'};
-  const chartMin=Math.min(...v,corridor.minW)-0.8;
-  const chartMax=Math.max(...v,corridor.maxW)+0.8;
+  const corridor=(!born&&typeof getExpectedWeightRange==='function')?getExpectedWeightRange(firstWt,week):null;
+  const chartMin=Math.min(...v,corridor?corridor.minW:firstWt)-0.8;
+  const chartMax=Math.max(...v,corridor?corridor.maxW:firstWt)+0.8;
   const span=chartMax-chartMin||1;
   if(corridorEl){
-    const topPct=(1-(corridor.maxW-chartMin)/span)*100;
-    const heightPct=((corridor.maxW-corridor.minW)/span)*100;
-    corridorEl.style.display='block';
-    corridorEl.style.top=Math.max(0,Math.min(92,topPct))+'%';
-    corridorEl.style.height=Math.max(10,Math.min(100,heightPct))+'%';
+    if(corridor){
+      const topPct=(1-(corridor.maxW-chartMin)/span)*100;
+      const heightPct=((corridor.maxW-corridor.minW)/span)*100;
+      corridorEl.style.display='block';
+      corridorEl.style.top=Math.max(0,Math.min(92,topPct))+'%';
+      corridorEl.style.height=Math.max(10,Math.min(100,heightPct))+'%';
+    }else{
+      corridorEl.style.display='none';
+    }
   }
   if(legendEl){
-    const cur=v[v.length-1];
-    const inCorridor=cur>=corridor.minW&&cur<=corridor.maxW;
-    legendEl.innerHTML='🟢 Коридор ВОЗ ('+corridor.label+'): <b>'+corridor.minW.toFixed(1)+'–'+corridor.maxW.toFixed(1)+' кг</b> на '+week+' нед.'+(inCorridor?' · ты в норме ✅':' · обсуди с врачом 💛');
+    if(corridor){
+      const cur=v[v.length-1];
+      const inCorridor=cur>=corridor.minW&&cur<=corridor.maxW;
+      legendEl.innerHTML='🟢 Коридор ВОЗ ('+corridor.label+'): <b>'+corridor.minW.toFixed(1)+'–'+corridor.maxW.toFixed(1)+' кг</b> на '+week+' нед.'+(inCorridor?' · ты в норме ✅':' · обсуди с врачом 💛');
+    }else if(born){
+      legendEl.innerHTML='💛 Восстановление после родов — у каждой мамы свой темп, без спешки';
+    }else{
+      legendEl.textContent='';
+    }
   }
   el.innerHTML=k.map((k2,i)=>{
     const wt=v[i];
@@ -6140,7 +6167,7 @@ function renderWtChart(){
     const isLast=i===k.length-1;
     const isFirst=i===0;
     let extraClass='';
-    if(isLast){if(wt>corridor.maxW)extraClass=' out-high';else if(wt<corridor.minW)extraClass=' out-low';}
+    if(isLast&&corridor){if(wt>corridor.maxW)extraClass=' out-high';else if(wt<corridor.minW)extraClass=' out-low';}
     const barClass=(isLast?'wt-bar latest':'wt-bar')+extraClass;
     const showVal=isLast||isFirst;
     return '<div class="wt-bar-w'+(showVal?' show-val':'')+'"><div class="wt-val">'+(showVal?wt:'')+'</div><div class="'+barClass+'" style="height:'+ht+'%"></div><div class="wt-lbl">'+dt.getDate()+'/'+(dt.getMonth()+1)+'</div></div>';
@@ -6154,7 +6181,7 @@ function renderWtChart(){
       const gNum=parseFloat(g);
       const arrow=gNum>0?'↑':gNum<0?'↓':'→';
       const col=gNum>0?'var(--rose)':gNum<0?'var(--teal)':'var(--t3)';
-      s.innerHTML='Прибавка: <b style="color:'+col+'">'+arrow+' '+(gNum>0?'+':'')+g+' кг</b> &nbsp;·&nbsp; Сейчас: <b>'+v[v.length-1]+' кг</b>';
+      s.innerHTML='Изменение: <b style="color:'+col+'">'+arrow+' '+(gNum>0?'+':'')+g+' кг</b> &nbsp;·&nbsp; Сейчас: <b>'+v[v.length-1]+' кг</b>';
     }
   }
 }
@@ -6671,8 +6698,7 @@ function renderMedWeekChart(){
   }).join('');
 }
 function buildWeekSummaryText(){
-  const edd=localStorage.getItem('eddDate');
-  const {week}=calcW(edd);
+  const born=hasBabyBorn();
   const score=getWellnessScore();
   const streak=localStorage.getItem('streak'+V)||'0';
   const total=localStorage.getItem('totalFinishedDays'+V)||'0';
@@ -6682,11 +6708,14 @@ function buildWeekSummaryText(){
   const bagStats=getBagStats(loadBagList());
   const g=localStorage.getItem('babyGender')||'n';
   const streakSub=g==='b'?'забота о сыне':g==='g'?'забота о дочке':'серия заботы';
-  return 'Сводка недели '+week+' 🤍\n'+
+  const headline=born?
+    ('Сводка недели · малышу '+(calcBabyAge(getBabyBirthDate())?formatBabyAge(calcBabyAge(getBabyBirthDate())):'')+' 🤍'):
+    ('Сводка недели '+calcW(localStorage.getItem('eddDate')).week+' 🤍');
+  return headline+'\n'+
     'Индекс заботы: '+score+' из 100\n'+
     'Серия: '+streak+' '+pluralDays(parseInt(streak,10)||0)+' · '+streakSub+'\n'+
     'Всего завершённых дней: '+total+'\n'+
-    'Настроение отмечено: '+moodCount+' из 7 дней · Сумка: '+bagStats.done+' из '+bagStats.total+'\n'+
+    'Настроение отмечено: '+moodCount+' из 7 дней'+(born?'':' · Сумка: '+bagStats.done+' из '+bagStats.total)+'\n'+
     '— Приложение «Для Индиры»';
 }
 function shareWeekSummary(){
@@ -7086,6 +7115,13 @@ const VISIT_PREP_DEFAULT=[
   {id:'questions',label:'Список вопросов врачу'},
   {id:'snack',label:'Перекус и вода с собой'}
 ];
+const VISIT_PREP_DEFAULT_BABY=[
+  {id:'docs',label:'Карта малыша и полис (ОМС/страховка)'},
+  {id:'analyses',label:'Результаты прошлых анализов и прививочный сертификат'},
+  {id:'measures',label:'Записать домашний вес и рост малыша'},
+  {id:'questions',label:'Список вопросов педиатру'},
+  {id:'snack',label:'Подгузник, смесь/бутылочка и перекус с собой'}
+];
 const VISIT_PREP_KEY='visitPrep'+V;
 function loadVisitPrep(){
   try{const r=localStorage.getItem(VISIT_PREP_KEY);if(r)return JSON.parse(r);}catch(e){}
@@ -7106,7 +7142,7 @@ function renderVisitPrep(){
   if(sub)sub.textContent=(days===0?'Сегодня':'Через '+days+' '+pluralDays(days))+' — '+appt.title+'. Отметь что готово:';
   const prep=loadVisitPrep();
   const key=String(appt.id);
-  if(!prep[key])prep[key]=VISIT_PREP_DEFAULT.map(x=>({...x,done:false}));
+  if(!prep[key])prep[key]=(hasBabyBorn()?VISIT_PREP_DEFAULT_BABY:VISIT_PREP_DEFAULT).map(x=>({...x,done:false}));
   list.innerHTML=prep[key].map((item,j)=>{
     return '<div class="visit-prep-item" onclick="toggleVisitPrep(\''+key+'\','+j+')"><div class="visit-prep-chk'+(item.done?' done':'')+'"></div><span class="visit-prep-lbl'+(item.done?' done':'')+'">'+escapeHtml(item.label)+'</span></div>';
   }).join('');
@@ -7297,7 +7333,13 @@ function loadJournalLog(){
   }catch(e){}
   const legacy=localStorage.getItem('diaryEntry');
   if(legacy&&legacy.trim()){
-    const entry={id:Date.now(),date:new Date().toISOString(),week:calcW(localStorage.getItem('eddDate')).week,text:legacy.trim()};
+    const entry={id:Date.now(),date:new Date().toISOString(),text:legacy.trim()};
+    if(hasBabyBorn()){
+      const age=calcBabyAge(getBabyBirthDate());
+      if(age)entry.babyAge=formatBabyAge(age);
+    }else{
+      entry.week=calcW(localStorage.getItem('eddDate')).week;
+    }
     localStorage.setItem(JOURNAL_KEY,JSON.stringify([entry]));
     return [entry];
   }
@@ -7317,9 +7359,17 @@ function renderJournalLog(){
     el.innerHTML='<div class="empty-state"><div class="empty-ico">🔍</div><div class="empty-title">Ничего не найдено</div><div class="empty-sub">Попробуй другие слова</div></div>';
     return;
   }
+  const birthISO=getBabyBirthDate();
+  const birthMs=birthISO?new Date(birthISO+'T00:00:00').getTime():null;
   el.innerHTML=filtered.map(e=>{
     const d=new Date(e.date);
-    return '<div class="journal-entry"><div class="journal-entry-meta">'+d.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'})+' · '+e.week+' нед.</div><div class="journal-entry-text">'+escapeHtml(e.text).replace(/\n/g,'<br>')+'</div><button type="button" class="journal-del" onclick="deleteJournalEntry('+e.id+')" aria-label="Удалить запись">✕</button></div>';
+    let tag='';
+    if(e.babyAge){
+      tag=' · '+e.babyAge;
+    }else if(e.week&&!(birthMs&&d.getTime()>=birthMs)){
+      tag=' · '+e.week+' нед.';
+    }
+    return '<div class="journal-entry"><div class="journal-entry-meta">'+d.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'})+tag+'</div><div class="journal-entry-text">'+escapeHtml(e.text).replace(/\n/g,'<br>')+'</div><button type="button" class="journal-del" onclick="deleteJournalEntry('+e.id+')" aria-label="Удалить запись">✕</button></div>';
   }).join('');
 }
 function saveJournalEntry(){
@@ -7328,8 +7378,14 @@ function saveJournalEntry(){
   const text=ta&&ta.value.trim();
   if(!text){toast('Напиши хотя бы пару строк');return;}
   const log=loadJournalLog();
-  const week=calcW(localStorage.getItem('eddDate')).week;
-  log.unshift({id:Date.now(),date:new Date().toISOString(),week,text});
+  const entry={id:Date.now(),date:new Date().toISOString(),text};
+  if(hasBabyBorn()){
+    const age=calcBabyAge(getBabyBirthDate());
+    if(age)entry.babyAge=formatBabyAge(age);
+  }else{
+    entry.week=calcW(localStorage.getItem('eddDate')).week;
+  }
+  log.unshift(entry);
   try{localStorage.setItem(JOURNAL_KEY,JSON.stringify(log.slice(0,120)));}catch(e){toast('Не удалось сохранить запись');return;}
   ta.value='';
   renderJournalLog();
@@ -8294,8 +8350,7 @@ function updateBMI(week){
 
 // ══ DOCTOR REPORT ══
 function buildReportText(){
-  const edd=localStorage.getItem('eddDate');
-  const {week}=calcW(edd);
+  const born=hasBabyBorn();
   const now=new Date();
   const gender=localStorage.getItem('babyGender')||'n';
   const gStr=gender==='g'?'Девочка':gender==='b'?'Мальчик':'Не определён';
@@ -8310,27 +8365,79 @@ function buildReportText(){
   const wtKeys=Object.keys(wts).sort();
   const wtLines=wtKeys.slice(-5).map(k=>'  '+k+': '+wts[k]+' кг');
   let bmiLine='  (нет данных о весе)';
-  if(wtKeys.length){
+  if(wtKeys.length&&!born){
     const h=parseFloat(localStorage.getItem('heightCm')||'165');
     const bmi=wts[wtKeys[0]]/((h/100)*(h/100));
+    const {week}=calcW(localStorage.getItem('eddDate'));
     const corridor=getExpectedWeightRange(wts[wtKeys[0]],week);
     const cur=wts[wtKeys[wtKeys.length-1]];
     bmiLine='  ИМТ '+bmi.toFixed(1)+' · прибавка '+(cur-wts[wtKeys[0]]).toFixed(1)+' кг · коридор ВОЗ: '+corridor.minW.toFixed(1)+'–'+corridor.maxW.toFixed(1)+' кг';
+  }else if(wtKeys.length&&born){
+    const cur=wts[wtKeys[wtKeys.length-1]];
+    const first=wts[wtKeys[0]];
+    const diff=cur-first;
+    bmiLine='  Текущий вес: '+cur+' кг'+(wtKeys.length>1?' · изменение с начала записей: '+(diff>=0?'+':'')+diff.toFixed(1)+' кг':'');
   }
   const moodH=JSON.parse(localStorage.getItem('moodH'+V)||'{}');
   const moodLines=Object.keys(moodH).sort().slice(-7).map(k=>'  '+k+': '+moodH[k]);
-  const journal=loadJournalLog().slice(0,5).map(e=>'  '+new Date(e.date).toLocaleDateString('ru-RU')+' ('+e.week+' нед.): '+e.text.slice(0,120));
-  const kickHist=JSON.parse(localStorage.getItem('kickHist'+V)||'[]').slice(0,5).map(h=>'  '+new Date(h.date).toLocaleDateString('ru-RU')+': '+h.count+' шев. '+(h.ok?'✓':'!'));
-  const kicks=localStorage.getItem('kickCount'+V)||'0';
   const streak=localStorage.getItem('streak'+V)||'0';
   const totalFinished=localStorage.getItem('totalFinishedDays'+V)||'0';
-  const appts=loadAppts().filter(a=>!a.done).slice(0,5).map(a=>'  '+a.date+': '+a.title);
+  const todayISO=now.toISOString().slice(0,10);
+  const appts=loadAppts().filter(a=>!a.done&&a.date>=todayISO).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,5).map(a=>'  '+new Date(a.date+'T12:00:00').toLocaleDateString('ru-RU')+': '+a.title);
+
+  const headerLines=born?(function(){
+    const age=calcBabyAge(getBabyBirthDate());
+    const name=(localStorage.getItem('babyName')||'').trim();
+    return [
+      'Малышу'+(name?' ('+escapeHtml(name)+')':'')+': '+(age?formatBabyAge(age):'—'),
+      'Дата рождения: '+formatBabyBirthDateRu(getBabyBirthDate()),
+      'Пол: '+gStr
+    ];
+  })():(function(){
+    const edd=localStorage.getItem('eddDate');
+    const {week}=calcW(edd);
+    return [
+      'Срок: '+week+' нед. · ПДР: '+(edd?new Date(edd).toLocaleDateString('ru-RU'):'—'),
+      'Пол малыша: '+gStr
+    ];
+  })();
+
+  const journalOrBabyLines=born?(function(){
+    const feeds=loadBabyFeed().filter(f=>isToday(f.ts));
+    const diapers=loadBabyDiaper().filter(d=>isToday(d.ts));
+    const sleeps=loadBabySleep().filter(s=>isToday(s.start));
+    const sleepMin=sleeps.reduce((sum,s)=>sum+Math.round(((s.end||Date.now())-s.start)/60000),0);
+    const gh=JSON.parse(localStorage.getItem('babyGrowthH'+V)||'{}');
+    const ghKeys=Object.keys(gh).sort();
+    const lastG=ghKeys.length?gh[ghKeys[ghKeys.length-1]]:null;
+    const lastGLine=lastG?('  Последний замер ('+ghKeys[ghKeys.length-1]+'): '+[lastG.w?lastG.w+' г':null,lastG.h?lastG.h+' см':null].filter(Boolean).join(' · ')):'  (нет замеров роста)';
+    return [
+      '',
+      '─── МАЛЫШ СЕГОДНЯ ───',
+      '  Кормлений: '+feeds.length+' · Подгузников: '+diapers.length+' · Сон: '+(sleepMin/60).toFixed(1).replace('.0','')+' ч',
+      lastGLine
+    ];
+  })():(function(){
+    const kickHist=JSON.parse(localStorage.getItem('kickHist'+V)||'[]').slice(0,5).map(h=>'  '+new Date(h.date).toLocaleDateString('ru-RU')+': '+h.count+' шев. '+(h.ok?'✓':'!'));
+    const kicks=localStorage.getItem('kickCount'+V)||'0';
+    return [
+      '',
+      '─── ШЕВЕЛЕНИЯ ───',
+      '  Сегодня: '+kicks+' (норма ≥10 за 2ч)',
+      ...(kickHist.length?['  История:',...kickHist]:[]),
+      '',
+      '─── СХВАТКИ (история) ───',
+      ...getContrReportLines()
+    ];
+  })();
+
+  const journal=born?[]:loadJournalLog().slice(0,5).map(e=>'  '+new Date(e.date).toLocaleDateString('ru-RU')+' ('+e.week+' нед.): '+e.text.slice(0,120));
+
   return [
     '═══════════════════════════════',
     'ОТЧЁТ ДЛЯ ВРАЧА — Для Индиры',
     'Дата: '+now.toLocaleDateString('ru-RU')+' '+now.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}),
-    'Срок: '+week+' нед. · ПДР: '+new Date(edd).toLocaleDateString('ru-RU'),
-    'Пол малыша: '+gStr,
+    ...headerLines,
     '',
     '─── ПРЕПАРАТЫ СЕГОДНЯ ───',
     ...(medsLines.length?medsLines:['  (нет активных)']),
@@ -8350,16 +8457,8 @@ function buildReportText(){
     '',
     '─── ДАВЛЕНИЕ (7 дней) ───',
     ...getBPReportLines(),
-    '',
-    '─── ШЕВЕЛЕНИЯ ───',
-    '  Сегодня: '+kicks+' (норма ≥10 за 2ч)',
-    ...(kickHist.length?['  История:',...kickHist]:[]),
-    '',
-    '─── СХВАТКИ (история) ───',
-    ...getContrReportLines(),
-    '',
-    '─── ДНЕВНИК ───',
-    ...(journal.length?journal:['  (нет записей)']),
+    ...journalOrBabyLines,
+    ...(born?[]:['','─── ДНЕВНИК ───',...(journal.length?journal:['  (нет записей)'])]),
     '',
     '─── ПРЕДСТОЯЩИЕ ВИЗИТЫ ───',
     ...(appts.length?appts:['  (не добавлены)']),
