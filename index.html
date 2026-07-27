@@ -1522,6 +1522,12 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .baby-progress-bar{height:6px;border-radius:6px;background:var(--bg2);border:1px solid var(--cb);overflow:hidden;margin-bottom:10px}
 .baby-progress-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--rose),var(--rose2));transition:width .4s ease}
 .baby-src-note{font-size:10.5px;font-weight:700;color:var(--t3);opacity:.8;text-align:center;margin-top:14px;line-height:1.6;padding:0 4px}
+.baby-growth-chartwrap{position:relative;height:150px;margin:10px 0 6px;border-radius:14px;overflow:hidden;background:var(--bg2);border:1px solid var(--cb)}
+.baby-growth-legend{font-size:9.5px;font-weight:800;color:var(--t3);text-align:center;margin-bottom:10px;line-height:1.8}
+.bgl-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:3px;vertical-align:middle}
+.bgl-dash{display:inline-block;width:12px;height:0;border-top:2px dashed var(--rose);margin:0 3px;vertical-align:middle;opacity:.55}
+.baby-growth-pct{font-size:12px;font-weight:800;color:var(--t2);text-align:center;line-height:1.7;margin-top:2px;padding:0 4px}
+.baby-growth-hint{font-size:11px;font-weight:800;color:var(--rose);background:rgba(232,50,90,.07);border-radius:12px;padding:8px 10px;text-align:center;margin:2px 0 4px;line-height:1.5}
 .baby-quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2px}
 .baby-q-btn{flex:1;min-width:88px;padding:13px 8px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:900;cursor:pointer;box-shadow:0 6px 16px rgba(232,50,90,.24);transition:transform .15s}
 .baby-q-btn:active{transform:scale(.95)}
@@ -2392,7 +2398,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <!-- ── BABY: GROWTH (postpartum) ── -->
         <div class="card postpartum-only" id="babyGrowthCard"><div class="cb">
           <div class="sh">📈 Рост малыша</div>
-          <div class="ssub">Вес, рост и окружность головы — удобно показать педиатру</div>
+          <div class="ssub">Вес и рост — с нормами ВОЗ прямо на графике, удобно показать педиатру</div>
           <div class="wt-input-row">
             <div class="wt-input-wrap">
               <input type="number" class="wt-inp-v2" id="babyWtIn" placeholder="3200" step="10" min="500" max="30000">
@@ -2404,10 +2410,14 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
             <input type="number" id="babyHtIn" placeholder="Рост, см" step="0.5" min="30" max="120" style="font-size:14px;padding:12px;text-align:center;font-weight:800">
             <input type="number" id="babyHcIn" placeholder="Голова, см" step="0.1" min="25" max="60" style="font-size:14px;padding:12px;text-align:center;font-weight:800">
           </div>
-          <div class="wt-chart-wrap" id="babyGrowthChartWrap">
-            <div class="wt-chart-v2" id="babyGrowthChart"></div>
+          <div class="baby-growth-hint" id="babyGrowthHint"></div>
+          <div class="baby-growth-chartwrap" id="babyGrowthChartWrap">
+            <div id="babyGrowthChart"></div>
           </div>
+          <div class="baby-growth-legend" id="babyGrowthLegend"></div>
           <div class="wt-stats-v2" id="babyGrowthStats"></div>
+          <div class="baby-growth-pct" id="babyGrowthPct"></div>
+          <div class="baby-src-note">📚 Диапазон и медиана — WHO Child Growth Standards (2006), 0–2 года. Ориентир, а не диагноз — обсуди динамику с педиатром.</div>
         </div></div>
 
         <div class="card pregnancy-only"><div class="cb">
@@ -2653,7 +2663,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v35</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v36</div>
         </div></div>
       </div>
     </div>
@@ -2799,7 +2809,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v35';
+const APP_DATA_VER='v36';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -5058,6 +5068,43 @@ const BABY_STAGES=[
       'Простые вопросы «что это?», «какого цвета?» — развивают речь'
     ]}
 ];
+// WHO Child Growth Standards (2006) — Simplified field tables, percentiles P3/P15/P50/P85/P97
+// Строки: [месяц, P3, P15, медиана(P50), P85, P97]
+const WHO_WEIGHT_KG={
+  boy:[[0,2.5,2.9,3.3,3.9,4.3],[1,3.4,3.9,4.5,5.1,5.7],[2,4.4,4.9,5.6,6.3,7.0],[3,5.1,5.6,6.4,7.2,7.9],[4,5.6,6.2,7.0,7.9,8.6],[5,6.1,6.7,7.5,8.4,9.2],[6,6.4,7.1,7.9,8.9,9.7],[9,7.2,7.9,8.9,10.0,10.9],[12,7.8,8.6,9.6,10.8,11.8],[15,8.4,9.2,10.3,11.6,12.7],[18,8.9,9.7,10.9,12.3,13.5],[21,9.3,10.3,11.5,13.0,14.3],[24,9.8,10.8,12.2,13.7,15.1]],
+  girl:[[0,2.4,2.8,3.2,3.7,4.2],[1,3.2,3.6,4.2,4.8,5.4],[2,4.0,4.5,5.1,5.9,6.5],[3,4.6,5.1,5.8,6.7,7.4],[4,5.1,5.6,6.4,7.3,8.1],[5,5.5,6.1,6.9,7.8,8.7],[6,5.8,6.4,7.3,8.3,9.2],[9,6.6,7.3,8.2,9.3,10.4],[12,7.1,7.9,8.9,10.2,11.3],[15,7.7,8.5,9.6,10.9,12.2],[18,8.2,9.0,10.2,11.6,13.0],[21,8.7,9.6,10.9,12.4,13.8],[24,9.2,10.1,11.5,13.1,14.6]]
+};
+const WHO_LENGTH_CM={
+  boy:[[0,46.3,47.9,49.9,51.8,53.4],[1,51.1,52.7,54.7,56.7,58.4],[2,54.7,56.4,58.4,60.5,62.2],[3,57.6,59.3,61.4,63.5,65.3],[4,60.0,61.7,63.9,66.0,67.8],[5,61.9,63.7,65.9,68.1,69.9],[6,63.6,65.4,67.6,69.8,71.6],[9,67.7,69.6,72.0,74.3,76.2],[12,71.3,73.3,75.7,78.2,80.2],[15,74.4,76.5,79.1,81.8,83.9],[18,77.2,79.5,82.3,85.1,87.3],[21,79.7,82.2,85.1,88.1,90.5],[24,82.1,84.6,87.8,91.0,93.6]],
+  girl:[[0,45.6,47.2,49.1,51.1,52.7],[1,50.0,51.7,53.7,55.7,57.4],[2,53.2,55.0,57.1,59.2,60.9],[3,55.8,57.6,59.8,62.0,63.8],[4,58.0,59.8,62.1,64.3,66.2],[5,59.9,61.7,64.0,66.3,68.2],[6,61.5,63.4,65.7,68.1,70.0],[9,65.6,67.6,70.1,72.6,74.7],[12,69.2,71.3,74.0,76.7,78.9],[15,72.4,74.7,77.5,80.3,82.7],[18,75.2,77.7,80.7,83.7,86.2],[21,77.9,80.5,83.7,86.8,89.4],[24,80.3,83.1,86.4,89.8,92.5]]
+};
+function whoGenderKey(){const gv=localStorage.getItem('babyGender')||'n';return gv==='b'?'boy':gv==='g'?'girl':null;}
+function whoTableRows(table){
+  const gk=whoGenderKey();
+  if(gk)return table[gk];
+  return table.boy.map((row,i)=>row.map((v,j)=>j===0?v:(v+table.girl[i][j])/2));
+}
+function whoInterp(rows,ageM){
+  if(ageM<=rows[0][0])return{p3:rows[0][1],p15:rows[0][2],p50:rows[0][3],p85:rows[0][4],p97:rows[0][5]};
+  const last=rows[rows.length-1];
+  if(ageM>=last[0])return{p3:last[1],p15:last[2],p50:last[3],p85:last[4],p97:last[5]};
+  for(let i=0;i<rows.length-1;i++){
+    const a=rows[i],b=rows[i+1];
+    if(ageM>=a[0]&&ageM<=b[0]){
+      const t=(ageM-a[0])/(b[0]-a[0]);
+      const lerp=(x,y)=>x+(y-x)*t;
+      return{p3:lerp(a[1],b[1]),p15:lerp(a[2],b[2]),p50:lerp(a[3],b[3]),p85:lerp(a[4],b[4]),p97:lerp(a[5],b[5])};
+    }
+  }
+  return{p3:last[1],p15:last[2],p50:last[3],p85:last[4],p97:last[5]};
+}
+function whoCategoryLabel(val,band){
+  if(val<band.p3)return{txt:'ниже нормы ВОЗ (< 3‑й перцентили)',cls:'lo'};
+  if(val<band.p15)return{txt:'чуть ниже среднего (3–15‑я перцентиль)',cls:'mid'};
+  if(val<=band.p85)return{txt:'в пределах нормы (15–85‑я перцентиль)',cls:'ok'};
+  if(val<=band.p97)return{txt:'чуть выше среднего (85–97‑я перцентиль)',cls:'mid'};
+  return{txt:'выше нормы ВОЗ (> 97‑й перцентили)',cls:'lo'};
+}
 function getBabyBirthDate(){return localStorage.getItem('babyBirthDate')||null;}
 function hasBabyBorn(){
   const d=getBabyBirthDate();
@@ -5422,37 +5469,95 @@ function saveBabyGrowth(){
   renderBabyGrowthChart();
   toast('Замеры малыша сохранены 📈');
 }
+function updateBabyGrowthHint(){
+  const hintEl=document.getElementById('babyGrowthHint');
+  if(!hintEl)return;
+  const birth=getBabyBirthDate();
+  if(!birth){hintEl.innerHTML='';return;}
+  const age=calcBabyAge(birth);
+  if(!age||age.monthsF>25){hintEl.innerHTML='';return;}
+  const ageM=age.monthsF;
+  const wBand=whoInterp(whoTableRows(WHO_WEIGHT_KG),ageM);
+  const hBand=whoInterp(whoTableRows(WHO_LENGTH_CM),ageM);
+  hintEl.innerHTML='📐 Ожидаемо в этом возрасте (ВОЗ, 15–85%): вес <b>'+wBand.p15.toFixed(1)+'–'+wBand.p85.toFixed(1)+' кг</b>, рост <b>'+hBand.p15.toFixed(0)+'–'+hBand.p85.toFixed(0)+' см</b>';
+}
 function renderBabyGrowthChart(){
+  updateBabyGrowthHint();
   const el=document.getElementById('babyGrowthChart');
   const statsEl=document.getElementById('babyGrowthStats');
+  const legendEl=document.getElementById('babyGrowthLegend');
+  const pctEl=document.getElementById('babyGrowthPct');
   if(!el)return;
   let h;try{h=JSON.parse(localStorage.getItem('babyGrowthH'+V)||'{}');}catch(e){h={};}
-  const k=Object.keys(h).filter(k2=>h[k2]&&typeof h[k2].w==='number').sort().slice(-10);
-  if(!k.length){
+  const birth=getBabyBirthDate();
+  const bTime=birth?new Date(birth+'T00:00:00').getTime():null;
+  const ageAtMs=(ts)=>bTime?Math.max(0,(ts-bTime)/86400000/30.4368):0;
+  const wKeys=Object.keys(h).filter(k2=>h[k2]&&typeof h[k2].w==='number').sort();
+  if(!wKeys.length){
     el.innerHTML='<p style="color:var(--t3);font-size:13px;font-weight:700;width:100%;text-align:center;padding:16px 0;opacity:.6">Запиши первый вес малыша!</p>';
     if(statsEl)statsEl.textContent='';
+    if(legendEl)legendEl.innerHTML='';
+    if(pctEl)pctEl.innerHTML='';
     return;
   }
-  const v=k.map(k2=>h[k2].w);
-  const chartMin=Math.min(...v)-Math.max(50,Math.min(...v)*0.05);
-  const chartMax=Math.max(...v)+Math.max(50,Math.max(...v)*0.05);
-  const span=chartMax-chartMin||1;
-  el.innerHTML=k.map((k2,i)=>{
-    const wt=v[i];
-    const ht2=Math.max(12,((wt-chartMin)/span)*100);
-    const dt=new Date(k2);
-    const isLast=i===k.length-1,isFirst=i===0;
-    const showVal=isLast||isFirst;
-    const barClass=isLast?'wt-bar latest':'wt-bar';
-    return '<div class="wt-bar-w'+(showVal?' show-val':'')+'"><div class="wt-val">'+(showVal?wt:'')+'</div><div class="'+barClass+'" style="height:'+ht2+'%"></div><div class="wt-lbl">'+dt.getDate()+'/'+(dt.getMonth()+1)+'</div></div>';
-  }).join('');
+  const pts=wKeys.map(k2=>({age:ageAtMs(new Date(k2+'T12:00:00').getTime()),kg:h[k2].w/1000,date:k2}));
+  const lastPt=pts[pts.length-1];
+  const showWho=bTime&&lastPt.age<=25;
+  const maxAge=showWho?Math.max(24,Math.ceil(lastPt.age)):Math.max(1,Math.ceil(lastPt.age));
+  const rows=whoTableRows(WHO_WEIGHT_KG).filter(r=>r[0]<=maxAge+1);
+  const allVals=[...pts.map(p=>p.kg)];
+  if(showWho)rows.forEach(r=>{allVals.push(r[1],r[5]);});
+  const yMin=Math.min(...allVals)*0.92,yMax=Math.max(...allVals)*1.06;
+  const W=300,H=150,padL=6,padR=6,padT=6,padB=6;
+  const xOf=(age)=>padL+(age/maxAge)*(W-padL-padR);
+  const yOf=(kg)=>padT+(1-(kg-yMin)/(yMax-yMin||1))*(H-padT-padB);
+  let svg='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="width:100%;height:100%;display:block">';
+  if(showWho){
+    const bandTop=rows.map(r=>xOf(r[0])+','+yOf(r[5])).join(' ');
+    const bandBot=rows.slice().reverse().map(r=>xOf(r[0])+','+yOf(r[1])).join(' ');
+    svg+='<polygon points="'+bandTop+' '+bandBot+'" fill="var(--rose)" opacity="0.09"/>';
+    const midBandTop=rows.map(r=>xOf(r[0])+','+yOf(r[4])).join(' ');
+    const midBandBot=rows.slice().reverse().map(r=>xOf(r[0])+','+yOf(r[2])).join(' ');
+    svg+='<polygon points="'+midBandTop+' '+midBandBot+'" fill="var(--rose)" opacity="0.13"/>';
+    const medianPts=rows.map(r=>xOf(r[0])+','+yOf(r[3])).join(' ');
+    svg+='<polyline points="'+medianPts+'" fill="none" stroke="var(--rose)" stroke-width="1" stroke-dasharray="3,3" opacity="0.55"/>';
+  }
+  const linePts=pts.map(p=>xOf(Math.min(p.age,maxAge))+','+yOf(p.kg)).join(' ');
+  svg+='<polyline points="'+linePts+'" fill="none" stroke="var(--rose)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+  pts.forEach((p,i)=>{
+    const isLast=i===pts.length-1;
+    svg+='<circle cx="'+xOf(Math.min(p.age,maxAge))+'" cy="'+yOf(p.kg)+'" r="'+(isLast?4.2:2.6)+'" fill="#fff" stroke="var(--rose)" stroke-width="2"/>';
+  });
+  svg+='</svg>';
+  el.innerHTML=svg;
+  if(legendEl){
+    legendEl.innerHTML=showWho?'<span class="bgl-dot" style="background:var(--rose)"></span>наш малыш &nbsp; <span class="bgl-dot" style="background:rgba(232,50,90,.35)"></span>норма ВОЗ (15–85%) &nbsp; <span class="bgl-dash"></span>медиана ВОЗ':'';
+  }
   if(statsEl){
-    if(v.length===1){
-      statsEl.innerHTML='<span>📍 Первая запись: <b>'+v[0]+' г</b></span>';
+    if(pts.length===1){
+      statsEl.innerHTML='<span>📍 Первая запись: <b>'+h[wKeys[0]].w+' г</b></span>';
     }else{
-      const g=v[v.length-1]-v[0];
+      const g=h[wKeys[wKeys.length-1]].w-h[wKeys[0]].w;
       const arrow=g>0?'↑':g<0?'↓':'→';
-      statsEl.innerHTML='Прибавка: <b style="color:var(--rose)">'+arrow+' '+(g>0?'+':'')+g+' г</b> &nbsp;·&nbsp; Сейчас: <b>'+v[v.length-1]+' г</b>';
+      statsEl.innerHTML='Прибавка: <b style="color:var(--rose)">'+arrow+' '+(g>0?'+':'')+g+' г</b> &nbsp;·&nbsp; Сейчас: <b>'+h[wKeys[wKeys.length-1]].w+' г</b>';
+    }
+  }
+  if(pctEl){
+    if(showWho){
+      const band=whoInterp(whoTableRows(WHO_WEIGHT_KG),lastPt.age);
+      const cat=whoCategoryLabel(lastPt.kg,band);
+      let extra='';
+      const hKeys=Object.keys(h).filter(k2=>h[k2]&&typeof h[k2].h==='number').sort();
+      if(hKeys.length){
+        const lastH=h[hKeys[hKeys.length-1]].h;
+        const hAge=ageAtMs(new Date(hKeys[hKeys.length-1]+'T12:00:00').getTime());
+        const hBand=whoInterp(whoTableRows(WHO_LENGTH_CM),hAge);
+        const hCat=whoCategoryLabel(lastH,hBand);
+        extra='<br>📏 Рост '+lastH+' см — '+hCat.txt;
+      }
+      pctEl.innerHTML='⚖️ Вес — '+cat.txt+extra+(whoGenderKey()?'':'<br><span style="opacity:.75">Укажи пол малыша в настройках для точного сравнения</span>');
+    }else{
+      pctEl.innerHTML='<span style="opacity:.7">Сравнение с нормами ВОЗ доступно для возраста 0–2 года</span>';
     }
   }
 }
@@ -5657,6 +5762,7 @@ function setGender(g){
     btn.style.transform=x===g?'scale(1.04)':'scale(1)';
   });
   if(g!=='n'){toast(g==='g'?'Это девочка! 🎀 Тема обновлена':'Это мальчик! 🩵 Тема обновлена');}
+  if(hasBabyBorn()){try{renderBabyHero();renderBabyGrowthChart();}catch(e){}}
 }
 
 function applyGender(g,showBanner){
