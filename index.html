@@ -1514,6 +1514,13 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .baby-milestone-cat{font-size:11px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 6px}
 .baby-milestone-cat:first-child{margin-top:0}
 .baby-src-note{font-size:10.5px;font-weight:700;color:var(--t3);opacity:.8;text-align:center;margin-top:14px;line-height:1.6;padding:0 4px}
+.baby-quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2px}
+.baby-q-btn{flex:1;min-width:88px;padding:13px 8px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:900;cursor:pointer;box-shadow:0 6px 16px rgba(232,50,90,.24);transition:transform .15s}
+.baby-q-btn:active{transform:scale(.95)}
+.baby-today-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:14px 0 4px}
+.baby-today-stat{padding:10px 6px;border-radius:14px;background:var(--bg2);border:1px solid var(--cb);text-align:center}
+.baby-today-stat b{display:block;font-size:16px;font-weight:900;color:var(--rose);line-height:1.3}
+.baby-today-stat span{font-size:9.5px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.4px}
 .bag-prog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;font-weight:900;color:var(--t2)}
 .bag-prog-sub{font-size:11px;font-weight:700;color:var(--t3);margin-top:8px;text-align:center}
 .kick-session-bar{display:flex;justify-content:space-between;align-items:center;background:var(--bg2);border:1px solid var(--cb);border-radius:14px;padding:10px 14px;margin-bottom:14px;font-size:12px;font-weight:800;color:var(--t2)}
@@ -2322,7 +2329,64 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           </div>
           <div class="appt-list" id="apptList"></div>
         </div></div>
-        <div class="card"><div class="cb">
+
+        <!-- ── BABY: FEEDING & DIAPERS (postpartum) ── -->
+        <div class="card postpartum-only" id="babyFeedCard"><div class="cb">
+          <div class="sh">🍼 Кормления и подгузники</div>
+          <div class="ssub">Отмечай за секунду — увидишь историю дня</div>
+          <div class="baby-quick-row">
+            <button type="button" class="baby-q-btn" onclick="logBabyFeed('bl')">🤱 Грудь Л</button>
+            <button type="button" class="baby-q-btn" onclick="logBabyFeed('br')">🤱 Грудь П</button>
+            <button type="button" class="baby-q-btn" onclick="toggleBabyFormulaRow()">🍼 Смесь</button>
+          </div>
+          <div class="appt-form" id="babyFormulaRow" style="display:none;margin-top:10px">
+            <input type="number" class="appt-inp" id="babyFormulaMl" placeholder="мл" min="10" max="400" style="max-width:110px">
+            <button type="button" class="wt-save-btn" style="flex:0 0 auto;padding:12px 16px" onclick="logBabyFeedFormula()">Записать</button>
+          </div>
+          <div class="baby-quick-row" style="margin-top:10px">
+            <button type="button" class="baby-q-btn" style="background:linear-gradient(135deg,var(--teal),var(--teal2))" onclick="logBabyDiaper('pee')">💧 Пописал</button>
+            <button type="button" class="baby-q-btn" style="background:linear-gradient(135deg,var(--teal),var(--teal2))" onclick="logBabyDiaper('poop')">💩 Покакал</button>
+            <button type="button" class="baby-q-btn" style="background:linear-gradient(135deg,var(--teal),var(--teal2))" onclick="logBabyDiaper('both')">🧷 Оба</button>
+          </div>
+          <div class="baby-today-stats" id="babyTodayStats"></div>
+          <div class="contr-hist" id="babyFeedHist"></div>
+        </div></div>
+
+        <!-- ── BABY: SLEEP (postpartum) ── -->
+        <div class="card postpartum-only" id="babySleepCard"><div class="cb">
+          <div class="sh">💤 Сон малыша</div>
+          <div class="ssub" id="babySleepSub">Нажми, когда малыш уснёт — и когда проснётся</div>
+          <div class="contr-meta">
+            <div class="contr-stat"><div class="contr-stat-val" id="babySleepToday">0ч 0м</div><div class="contr-stat-lbl">сон сегодня</div></div>
+            <div class="contr-stat"><div class="contr-stat-val" id="babySleepCount">0</div><div class="contr-stat-lbl">снов сегодня</div></div>
+            <div class="contr-stat"><div class="contr-stat-val" id="babySleepCur">—</div><div class="contr-stat-lbl">сейчас</div></div>
+          </div>
+          <button type="button" class="contr-btn" id="babySleepBtn" onclick="toggleBabySleep()">😴 Малыш заснул</button>
+          <div class="contr-hist" id="babySleepHist"></div>
+        </div></div>
+
+        <!-- ── BABY: GROWTH (postpartum) ── -->
+        <div class="card postpartum-only" id="babyGrowthCard"><div class="cb">
+          <div class="sh">📈 Рост малыша</div>
+          <div class="ssub">Вес, рост и окружность головы — удобно показать педиатру</div>
+          <div class="wt-input-row">
+            <div class="wt-input-wrap">
+              <input type="number" class="wt-inp-v2" id="babyWtIn" placeholder="3200" step="10" min="500" max="30000">
+              <span class="wt-unit">г</span>
+            </div>
+            <button onclick="saveBabyGrowth()" class="wt-save-btn">Записать</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 4px">
+            <input type="number" id="babyHtIn" placeholder="Рост, см" step="0.5" min="30" max="120" style="font-size:14px;padding:12px;text-align:center;font-weight:800">
+            <input type="number" id="babyHcIn" placeholder="Голова, см" step="0.1" min="25" max="60" style="font-size:14px;padding:12px;text-align:center;font-weight:800">
+          </div>
+          <div class="wt-chart-wrap" id="babyGrowthChartWrap">
+            <div class="wt-chart-v2" id="babyGrowthChart"></div>
+          </div>
+          <div class="wt-stats-v2" id="babyGrowthStats"></div>
+        </div></div>
+
+        <div class="card pregnancy-only"><div class="cb">
           <div class="sh">🩺 Самочувствие сегодня</div>
           <div class="ssub">Отметь симптомы и давление — попадёт в отчёт для врача</div>
           <div class="symptom-row" id="symptomRow"></div>
@@ -2344,7 +2408,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
             <div class="bp-trend" id="bpTrend"></div>
           </div>
         </div></div>
-        <div class="card contr-card"><div class="cb">
+        <div class="card contr-card pregnancy-only"><div class="cb">
           <div class="sh">⏱️ Таймер схваток</div>
           <div class="ssub">На случай родов — отмечай каждую схватку, приложение посчитает интервал</div>
           <div class="contr-meta">
@@ -2565,7 +2629,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v31</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v32</div>
         </div></div>
       </div>
     </div>
@@ -2711,7 +2775,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v31';
+const APP_DATA_VER='v32';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -4980,6 +5044,8 @@ function applyAppMode(){
   if(clearBtn)clearBtn.style.display=born?'block':'none';
   if(born){
     renderBabyHero();renderBabySection();
+    try{renderBabyJournalTrackers();}catch(e){}
+    try{ensureBabyAppts();}catch(e){}
   }else{
     const edd=localStorage.getItem('eddDate');
     if(edd)try{updateAll(edd);}catch(e){}
@@ -5074,6 +5140,227 @@ function clearBabyBirth(){
   applyAppMode();
   updateDataStatusUI();
   toast('Режим беременности снова активен');
+}
+
+// ── BABY: PEDIATRIC VISITS & VACCINATION REMINDERS ──
+// Ориентировочные сроки осмотров/вакцинации — общая международная практика (ВОЗ EPI).
+// Точный национальный календарь вакцинации может отличаться — уточняй у своего педиатра.
+function getBabyApptDates(birthISO){
+  const b=new Date(birthISO+'T12:00:00');
+  if(isNaN(b.getTime()))return[];
+  const addDays=(n)=>{const d=new Date(b.getTime()+n*86400000);return d.toISOString().slice(0,10);};
+  return [
+    {day:3,title:'Патронаж новорождённого (3 дня)'},
+    {day:14,title:'Осмотр педиатра (2 недели)'},
+    {day:30,title:'Осмотр педиатра · 1 месяц + вакцинация'},
+    {day:60,title:'Осмотр педиатра · 2 месяца + вакцинация'},
+    {day:90,title:'Осмотр педиатра · 3 месяца + вакцинация'},
+    {day:120,title:'Осмотр педиатра · 4 месяца + вакцинация'},
+    {day:180,title:'Осмотр педиатра · 6 месяцев + вакцинация'},
+    {day:270,title:'Осмотр педиатра · 9 месяцев'},
+    {day:365,title:'Осмотр педиатра · 1 год + вакцинация'},
+    {day:548,title:'Осмотр педиатра · 1,5 года'},
+    {day:730,title:'Осмотр педиатра · 2 года'}
+  ].map(m=>({date:addDays(m.day),title:m.title}));
+}
+function ensureBabyAppts(){
+  const birth=getBabyBirthDate();
+  if(!birth)return;
+  if(localStorage.getItem('babyApptsSeeded'+V)==='1')return;
+  const list=loadAppts();
+  const titles=new Set(list.map(a=>a.title));
+  const toAdd=getBabyApptDates(birth).filter(m=>!titles.has(m.title));
+  if(toAdd.length){
+    toAdd.forEach((m,i)=>list.push({id:Date.now()+i+500,date:m.date,title:m.title,done:false}));
+    saveAppts(list);
+    renderAppts();
+    updateApptHomeCard();
+  }
+  localStorage.setItem('babyApptsSeeded'+V,'1');
+  toast('Добавили ориентировочные визиты к педиатру — уточни точные сроки вакцинации у своего врача 🩺');
+}
+
+// ── BABY: FEEDING & DIAPERS ──
+const BABY_FEED_KEY='babyFeedH'+V;
+const BABY_DIAPER_KEY='babyDiaperH'+V;
+function loadBabyFeed(){try{const r=JSON.parse(localStorage.getItem(BABY_FEED_KEY)||'[]');return Array.isArray(r)?r:[];}catch(e){return[];}}
+function saveBabyFeedList(list){localStorage.setItem(BABY_FEED_KEY,JSON.stringify(list.slice(-300)));}
+function loadBabyDiaper(){try{const r=JSON.parse(localStorage.getItem(BABY_DIAPER_KEY)||'[]');return Array.isArray(r)?r:[];}catch(e){return[];}}
+function saveBabyDiaperList(list){localStorage.setItem(BABY_DIAPER_KEY,JSON.stringify(list.slice(-300)));}
+function logBabyFeed(type){
+  H();
+  const list=loadBabyFeed();
+  list.push({ts:Date.now(),type});
+  saveBabyFeedList(list);
+  renderBabyFeedHist();
+  const lbl=type==='bl'?'левая грудь':'правая грудь';
+  toast('Кормление записано — '+lbl+' 🤱');
+}
+function toggleBabyFormulaRow(){
+  H();
+  const row=document.getElementById('babyFormulaRow');
+  if(!row)return;
+  const show=row.style.display==='none'||!row.style.display;
+  row.style.display=show?'flex':'none';
+  if(show)setTimeout(()=>document.getElementById('babyFormulaMl')?.focus(),150);
+}
+function logBabyFeedFormula(){
+  H();
+  const inp=document.getElementById('babyFormulaMl');
+  const ml=parseInt(inp&&inp.value,10);
+  if(isNaN(ml)||ml<10||ml>400){toast('Укажи объём смеси в мл (10–400)');return;}
+  const list=loadBabyFeed();
+  list.push({ts:Date.now(),type:'formula',ml});
+  saveBabyFeedList(list);
+  if(inp)inp.value='';
+  document.getElementById('babyFormulaRow').style.display='none';
+  renderBabyFeedHist();
+  toast('Кормление смесью '+ml+' мл записано 🍼');
+}
+function logBabyDiaper(type){
+  H();
+  const list=loadBabyDiaper();
+  list.push({ts:Date.now(),type});
+  saveBabyDiaperList(list);
+  renderBabyFeedHist();
+  toast('Подгузник отмечен ✓');
+}
+function isToday(ts){
+  const d=new Date(ts),n=new Date();
+  return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate();
+}
+function renderBabyFeedHist(){
+  const statsEl=document.getElementById('babyTodayStats');
+  const histEl=document.getElementById('babyFeedHist');
+  if(!statsEl&&!histEl)return;
+  const feeds=loadBabyFeed().filter(f=>isToday(f.ts));
+  const diapers=loadBabyDiaper().filter(d=>isToday(d.ts));
+  if(statsEl){
+    const wetCount=diapers.filter(d=>d.type==='pee'||d.type==='both').length;
+    const dirtyCount=diapers.filter(d=>d.type==='poop'||d.type==='both').length;
+    statsEl.innerHTML=[
+      {b:String(feeds.length),t:'кормлений'},
+      {b:String(wetCount),t:'мокрых'},
+      {b:String(dirtyCount),t:'грязных'}
+    ].map(x=>'<div class="baby-today-stat"><b>'+x.b+'</b><span>'+x.t+'</span></div>').join('');
+  }
+  if(histEl){
+    const items=[
+      ...feeds.map(f=>({ts:f.ts,txt:f.type==='bl'?'🤱 Грудь Л':f.type==='br'?'🤱 Грудь П':'🍼 Смесь '+(f.ml||'')+' мл'})),
+      ...diapers.map(d=>({ts:d.ts,txt:d.type==='pee'?'💧 Пописал':d.type==='poop'?'💩 Покакал':'🧷 Оба'}))
+    ].sort((a,b)=>b.ts-a.ts).slice(0,14);
+    histEl.innerHTML=items.length?items.map(it=>'<div class="contr-hist-item"><span>'+new Date(it.ts).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'</span><span>'+it.txt+'</span></div>').join(''):'<div class="empty-sub" style="text-align:center;padding:8px 0">Пока пусто — отметь первое кормление</div>';
+  }
+}
+
+// ── BABY: SLEEP ──
+const BABY_SLEEP_KEY='babySleepH'+V;
+function loadBabySleep(){try{const r=JSON.parse(localStorage.getItem(BABY_SLEEP_KEY)||'[]');return Array.isArray(r)?r:[];}catch(e){return[];}}
+function saveBabySleepList(list){localStorage.setItem(BABY_SLEEP_KEY,JSON.stringify(list.slice(-200)));}
+function toggleBabySleep(){
+  H();
+  const list=loadBabySleep();
+  const last=list[list.length-1];
+  const btn=document.getElementById('babySleepBtn');
+  if(last&&!last.end){
+    last.end=Date.now();
+    saveBabySleepList(list);
+    toast('Малыш проснулся — сон записан 🌤️');
+  }else{
+    list.push({start:Date.now(),end:null});
+    saveBabySleepList(list);
+    toast('Отметили начало сна 😴');
+  }
+  renderBabySleep();
+}
+function renderBabySleep(){
+  const list=loadBabySleep();
+  const last=list[list.length-1];
+  const active=last&&!last.end;
+  const btn=document.getElementById('babySleepBtn');
+  const subEl=document.getElementById('babySleepSub');
+  if(btn)btn.textContent=active?'☀️ Малыш проснулся':'😴 Малыш заснул';
+  if(subEl)subEl.textContent=active?'Идёт сон — нажми, когда малыш проснётся':'Нажми, когда малыш уснёт — и когда проснётся';
+  const curEl=document.getElementById('babySleepCur');
+  if(curEl)curEl.textContent=active?fmtDurMin(Math.round((Date.now()-last.start)/60000)):'—';
+  const todaySessions=list.filter(s=>isToday(s.start));
+  const totalMin=todaySessions.reduce((sum,s)=>sum+Math.round(((s.end||Date.now())-s.start)/60000),0);
+  const todayEl=document.getElementById('babySleepToday');
+  if(todayEl)todayEl.textContent=fmtDurMin(totalMin);
+  const countEl=document.getElementById('babySleepCount');
+  if(countEl)countEl.textContent=String(todaySessions.length);
+  const histEl=document.getElementById('babySleepHist');
+  if(histEl){
+    const recent=list.slice(-8).reverse();
+    histEl.innerHTML=recent.length?recent.map(s=>{
+      const st=new Date(s.start).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+      const dur=s.end?fmtDurMin(Math.round((s.end-s.start)/60000)):'идёт…';
+      return '<div class="contr-hist-item"><span>'+st+'</span><span>'+dur+'</span></div>';
+    }).join(''):'<div class="empty-sub" style="text-align:center;padding:8px 0">Пока нет записей сна</div>';
+  }
+}
+function fmtDurMin(min){
+  if(min<60)return min+'м';
+  const h=Math.floor(min/60),m=min%60;
+  return h+'ч '+m+'м';
+}
+
+// ── BABY: GROWTH ──
+function saveBabyGrowth(){
+  H();
+  const wIn=document.getElementById('babyWtIn'),hIn=document.getElementById('babyHtIn'),hcIn=document.getElementById('babyHcIn');
+  const w=parseFloat(wIn&&wIn.value),ht=parseFloat(hIn&&hIn.value),hc=parseFloat(hcIn&&hcIn.value);
+  const hasW=!isNaN(w)&&w>=500&&w<=30000;
+  const hasH=!isNaN(ht)&&ht>=30&&ht<=120;
+  const hasHc=!isNaN(hc)&&hc>=25&&hc<=60;
+  if(!hasW&&!hasH&&!hasHc){toast('Заполни хотя бы одно поле — вес, рост или окружность головы');return;}
+  const t=new Date().toISOString().slice(0,10);
+  let h;try{h=JSON.parse(localStorage.getItem('babyGrowthH'+V)||'{}');}catch(e){h={};}
+  if(typeof h!=='object'||Array.isArray(h))h={};
+  h[t]={w:hasW?w:(h[t]&&h[t].w)||null,h:hasH?ht:(h[t]&&h[t].h)||null,hc:hasHc?hc:(h[t]&&h[t].hc)||null};
+  localStorage.setItem('babyGrowthH'+V,JSON.stringify(h));
+  if(wIn)wIn.value='';if(hIn)hIn.value='';if(hcIn)hcIn.value='';
+  renderBabyGrowthChart();
+  toast('Замеры малыша сохранены 📈');
+}
+function renderBabyGrowthChart(){
+  const el=document.getElementById('babyGrowthChart');
+  const statsEl=document.getElementById('babyGrowthStats');
+  if(!el)return;
+  let h;try{h=JSON.parse(localStorage.getItem('babyGrowthH'+V)||'{}');}catch(e){h={};}
+  const k=Object.keys(h).filter(k2=>h[k2]&&typeof h[k2].w==='number').sort().slice(-10);
+  if(!k.length){
+    el.innerHTML='<p style="color:var(--t3);font-size:13px;font-weight:700;width:100%;text-align:center;padding:16px 0;opacity:.6">Запиши первый вес малыша!</p>';
+    if(statsEl)statsEl.textContent='';
+    return;
+  }
+  const v=k.map(k2=>h[k2].w);
+  const chartMin=Math.min(...v)-Math.max(50,Math.min(...v)*0.05);
+  const chartMax=Math.max(...v)+Math.max(50,Math.max(...v)*0.05);
+  const span=chartMax-chartMin||1;
+  el.innerHTML=k.map((k2,i)=>{
+    const wt=v[i];
+    const ht2=Math.max(12,((wt-chartMin)/span)*100);
+    const dt=new Date(k2);
+    const isLast=i===k.length-1,isFirst=i===0;
+    const showVal=isLast||isFirst;
+    const barClass=isLast?'wt-bar latest':'wt-bar';
+    return '<div class="wt-bar-w'+(showVal?' show-val':'')+'"><div class="wt-val">'+(showVal?wt:'')+'</div><div class="'+barClass+'" style="height:'+ht2+'%"></div><div class="wt-lbl">'+dt.getDate()+'/'+(dt.getMonth()+1)+'</div></div>';
+  }).join('');
+  if(statsEl){
+    if(v.length===1){
+      statsEl.innerHTML='<span>📍 Первая запись: <b>'+v[0]+' г</b></span>';
+    }else{
+      const g=v[v.length-1]-v[0];
+      const arrow=g>0?'↑':g<0?'↓':'→';
+      statsEl.innerHTML='Прибавка: <b style="color:var(--rose)">'+arrow+' '+(g>0?'+':'')+g+' г</b> &nbsp;·&nbsp; Сейчас: <b>'+v[v.length-1]+' г</b>';
+    }
+  }
+}
+function renderBabyJournalTrackers(){
+  renderBabyFeedHist();
+  renderBabySleep();
+  renderBabyGrowthChart();
 }
 
 let _appTimersSet=false;
@@ -5199,7 +5486,7 @@ function init(){
   else if(localStorage.getItem('dataMigrateToast_v8')!=='1'&&localStorage.getItem('eddDate')){
     localStorage.setItem('dataMigrateToast_v8','1');
   }
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();updateApptHomeCard();updateWaterHint();if(hasBabyBorn()){renderBabyHero();renderBabySection();}}});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();updateApptHomeCard();updateWaterHint();if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();}}});
   if(!_appTimersSet){
     _appTimersSet=true;
     setInterval(()=>updateCD(localStorage.getItem('eddDate')||edd),60000);
@@ -5209,7 +5496,7 @@ function init(){
     setInterval(updateMilestoneCard,60000);
     setInterval(updateApptHomeCard,60000);
     setInterval(updateWaterHint,60000);
-    setInterval(()=>{if(hasBabyBorn()){renderBabyHero();renderBabySection();}},60000);
+    setInterval(()=>{if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();}},60000);
   }
   setTimeout(showCoachIfNeeded,3000);
   updateOfflinePill();
@@ -7441,7 +7728,7 @@ function switchTab(id,btn){
   btn.setAttribute('aria-selected','true');
   btn.setAttribute('aria-current','page');
   if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();updateDataStatusUI();updateBackupReminder();updatePhotoModeUI();}
-  if(id==='journal'){renderGallery(localStorage.getItem('eddDate'));renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();}
+  if(id==='journal'){renderGallery(localStorage.getItem('eddDate'));renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();if(hasBabyBorn())renderBabyJournalTrackers();}
   if(id==='bag')renderBag();
   if(id==='meds')renderMedWeekChart();
   if(id==='home'){updateTodayDash();renderWeekWellness();if(hasBabyBorn()){renderBabyHero();renderBabySection();}}
