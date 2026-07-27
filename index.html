@@ -2637,7 +2637,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v33</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v34</div>
         </div></div>
       </div>
     </div>
@@ -2783,7 +2783,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v33';
+const APP_DATA_VER='v34';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -7709,12 +7709,13 @@ function updateNotifUI(){
   const el=document.getElementById('notifStatus');
   const btn=document.getElementById('notifBtn');
   if(!el)return;
+  const born=hasBabyBorn();
   if(!('Notification' in window)){el.textContent='Уведомления недоступны в этом браузере';el.className='notif-status warn';return;}
   const p=Notification.permission;
   if(p==='granted'){
     const next=getNextMedReminder();
     el.className='notif-status ok';
-    el.innerHTML='✓ Напоминания включены'+(next?'<br>Ближайшее: <b>'+escapeHtml(next)+'</b>':'<br>На сегодня все препараты отмечены 🎉')+'<br><span style="font-size:11px;opacity:.85">На iPhone держи приложение открытым — так напоминания точнее</span>';
+    el.innerHTML='✓ Напоминания включены'+(next?'<br>Ближайшее: <b>'+escapeHtml(next)+'</b>':'<br>На сегодня все препараты отмечены 🎉')+(born?'<br>+ напомню о кормлении и долгом бодрствовании малыша':'')+'<br><span style="font-size:11px;opacity:.85">На iPhone держи приложение открытым — так напоминания точнее</span>';
     if(btn){btn.textContent='Активны ✓';btn.disabled=true;}
   }else if(p==='denied'){
     el.className='notif-status warn';
@@ -7722,7 +7723,7 @@ function updateNotifUI(){
     if(btn){btn.textContent='Заблокировано';btn.disabled=true;}
   }else{
     el.className='notif-status';
-    el.textContent='Напомню о препаратах — нажми «Включить». На iPhone работает лучше, когда приложение открыто.';
+    el.textContent=born?'Напомню о кормлении малыша и препаратах — нажми «Включить». На iPhone работает лучше, когда приложение открыто.':'Напомню о препаратах — нажми «Включить». На iPhone работает лучше, когда приложение открыто.';
     if(btn){btn.textContent='Включить';btn.disabled=false;}
   }
 }
@@ -7784,6 +7785,42 @@ function checkNotifs(){
       localStorage.setItem('apptNtfEve_'+a.id+V,tomorrowStr);
     }
   });
+  if(hasBabyBorn())checkBabyNotifs(now);
+}
+function checkBabyNotifs(now){
+  const feeds=loadBabyFeed();
+  const lastFeed=feeds[feeds.length-1];
+  if(lastFeed){
+    const hSince=(now.getTime()-lastFeed.ts)/3600000;
+    if(hSince>=3){
+      const key='babyFeedNtf'+V;
+      const marker=String(lastFeed.ts);
+      if(localStorage.getItem(key)!==marker){
+        const hh=Math.floor(hSince),mm=Math.round((hSince-hh)*60);
+        new Notification('Пора покормить малыша 🍼',{body:'Прошло '+hh+' ч '+mm+' мин с последнего кормления',icon:'apple-icon.png',tag:'baby-feed'});
+        localStorage.setItem(key,marker);
+        if(navigator.vibrate)navigator.vibrate([8,30,8]);
+      }
+    }
+  }
+  const sleeps=loadBabySleep();
+  const lastSleep=sleeps[sleeps.length-1];
+  if(!lastSleep||lastSleep.end){
+    const awakeSince=lastSleep?lastSleep.end:null;
+    if(awakeSince){
+      const hAwake=(now.getTime()-awakeSince)/3600000;
+      if(hAwake>=3){
+        const key='babySleepNtf'+V;
+        const marker=String(awakeSince);
+        if(localStorage.getItem(key)!==marker){
+          const hh=Math.floor(hAwake),mm=Math.round((hAwake-hh)*60);
+          new Notification('Малыш давно не спал 💤',{body:'Не спит уже '+hh+' ч '+mm+' мин — может, пора укладывать?',icon:'apple-icon.png',tag:'baby-sleep'});
+          localStorage.setItem(key,marker);
+          if(navigator.vibrate)navigator.vibrate([8,30,8]);
+        }
+      }
+    }
+  }
 }
 
 // MISC
