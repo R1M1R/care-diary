@@ -1502,17 +1502,25 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 /* Видимость .pregnancy-only/.postpartum-only переключается через JS (applyAppMode),
    инлайн-стилями — так сохраняется корректный display (flex/block) у разных элементов. */
 .postpartum-only{display:none}
-.postpartum-hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#E8325A,#FF8FA3,#C44DFF);border-radius:28px;padding:30px 22px;margin:0 15px 18px;text-align:center;color:#fff;box-shadow:0 14px 34px rgba(232,50,90,.28)}
-.postpartum-hero-emoji{font-size:52px;margin-bottom:8px;display:block}
-.postpartum-hero-age{font-family:'Playfair Display',serif;font-size:27px;font-style:italic;font-weight:900;margin-bottom:4px;line-height:1.3}
-.postpartum-hero-sub{font-size:13px;font-weight:700;color:rgba(255,255,255,.88);margin-bottom:2px}
-.postpartum-hero-name{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.65);margin-top:10px}
+.postpartum-hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#E8325A,#FF8FA3,#C44DFF);border-radius:28px;padding:32px 22px 26px;margin:0 15px 18px;text-align:center;color:#fff;box-shadow:0 16px 38px rgba(232,50,90,.32)}
+.postpartum-hero-day{position:absolute;top:16px;right:16px;z-index:3;background:rgba(255,255,255,.22);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.4);border-radius:50px;padding:5px 13px;font-size:11px;font-weight:900;color:#fff;white-space:nowrap}
+.postpartum-hero-emoji{position:relative;z-index:2;font-size:54px;margin-bottom:8px;display:block;filter:drop-shadow(0 4px 18px rgba(0,0,0,.18));animation:gbEmojiFloat 3.2s ease-in-out infinite}
+.postpartum-hero-age{position:relative;z-index:2;font-family:'Playfair Display',serif;font-size:27px;font-style:italic;font-weight:900;margin-bottom:4px;line-height:1.3;text-shadow:0 2px 16px rgba(0,0,0,.18)}
+.postpartum-hero-sub{position:relative;z-index:2;font-size:13px;font-weight:700;color:rgba(255,255,255,.88);margin-bottom:2px}
+.postpartum-hero-stats{position:relative;z-index:2;display:flex;gap:8px;margin-top:18px}
+.pp-hs{flex:1;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:16px;padding:10px 4px;backdrop-filter:blur(10px)}
+.pp-hs b{display:block;font-family:'Playfair Display',serif;font-size:18px;font-weight:900;line-height:1.25}
+.pp-hs span{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;opacity:.85;line-height:1.3}
+.postpartum-hero-name{position:relative;z-index:2;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.65);margin-top:14px}
 .baby-age-card-inner{text-align:center;padding:6px 0}
 .baby-age-emoji{font-size:44px;display:block}
 .baby-age-title{font-family:'Playfair Display',serif;font-size:25px;font-style:italic;font-weight:900;color:var(--rose);margin-top:2px}
 .baby-age-sub{font-size:12px;font-weight:700;color:var(--t3);margin-top:6px;line-height:1.5}
-.baby-milestone-cat{font-size:11px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 6px}
+.baby-milestone-cat{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 6px}
 .baby-milestone-cat:first-child{margin-top:0}
+.baby-progress-badge{flex-shrink:0;background:var(--rose);color:#fff;border-radius:50px;padding:2px 9px;font-size:10px;font-weight:900;letter-spacing:0}
+.baby-progress-bar{height:6px;border-radius:6px;background:var(--bg2);border:1px solid var(--cb);overflow:hidden;margin-bottom:10px}
+.baby-progress-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--rose),var(--rose2));transition:width .4s ease}
 .baby-src-note{font-size:10.5px;font-weight:700;color:var(--t3);opacity:.8;text-align:center;margin-top:14px;line-height:1.6;padding:0 4px}
 .baby-quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2px}
 .baby-q-btn{flex:1;min-width:88px;padding:13px 8px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:900;cursor:pointer;box-shadow:0 6px 16px rgba(232,50,90,.24);transition:transform .15s}
@@ -1888,9 +1896,17 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
       </div><!-- /hero-zone -->
 
       <div class="postpartum-hero postpartum-only" id="postpartumHero">
+        <div class="hero-orb hero-orb1"></div><div class="hero-orb hero-orb2"></div>
+        <div class="hero-shine"></div>
+        <div class="postpartum-hero-day" id="ppHeroDay">🌙 день —</div>
         <span class="postpartum-hero-emoji" id="ppHeroEmoji">👶</span>
         <div class="postpartum-hero-age" id="ppHeroAge">Малышу уже…</div>
         <div class="postpartum-hero-sub" id="ppHeroSub">—</div>
+        <div class="postpartum-hero-stats" id="ppHeroStats">
+          <div class="pp-hs"><b id="ppHsFeed">0</b><span>кормл. сегодня</span></div>
+          <div class="pp-hs"><b id="ppHsSleep">0ч</b><span>сна сегодня</span></div>
+          <div class="pp-hs"><b id="ppHsDiaper">0</b><span>подгузников</span></div>
+        </div>
         <div class="postpartum-hero-name" id="ppHeroName">наш малыш</div>
       </div>
 
@@ -2074,7 +2090,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
       <button type="button" class="home-sec-h postpartum-only" id="babySecHeader" onclick="toggleHomeSec('baby')"><span>👶 Малыш — по возрасту</span><span class="home-sec-chev" id="chev-baby">▾</span></button>
       <div class="home-sec-b open postpartum-only" id="sec-baby">
 
-      <div class="card">
+      <div class="card" style="background:linear-gradient(160deg,rgba(232,50,90,.08),rgba(196,77,255,.06));border:1.5px solid rgba(232,50,90,.16)">
         <div class="cb baby-age-card-inner">
           <span class="baby-age-emoji" id="babyAgeEmoji">👶</span>
           <div class="baby-age-title" id="babyAgeTitle">—</div>
@@ -2352,9 +2368,9 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
             <button type="button" class="wt-save-btn" style="flex:0 0 auto;padding:12px 16px" onclick="logBabyFeedFormula()">Записать</button>
           </div>
           <div class="baby-quick-row" style="margin-top:10px">
-            <button type="button" class="baby-q-btn" style="background:linear-gradient(135deg,var(--teal),var(--teal2))" onclick="logBabyDiaper('pee')">💧 Пописал</button>
-            <button type="button" class="baby-q-btn" style="background:linear-gradient(135deg,var(--teal),var(--teal2))" onclick="logBabyDiaper('poop')">💩 Покакал</button>
-            <button type="button" class="baby-q-btn" style="background:linear-gradient(135deg,var(--teal),var(--teal2))" onclick="logBabyDiaper('both')">🧷 Оба</button>
+            <button type="button" class="baby-q-btn" style="background:linear-gradient(135deg,#1E9CB0,#30C0D8);box-shadow:0 6px 16px rgba(30,156,176,.24)" onclick="logBabyDiaper('pee')">💧 Пописал</button>
+            <button type="button" class="baby-q-btn" style="background:linear-gradient(135deg,#B8752E,#DDA34E);box-shadow:0 6px 16px rgba(184,117,46,.24)" onclick="logBabyDiaper('poop')">💩 Покакал</button>
+            <button type="button" class="baby-q-btn" style="background:linear-gradient(135deg,#8B5CF6,#B18AFF);box-shadow:0 6px 16px rgba(139,92,246,.24)" onclick="logBabyDiaper('both')">🧷 Оба</button>
           </div>
           <div class="baby-today-stats" id="babyTodayStats"></div>
           <div class="contr-hist" id="babyFeedHist"></div>
@@ -2637,7 +2653,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v34</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v35</div>
         </div></div>
       </div>
     </div>
@@ -2783,7 +2799,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v34';
+const APP_DATA_VER='v35';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -4948,9 +4964,9 @@ const BABY_STAGES=[
     ]},
   {id:'m6',fromMo:6,label:'6–9 месяцев',
     milestones:[
-      {c:'🤝 Общение',t:'Может стесняться незнакомых; расстраивается, когда мама уходит'},
-      {c:'👂 Речь',t:'Понимает слово «нет», лепечет «ма-ма-ма», «ба-ба-ба»'},
-      {c:'🧠 Познание',t:'Ищет игрушку, спрятанную на глазах; играет в «ку-ку»'},
+      {c:'🤝 Общение',t:'Может стесняться незнакомых; тянет ручки, чтобы её взяли на руки'},
+      {c:'👂 Речь',t:'Лепечет «ма-ма-ма», «ба-ба-ба», реагирует, когда зовёшь по имени'},
+      {c:'🧠 Познание',t:'Ищет игрушку, если её уронили на глазах; стучит предметами друг о друга'},
       {c:'🏃 Движение',t:'Сидит без опоры; ползает — в среднем к 8,5 мес по данным ВОЗ'}
     ],
     needs:[
@@ -4967,9 +4983,9 @@ const BABY_STAGES=[
     ]},
   {id:'m9',fromMo:9,label:'9–12 месяцев',
     milestones:[
-      {c:'🤝 Общение',t:'Играет в «ку-ку» и «дай пять», машет рукой «до свидания»'},
-      {c:'👂 Речь',t:'Говорит «мама»/«папа» осмысленно, использует разные звуки'},
-      {c:'🧠 Познание',t:'Кладёт предметы в коробку и достаёт обратно, стучит ими друг о друга'},
+      {c:'🤝 Общение',t:'Играет в игры вроде «ладушки», показывает несколько эмоций мимикой'},
+      {c:'👂 Речь',t:'Машет ручкой «пока-пока», зовёт «мама»/«папа» осмысленно, понимает слово «нельзя»'},
+      {c:'🧠 Познание',t:'Кладёт предмет в коробку/чашку, ищет игрушку, которую спрятали при нём'},
       {c:'🏃 Движение',t:'Встаёт у опоры, «ходит» вдоль мебели; к 12 мес многие делают первые шаги (ВОЗ: медиана 12,1 мес)'}
     ],
     needs:[
@@ -5006,8 +5022,8 @@ const BABY_STAGES=[
   {id:'m18',fromMo:18,label:'1,5–2 года',
     milestones:[
       {c:'🤝 Общение',t:'Замечает, когда другим плохо; смотрит на лицо мамы в новой ситуации'},
-      {c:'👂 Речь',t:'Показывает предметы в книге по просьбе, говорит фразы из 2 слов'},
-      {c:'🧠 Познание',t:'Крутит и вертит ручки/кнопки, выполняет просьбу из 2 шагов'},
+      {c:'👂 Речь',t:'Показывает предметы в книге по просьбе, говорит фразы из 2 слов («ещё сок»)'},
+      {c:'🧠 Познание',t:'Крутит ручки/кнопки на игрушках, играет сразу с двумя предметами (кормит куклу из тарелочки)'},
       {c:'🏃 Движение',t:'Бьёт ногой по мячу, бегает, поднимается по лестнице держась за перила'}
     ],
     needs:[
@@ -5025,9 +5041,9 @@ const BABY_STAGES=[
   {id:'m24',fromMo:24,label:'2–3 года',
     milestones:[
       {c:'🤝 Общение',t:'Играет рядом с другими детьми, успокаивается за ~10 минут после разлуки с мамой'},
-      {c:'👂 Речь',t:'Говорит предложениями из 2–4 слов; к 3 годам словарный запас ~200 слов'},
-      {c:'🧠 Познание',t:'Собирает пазл из 3–4 деталей, понимает слово «горячо»'},
-      {c:'🏃 Движение',t:'Прыгает на месте двумя ногами, хорошо бегает и лазает, частично одевается сама'}
+      {c:'👂 Речь',t:'Говорит фразами из 2+ слов с действием («собачка бежит»), к 3 годам — простой диалог из 2+ реплик'},
+      {c:'🧠 Познание',t:'Знает хотя бы 1 цвет, выполняет просьбу из 2 шагов («положи игрушку и закрой дверь»)'},
+      {c:'🏃 Движение',t:'Прыгает на месте двумя ногами, хорошо бегает и лазает, снимает часть одежды сама (штаны, куртку)'}
     ],
     needs:[
       'Одежда с крупными застёжками — учимся одеваться самостоятельно',
@@ -5122,6 +5138,19 @@ function renderBabyHero(){
   const bDate=age.birthDate.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
   const subEl=document.getElementById('ppHeroSub');if(subEl)subEl.textContent='Родился(лась) '+bDate;
   const nameEl=document.getElementById('ppHeroName');if(nameEl)nameEl.textContent=name?name:'наш малыш';
+  const dayEl=document.getElementById('ppHeroDay');if(dayEl)dayEl.textContent='🌙 '+(age.days+1)+'-й день жизни';
+  const feeds=loadBabyFeed().filter(f=>isToday(f.ts));
+  const diapers=loadBabyDiaper().filter(d=>isToday(d.ts));
+  const sleeps=loadBabySleep().filter(s=>isToday(s.start));
+  const sleepMin=sleeps.reduce((sum,s)=>sum+Math.round(((s.end||Date.now())-s.start)/60000),0);
+  const fEl=document.getElementById('ppHsFeed');if(fEl)fEl.textContent=String(feeds.length);
+  const sEl=document.getElementById('ppHsSleep');if(sEl)sEl.textContent=(sleepMin/60).toFixed(1).replace('.0','')+'ч';
+  const dEl=document.getElementById('ppHsDiaper');if(dEl)dEl.textContent=String(diapers.length);
+}
+function babyProgressHead(text,done,total){
+  const pct=total?Math.round(done/total*100):0;
+  return '<div class="baby-milestone-cat"><span>'+escapeHtml(text)+'</span><span class="baby-progress-badge">'+done+'/'+total+'</span></div>'+
+    '<div class="baby-progress-bar"><div class="baby-progress-fill" style="width:'+pct+'%"></div></div>';
 }
 function renderBabySection(){
   const age=calcBabyAge(getBabyBirthDate());
@@ -5139,20 +5168,22 @@ function renderBabySection(){
   const msBox=document.getElementById('babyMilestonesBox');
   if(msBox){
     msBox.innerHTML=stagesToShow.map((s,si)=>{
-      const head='<div class="baby-milestone-cat">'+(si===0?'✨ Сейчас — ':'🔜 Скоро — ')+s.label+'</div>';
+      const doneCount=s.milestones.filter((m,i)=>doneMs[s.id+'_'+i]).length;
+      const head=babyProgressHead((si===0?'✨ Сейчас — ':'🔜 Скоро — ')+s.label,doneCount,s.milestones.length);
       const items=s.milestones.map((m,i)=>{
         const id=s.id+'_'+i;
         const isDone=!!doneMs[id];
         return '<div class="bag-item"><div class="bag-item-main" onclick="toggleBabyMilestone(\''+id+'\')"><div class="bag-chk '+(isDone?'done':'')+'"></div><span class="bag-lbl '+(isDone?'done':'')+'">'+escapeHtml(m.c+': '+m.t)+'</span></div></div>';
       }).join('');
       return head+items;
-    }).join('')+'<div class="baby-src-note">📚 Ориентиры по данным ВОЗ (WHO Motor Development Study) и CDC «Learn the Signs. Act Early.» — не диагноз, темп у каждого малыша свой. Если что-то тревожит — обсуди с педиатром.</div>';
+    }).join('')+'<div class="baby-src-note">📚 Ориентиры по данным ВОЗ (WHO Motor Development Study, 2006) и CDC «Learn the Signs. Act Early.» (чек-листы, редакция 2022) — не диагноз, темп у каждого малыша свой. Если что-то тревожит — обсуди с педиатром.</div>';
   }
   const doneNeeds=loadBabyNeedsDone();
   const needsBox=document.getElementById('babyNeedsBox');
   if(needsBox){
     needsBox.innerHTML=stagesToShow.map((s,si)=>{
-      const head='<div class="baby-milestone-cat">'+(si===0?'✨ Сейчас — ':'🔜 Скоро — ')+s.label+'</div>';
+      const doneCount=s.needs.filter((t,i)=>doneNeeds[s.id+'_'+i]).length;
+      const head=babyProgressHead((si===0?'✨ Сейчас — ':'🔜 Скоро — ')+s.label,doneCount,s.needs.length);
       const items=s.needs.map((t,i)=>{
         const id=s.id+'_'+i;
         const isDone=!!doneNeeds[id];
