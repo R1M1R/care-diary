@@ -1520,6 +1520,28 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 .pp-hs b{display:block;font-family:'Playfair Display',serif;font-size:18px;font-weight:900;line-height:1.25}
 .pp-hs span{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;opacity:.85;line-height:1.3}
 .postpartum-hero-name{position:relative;z-index:2;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.65);margin-top:14px}
+.pp-hero-letter-btn{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);backdrop-filter:blur(12px);border-radius:50px;padding:9px 18px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;color:#fff;cursor:pointer;transition:transform .15s}
+.pp-hero-letter-btn:active{transform:scale(.95)}
+/* ── BABY CONGRATS LETTER (появляется один раз после ввода даты рождения) ── */
+.congrats-mo{position:fixed;inset:0;background:rgba(20,4,12,.62);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);z-index:400;display:none;align-items:center;justify-content:center;padding:20px;padding-top:max(20px,env(safe-area-inset-top));padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.congrats-mo.open{display:flex}
+.congrats-card{position:relative;overflow:hidden;width:100%;max-width:400px;max-height:92vh;overflow-y:auto;border-radius:32px;background:linear-gradient(160deg,#E8325A 0%,#FF7FA0 42%,#C44DFF 100%);box-shadow:0 30px 70px rgba(120,20,60,.45);padding:36px 22px 24px;text-align:center;color:#fff;animation:congratsPop .55s cubic-bezier(.34,1.56,.64,1)}
+@keyframes congratsPop{0%{transform:scale(.78) translateY(30px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
+.congrats-close{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;backdrop-filter:blur(10px)}
+.congrats-close:active{transform:scale(.88)}
+.congrats-ribbon{position:relative;z-index:2;display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.4);backdrop-filter:blur(12px);border-radius:50px;padding:6px 16px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1.3px;color:#fff;margin-bottom:16px}
+.congrats-emoji{position:relative;z-index:2;font-size:56px;display:block;margin-bottom:10px;filter:drop-shadow(0 6px 20px rgba(0,0,0,.2));animation:gbEmojiFloat 3s ease-in-out infinite}
+.congrats-title{position:relative;z-index:2;font-family:'Playfair Display',serif;font-style:italic;font-weight:900;font-size:25px;line-height:1.35;margin-bottom:8px;text-shadow:0 2px 14px rgba(0,0,0,.18);word-break:break-word}
+.congrats-sub{position:relative;z-index:2;font-size:12.5px;font-weight:700;color:rgba(255,255,255,.88);margin-bottom:18px;line-height:1.5;padding:0 6px}
+.congrats-stats{position:relative;z-index:2;display:flex;gap:8px;margin-bottom:20px}
+.congrats-stat{flex:1;min-width:0;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:16px;padding:10px 4px;backdrop-filter:blur(10px)}
+.congrats-stat b{display:block;font-family:'Playfair Display',serif;font-size:14px;font-weight:900;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.congrats-stat span{font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;opacity:.85;line-height:1.3;display:block}
+.congrats-letter{position:relative;z-index:2;background:rgba(255,255,255,.95);border-radius:20px;padding:20px 18px;text-align:left;margin-bottom:16px;box-shadow:0 10px 28px rgba(0,0,0,.12)}
+.congrats-letter-text{font-family:'Caveat',cursive;font-size:20px;line-height:1.55;color:#4A1030;word-wrap:break-word}
+.congrats-sign{font-family:'Lora',serif;font-size:14px;font-style:italic;text-align:right;margin-top:14px;color:#C4245A}
+.congrats-btn{position:relative;z-index:2;width:100%;padding:15px;border:none;border-radius:18px;background:#fff;color:#C4245A;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.2)}
+.congrats-btn:active{transform:scale(.97)}
 .baby-age-card-inner{text-align:center;padding:6px 0}
 .baby-age-emoji{font-size:44px;display:block}
 .baby-age-title{font-family:'Playfair Display',serif;font-size:25px;font-style:italic;font-weight:900;color:var(--rose);margin-top:2px}
@@ -1923,6 +1945,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
           <div class="pp-hs"><b id="ppHsDiaper">0</b><span>подгузников</span></div>
         </div>
         <div class="postpartum-hero-name" id="ppHeroName">наш малыш</div>
+        <button type="button" class="pp-hero-letter-btn" onclick="showBabyCongrats()">💌 Письмо от Эмира</button>
       </div>
 
       <div class="today-dash" id="todayDash" role="region" aria-label="Сводка на сегодня">
@@ -2672,7 +2695,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v38</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v39</div>
         </div></div>
       </div>
     </div>
@@ -2710,6 +2733,25 @@ body.mode-postpartum .pregnancy-only{display:none!important}
     <div style="text-align:center;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:rgba(138,88,0,.5);margin-bottom:12px">Купон на:</div>
     <div style="font-size:22px;font-weight:900;text-align:center;color:#5A2800;line-height:1.45;margin-bottom:22px" id="cpnBody"></div>
     <p style="text-align:center;font-size:12px;font-weight:700;color:rgba(138,88,0,.55);background:rgba(255,255,255,.5);padding:12px;border-radius:14px">Сделай скриншот и отправь мне ❤️<br>Срок годности: бесконечен.</p>
+  </div>
+</div>
+
+<!-- MODAL: BABY BIRTH CONGRATS LETTER -->
+<div class="congrats-mo" id="babyCongratsMo" role="dialog" aria-modal="true" aria-labelledby="congratsTitle" onclick="if(event.target===this)closeBabyCongrats()">
+  <div class="congrats-card">
+    <button type="button" class="congrats-close" onclick="closeBabyCongrats()" aria-label="Закрыть">✕</button>
+    <div class="hero-orb hero-orb1"></div><div class="hero-orb hero-orb2"></div>
+    <div class="hero-shine"></div>
+    <div class="congrats-ribbon">💌 Письмо от Эмира</div>
+    <span class="congrats-emoji">👶💗</span>
+    <div class="congrats-title" id="congratsTitle">С рождением!</div>
+    <div class="congrats-sub" id="congratsSub"></div>
+    <div class="congrats-stats" id="congratsStats"></div>
+    <div class="congrats-letter">
+      <div class="congrats-letter-text" id="congratsLetterText"></div>
+      <p class="congrats-sign">— Твой Эмир ❤️</p>
+    </div>
+    <button type="button" class="congrats-btn" onclick="closeBabyCongrats()">Спасибо, любимый 💖</button>
   </div>
 </div>
 
@@ -2818,7 +2860,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v38';
+const APP_DATA_VER='v39';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -5287,14 +5329,69 @@ function saveBabyBirth(){
   if(statusEl){statusEl.style.display='block';statusEl.textContent='Сохранено! Теперь на Главной — режим заботы о малыше 👶';}
   if(typeof confetti==='function')confetti({particleCount:200,spread:120,origin:{y:.5},colors:['#E8325A','#FFD700','#C44DFF','#43C8E0','#fff']});
   toast('Ура, малыш родился! 🎉👶');
+  if(localStorage.getItem('babyCongratsShown'+V)!=='1'){
+    setTimeout(showBabyCongrats,700);
+  }
 }
 function clearBabyBirth(){
   H();
   if(!confirm('Убрать дату родов и вернуться в режим беременности? Записи о малыше не удалятся.'))return;
   localStorage.removeItem('babyBirthDate');
+  localStorage.removeItem('babyCongratsShown'+V);
   applyAppMode();
   updateDataStatusUI();
   toast('Режим беременности снова активен');
+}
+function formatBabyBirthDateRu(iso){
+  const d=new Date(iso+'T00:00:00');
+  if(isNaN(d.getTime()))return'';
+  return d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+}
+function showBabyCongrats(){
+  const d=getBabyBirthDate();
+  if(!d)return;
+  H();
+  const name=(localStorage.getItem('babyName')||'').trim();
+  const g=localStorage.getItem('babyGender')||'n';
+  const isGirl=g==='g';
+  const verbEnd=isGirl?'ась':'ся';
+  const nomWord=g==='b'?'сынок':g==='g'?'доченька':'малыш';
+  const possNom=isGirl?'наша':'наш';
+  const accWord=g==='b'?'сына':g==='g'?'дочку':'малыша';
+  const possAcc=isGirl?'нашу':'нашего';
+  const nameOrWord=name||nomWord;
+  const bw=parseInt(localStorage.getItem('babyBirthWeight'),10);
+  const bh=parseFloat(localStorage.getItem('babyBirthHeight'));
+  const fDate=formatBabyBirthDateRu(d);
+  const shortDate=new Date(d+'T00:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'});
+
+  const titleEl=document.getElementById('congratsTitle');
+  if(titleEl)titleEl.textContent='У нас родил'+verbEnd+' '+nameOrWord+'! 🎉';
+  const subEl=document.getElementById('congratsSub');
+  if(subEl)subEl.textContent=fDate+' — день, который мы будем помнить всегда 💫';
+
+  const stats=[
+    {v:shortDate,l:'Родился(ась)'},
+    {v:(bw>=500&&bw<=7000)?(bw+' г'):'—',l:'Вес'},
+    {v:(bh>=30&&bh<=65)?(bh+' см'):'—',l:'Рост'}
+  ];
+  const statsEl=document.getElementById('congratsStats');
+  if(statsEl)statsEl.innerHTML=stats.map(s=>'<div class="congrats-stat"><b>'+escapeHtml(String(s.v))+'</b><span>'+s.l+'</span></div>').join('');
+
+  const letterEl=document.getElementById('congratsLetterText');
+  if(letterEl)letterEl.innerHTML=
+    'Родная моя, Солнышко, эмоциональная козявочка моя! Свершилось чудо — ты стала мамой. '+fDate+' на свет появил'+verbEnd+' '+possNom+' '+escapeHtml(nameOrWord)+'.<br><br>'+
+    'Я безумно горжусь тобой. Все эти месяцы — тревоги, бессонные ночи, тяжесть, страх и надежда — ты прошла с невероятной силой и нежностью. Ты только что совершила самое важное дело в своей жизни.<br><br>'+
+    'Спасибо тебе за '+possAcc+' '+accWord+'. Спасибо, что подарила мне самую большую радость на свете. Я люблю вас двоих больше жизни и буду рядом всегда, что бы ни случилось.<br><br>'+
+    'Отдыхай, моя хорошая. Ты теперь не просто моя жена — ты мама. Лучшая на свете. 🤍';
+
+  document.getElementById('babyCongratsMo').classList.add('open');
+  if(typeof confetti==='function')confetti({particleCount:260,spread:130,origin:{y:.4},colors:['#E8325A','#FFD700','#C44DFF','#43C8E0','#fff']});
+  localStorage.setItem('babyCongratsShown'+V,'1');
+}
+function closeBabyCongrats(){
+  H();
+  document.getElementById('babyCongratsMo').classList.remove('open');
 }
 
 // ── BABY: PEDIATRIC VISITS & VACCINATION REMINDERS ──
