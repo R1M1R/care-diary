@@ -1498,6 +1498,22 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 .home-sec-chev{font-size:14px;color:var(--rose);transition:transform .25s}
 .home-sec-b{display:none;margin:0 15px 4px}
 .home-sec-b.open{display:block}
+/* ── POSTPARTUM MODE ── */
+/* Видимость .pregnancy-only/.postpartum-only переключается через JS (applyAppMode),
+   инлайн-стилями — так сохраняется корректный display (flex/block) у разных элементов. */
+.postpartum-only{display:none}
+.postpartum-hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#E8325A,#FF8FA3,#C44DFF);border-radius:28px;padding:30px 22px;margin:0 15px 18px;text-align:center;color:#fff;box-shadow:0 14px 34px rgba(232,50,90,.28)}
+.postpartum-hero-emoji{font-size:52px;margin-bottom:8px;display:block}
+.postpartum-hero-age{font-family:'Playfair Display',serif;font-size:27px;font-style:italic;font-weight:900;margin-bottom:4px;line-height:1.3}
+.postpartum-hero-sub{font-size:13px;font-weight:700;color:rgba(255,255,255,.88);margin-bottom:2px}
+.postpartum-hero-name{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.65);margin-top:10px}
+.baby-age-card-inner{text-align:center;padding:6px 0}
+.baby-age-emoji{font-size:44px;display:block}
+.baby-age-title{font-family:'Playfair Display',serif;font-size:25px;font-style:italic;font-weight:900;color:var(--rose);margin-top:2px}
+.baby-age-sub{font-size:12px;font-weight:700;color:var(--t3);margin-top:6px;line-height:1.5}
+.baby-milestone-cat{font-size:11px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 6px}
+.baby-milestone-cat:first-child{margin-top:0}
+.baby-src-note{font-size:10.5px;font-weight:700;color:var(--t3);opacity:.8;text-align:center;margin-top:14px;line-height:1.6;padding:0 4px}
 .bag-prog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;font-weight:900;color:var(--t2)}
 .bag-prog-sub{font-size:11px;font-weight:700;color:var(--t3);margin-top:8px;text-align:center}
 .kick-session-bar{display:flex;justify-content:space-between;align-items:center;background:var(--bg2);border:1px solid var(--cb);border-radius:14px;padding:10px 14px;margin-bottom:14px;font-size:12px;font-weight:800;color:var(--t2)}
@@ -1830,7 +1846,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
       </div>
 
       <!-- ── HERO ZONE: баннер пола + герой — единый блок ── -->
-      <div class="hero-zone" id="heroZone">
+      <div class="hero-zone pregnancy-only" id="heroZone">
 
         <!-- GENDER REVEAL BANNER — появляется когда узнали пол -->
         <div id="genderBanner" style="display:none">
@@ -1863,6 +1879,13 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
       </div>
 
       </div><!-- /hero-zone -->
+
+      <div class="postpartum-hero postpartum-only" id="postpartumHero">
+        <span class="postpartum-hero-emoji" id="ppHeroEmoji">👶</span>
+        <div class="postpartum-hero-age" id="ppHeroAge">Малышу уже…</div>
+        <div class="postpartum-hero-sub" id="ppHeroSub">—</div>
+        <div class="postpartum-hero-name" id="ppHeroName">наш малыш</div>
+      </div>
 
       <div class="today-dash" id="todayDash" role="region" aria-label="Сводка на сегодня">
         <button type="button" class="today-chip" onclick="switchTabById('meds')"><span class="today-chip-ico">💊</span><span class="today-chip-val" id="tdMed">0%</span><span class="today-chip-lbl">препараты</span></button>
@@ -1924,14 +1947,14 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
               <div class="wellness-score" id="wellnessScore" aria-label="Индекс заботы">—</div>
               <span class="wellness-score-lbl">индекс</span>
             </div>
-            <span class="week-wellness-wk" id="weekWellnessWk">— нед.</span>
+            <span class="week-wellness-wk pregnancy-only" id="weekWellnessWk">— нед.</span>
           </div>
         </div>
         <div class="week-wellness-grid" id="weekWellnessGrid"></div>
         <div class="week-wellness-hint" id="weekWellnessHint" style="display:none"></div>
       </div>
 
-      <div class="journey-card" id="journeyCard" role="region" aria-label="Прогресс беременности">
+      <div class="journey-card pregnancy-only" id="journeyCard" role="region" aria-label="Прогресс беременности">
         <div class="journey-head"><span>Путь к малышу</span><b id="journeyPct">—%</b></div>
         <div class="journey-track">
           <div class="journey-seg t1"></div>
@@ -1942,9 +1965,9 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         <div class="journey-labels"><span id="jl1">I трим. · 1–13</span><span id="jl2">II · 14–27</span><span id="jl3">III · 28–40</span></div>
       </div>
 
-      <div id="smartTips" style="margin-top:4px"></div>
+      <div id="smartTips" class="pregnancy-only" style="margin-top:4px"></div>
 
-      <div class="cd-bar">
+      <div class="cd-bar pregnancy-only">
         <div class="cd-title">✨ До встречи с малышом</div>
         <div class="cd-grid">
           <div class="cd-unit"><div class="cd-num" id="cdD">--</div><div class="cd-lbl">дней</div></div>
@@ -1963,6 +1986,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
       <div class="card">
         <div class="cb">
+          <div class="pregnancy-only">
           <div class="ring-wrap">
             <svg width="208" height="208" viewBox="0 0 208 208">
               <circle cx="104" cy="104" r="88" fill="none" stroke="rgba(232,50,90,.1)" stroke-width="16"/>
@@ -1996,6 +2020,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
             </div>
           </div>
           <div id="factT" class="fact-card"></div>
+          </div><!-- /pregnancy-only ring block -->
           <!-- Quote note - tappable, rotates quotes -->
           <div class="q-note" onclick="nextQuote()" id="qNote" title="Тапни — другая цитата">
             <div class="q-pin">📌</div>
@@ -2030,13 +2055,43 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
       </div>
 
       <!-- BODY CHANGES CARD -->
-      <div class="card" id="bodyChangesCard">
+      <div class="card pregnancy-only" id="bodyChangesCard">
         <div class="cb">
           <div class="sh">🌸 Твоё тело сейчас</div>
           <div class="ssub" id="bodyChangesSub">Что происходит с мамой на этой неделе</div>
           <div id="bodyChangesContent"></div>
         </div>
       </div>
+
+      <!-- ── BABY BY AGE (postpartum) ── -->
+      <button type="button" class="home-sec-h postpartum-only" id="babySecHeader" onclick="toggleHomeSec('baby')"><span>👶 Малыш — по возрасту</span><span class="home-sec-chev" id="chev-baby">▾</span></button>
+      <div class="home-sec-b open postpartum-only" id="sec-baby">
+
+      <div class="card">
+        <div class="cb baby-age-card-inner">
+          <span class="baby-age-emoji" id="babyAgeEmoji">👶</span>
+          <div class="baby-age-title" id="babyAgeTitle">—</div>
+          <div class="baby-age-sub" id="babyAgeSub">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cb">
+          <div class="sh">🌱 Что малыш умеет и скоро научится</div>
+          <div class="ssub">Ориентир для здорового развития — по возрасту</div>
+          <div id="babyMilestonesBox"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cb">
+          <div class="sh">🧺 Что нужно на этом этапе</div>
+          <div class="ssub">Базовый чек-лист — отмечай, что уже есть дома</div>
+          <div id="babyNeedsBox"></div>
+        </div>
+      </div>
+
+      </div><!-- /sec-baby -->
 
       <button type="button" class="home-sec-h" onclick="toggleHomeSec('support')"><span>💌 Поддержка и душа</span><span class="home-sec-chev" id="chev-support">▾</span></button>
       <div class="home-sec-b open" id="sec-support">
@@ -2158,7 +2213,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
         </div>
       </div>
 
-      <div class="card" id="kickCard" style="display:none">
+      <div class="card pregnancy-only" id="kickCard" style="display:none">
         <div class="cb" style="text-align:center">
           <div class="sh">👣 Шевеления малыша</div>
           <div class="ssub">Клинический метод: 10+ движений за 2 часа. Начни сессию перед подсчётом.</div>
@@ -2419,6 +2474,28 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
           </div>
         </div>
 
+        <div class="card" style="border:2px solid rgba(232,50,90,.18)"><div class="cb" id="babyBirthCard">
+          <div style="font-family:'Playfair Display',serif;font-size:20px;font-style:italic;font-weight:700;margin-bottom:6px">🎉 Малыш родился?</div>
+          <p style="font-size:13px;font-weight:700;color:var(--t3);margin-bottom:16px;line-height:1.6">Впиши дату рождения — приложение переключится в режим заботы о малыше: возраст, что нужно и что он должен уметь по возрасту, с точными научными данными (ВОЗ, CDC).</p>
+          <div style="font-size:15px;font-weight:800;margin-bottom:8px">Дата рождения малыша:</div>
+          <input type="date" id="babyBirthIn" style="width:100%;font-size:16px;padding:14px;text-align:center;font-weight:800;margin-bottom:14px">
+          <div style="font-size:15px;font-weight:800;margin-bottom:8px">Имя малыша (необязательно):</div>
+          <input type="text" id="babyNameIn" placeholder="Например: Амина" maxlength="40" style="width:100%;font-size:15px;padding:14px;margin-bottom:14px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px">
+            <div>
+              <div style="font-size:12px;font-weight:800;color:var(--t3);margin-bottom:6px">Вес при рождении, г</div>
+              <input type="number" id="babyBirthWeightIn" placeholder="3200" min="500" max="7000" style="width:100%;font-size:15px;padding:12px;text-align:center;font-weight:800">
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:800;color:var(--t3);margin-bottom:6px">Рост, см</div>
+              <input type="number" id="babyBirthHeightIn" placeholder="51" min="30" max="65" style="width:100%;font-size:15px;padding:12px;text-align:center;font-weight:800">
+            </div>
+          </div>
+          <button class="lq" onclick="saveBabyBirth()">Сохранить и включить заботу о малыше 👶</button>
+          <div id="babyBirthStatus" style="margin-top:14px;font-size:13px;font-weight:800;color:var(--rose);text-align:center;display:none"></div>
+          <button type="button" id="babyBirthClearBtn" onclick="clearBabyBirth()" style="display:none;width:100%;margin-top:12px;background:none;border:none;color:var(--t3);font-size:12px;font-weight:700;text-decoration:underline;cursor:pointer">Ошибка в дате — вернуться в режим беременности</button>
+        </div></div>
+
         <div class="card"><div class="cb">
           <div class="photo-storage-card">
             <div class="photo-storage-title">📸 Память для фото</div>
@@ -2488,7 +2565,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v30</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v31</div>
         </div></div>
       </div>
     </div>
@@ -2634,7 +2711,7 @@ body{background:linear-gradient(180deg,rgba(255,220,230,0.18) 0%,var(--bg) 120px
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v30';
+const APP_DATA_VER='v31';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -4731,6 +4808,274 @@ function calcW(edd){
   return{week:Math.min(40,Math.max(1,Math.floor(days/7))),dayR:days%7,days};
 }
 
+// ══════════════════════════════════
+// POSTPARTUM MODE — режим после родов
+// Возрастные ориентиры: ВОЗ (WHO Motor Development Study, 2006) и
+// CDC «Learn the Signs. Act Early.» (контрольные точки развития 2–36 мес, США).
+// Это ориентир для здорового развития, а не диагноз — темп у каждого ребёнка свой.
+// ══════════════════════════════════
+const BABY_STAGES=[
+  {id:'m0',fromMo:0,label:'0–2 месяца · новорождённый',
+    milestones:[
+      {c:'🤝 Общение',t:'Успокаивается на руках, ненадолго смотрит в лицо'},
+      {c:'👂 Речь',t:'Реагирует на громкие звуки, издаёт мягкие горловые звуки'},
+      {c:'🧠 Познание',t:'Следит взглядом за предметом на близком расстоянии'},
+      {c:'🏃 Движение',t:'На животике на секунды поднимает и держит голову'}
+    ],
+    needs:[
+      'Подгузники размера newborn/1 и влажные салфетки',
+      'Боди и комбинезоны 5–7 шт (тонкие и тёплые)',
+      'Безопасная кроватка/люлька для сна на спине',
+      'Автокресло группы 0+ для поездок',
+      'Термометр, аспиратор для носа, ножницы с округлыми кончиками',
+      'Средства для пупочной ранки — по назначению педиатра'
+    ]},
+  {id:'m2',fromMo:2,label:'2–4 месяца',
+    milestones:[
+      {c:'🤝 Общение',t:'Сама улыбается, чтобы привлечь внимание; гулит от радости'},
+      {c:'👂 Речь',t:'Издаёт певучие звуки «гу», «а-а», отвечает на разговор звуками'},
+      {c:'🧠 Познание',t:'Тянется к игрушке, с интересом рассматривает свои ручки'},
+      {c:'🏃 Движение',t:'Держит голову без опоры; упирается на предплечья на животике'}
+    ],
+    needs:[
+      'Плед для выкладывания на живот — тренирует шею и спину',
+      'Прорезыватели — начинается активное слюноотделение',
+      'Подгузники размера 2, одежда на рост 62–68',
+      'Развивающий коврик с подвесками'
+    ]},
+  {id:'m4',fromMo:4,label:'4–6 месяцев',
+    milestones:[
+      {c:'🤝 Общение',t:'Узнаёт близких, радуется, увидев себя в зеркале'},
+      {c:'👂 Речь',t:'Гулит цепочками звуков, «пускает пузыри», выражает эмоции звуками'},
+      {c:'🧠 Познание',t:'Тянет предметы в рот — так изучает мир вокруг'},
+      {c:'🏃 Движение',t:'Переворачивается с живота на спину; опирается на прямые руки'}
+    ],
+    needs:[
+      'Стульчик для кормления — готовимся к прикорму примерно с 6 мес',
+      'Силиконовые щётки/прорезыватели для первых зубов',
+      'Мягкие книжки и кольца-игрушки',
+      'Мягкие накладки на углы мебели — малыш скоро активно задвигается'
+    ]},
+  {id:'m6',fromMo:6,label:'6–9 месяцев',
+    milestones:[
+      {c:'🤝 Общение',t:'Может стесняться незнакомых; расстраивается, когда мама уходит'},
+      {c:'👂 Речь',t:'Понимает слово «нет», лепечет «ма-ма-ма», «ба-ба-ба»'},
+      {c:'🧠 Познание',t:'Ищет игрушку, спрятанную на глазах; играет в «ку-ку»'},
+      {c:'🏃 Движение',t:'Сидит без опоры; ползает — в среднем к 8,5 мес по данным ВОЗ'}
+    ],
+    needs:[
+      'Посуда для прикорма: тарелка с присоской, ложка, слюнявчики',
+      'Заглушки на розетки, блокираторы на шкафы — малыш ползает',
+      'Манеж или безопасная зона для игр на полу',
+      'Свободное пространство для ползания важнее ходунков'
+    ]},
+  {id:'m9',fromMo:9,label:'9–12 месяцев',
+    milestones:[
+      {c:'🤝 Общение',t:'Играет в «ку-ку» и «дай пять», машет рукой «до свидания»'},
+      {c:'👂 Речь',t:'Говорит «мама»/«папа» осмысленно, использует разные звуки'},
+      {c:'🧠 Познание',t:'Кладёт предметы в коробку и достаёт обратно, стучит ими друг о друга'},
+      {c:'🏃 Движение',t:'Встаёт у опоры, «ходит» вдоль мебели; к 12 мес многие делают первые шаги (ВОЗ: медиана 12,1 мес)'}
+    ],
+    needs:[
+      'Обувь для первых шагов с гибкой нескользящей подошвой',
+      'Чашка-непроливайка вместо бутылочки',
+      'Блокиратор на лестницу',
+      'Игрушки для мелкой моторики: пирамидки, кубики'
+    ]},
+  {id:'m12',fromMo:12,label:'1–1,5 года',
+    milestones:[
+      {c:'🤝 Общение',t:'Копирует других детей в игре, показывает привязанность (обнимает)'},
+      {c:'👂 Речь',t:'Говорит 3+ слова кроме «мама/папа», выполняет простую просьбу без жеста'},
+      {c:'🧠 Познание',t:'Пробует использовать предметы по назначению (телефон, чашка, книга)'},
+      {c:'🏃 Движение',t:'Ходит без поддержки, пьёт из открытой чашки, ест руками сама'}
+    ],
+    needs:[
+      'Уличная обувь на прочной гибкой подошве',
+      'Столовые приборы для самостоятельной еды',
+      'Книжки с яркими картинками — расширяем словарный запас',
+      'Безопасное место для активных игр — малыш уже бегает'
+    ]},
+  {id:'m18',fromMo:18,label:'1,5–2 года',
+    milestones:[
+      {c:'🤝 Общение',t:'Замечает, когда другим плохо; смотрит на лицо мамы в новой ситуации'},
+      {c:'👂 Речь',t:'Показывает предметы в книге по просьбе, говорит фразы из 2 слов'},
+      {c:'🧠 Познание',t:'Крутит и вертит ручки/кнопки, выполняет просьбу из 2 шагов'},
+      {c:'🏃 Движение',t:'Бьёт ногой по мячу, бегает, поднимается по лестнице держась за перила'}
+    ],
+    needs:[
+      'Горшок или детская насадка на унитаз — можно начинать знакомство',
+      'Простые пазлы и сортеры форм',
+      'Угловые накладки и блокираторы, если ещё не установлены',
+      'Ложка и вилка для самостоятельной еды'
+    ]},
+  {id:'m24',fromMo:24,label:'2–3 года',
+    milestones:[
+      {c:'🤝 Общение',t:'Играет рядом с другими детьми, успокаивается за ~10 минут после разлуки с мамой'},
+      {c:'👂 Речь',t:'Говорит предложениями из 2–4 слов; к 3 годам словарный запас ~200 слов'},
+      {c:'🧠 Познание',t:'Собирает пазл из 3–4 деталей, понимает слово «горячо»'},
+      {c:'🏃 Движение',t:'Прыгает на месте двумя ногами, хорошо бегает и лазает, частично одевается сама'}
+    ],
+    needs:[
+      'Одежда с крупными застёжками — учимся одеваться самостоятельно',
+      'Мелки, пластилин, материалы для творчества',
+      'Беговел или трёхколёсный велосипед',
+      'Режим дня перед садом, если планируется'
+    ]}
+];
+function getBabyBirthDate(){return localStorage.getItem('babyBirthDate')||null;}
+function hasBabyBorn(){
+  const d=getBabyBirthDate();
+  if(!d)return false;
+  const b=new Date(d+'T00:00:00');
+  return !isNaN(b.getTime())&&b.getTime()<=Date.now();
+}
+function calcBabyAge(birthISO){
+  if(!birthISO)return null;
+  const b=new Date(birthISO+'T00:00:00');
+  if(isNaN(b.getTime()))return null;
+  const ms=Math.max(0,Date.now()-b.getTime());
+  const days=Math.floor(ms/86400000);
+  const monthsF=days/30.4368;
+  return{days,weeks:Math.floor(days/7),monthsF,monthsInt:Math.floor(monthsF),birthDate:b};
+}
+function formatBabyAge(age){
+  if(!age)return'—';
+  if(age.days<60){
+    const w=Math.floor(age.days/7),d=age.days%7;
+    const wl=w===1?'неделя':(w>=2&&w<=4?'недели':'недель');
+    const dl=d===1?'день':(d>=2&&d<=4?'дня':'дней');
+    return w+' '+wl+(d?' '+d+' '+dl:'');
+  }
+  const mo=age.monthsInt;
+  const ml=mo===1?'месяц':(mo>=2&&mo<=4?'месяца':'месяцев');
+  return mo+' '+ml;
+}
+function getBabyStage(monthsInt){
+  let cur=BABY_STAGES[0];
+  for(const s of BABY_STAGES){if(monthsInt>=s.fromMo)cur=s;else break;}
+  return cur;
+}
+function loadBabyMilestonesDone(){try{return JSON.parse(localStorage.getItem('babyMsDone'+V)||'{}');}catch(e){return{};}}
+function loadBabyNeedsDone(){try{return JSON.parse(localStorage.getItem('babyNeedsDone'+V)||'{}');}catch(e){return{};}}
+function toggleBabyMilestone(id){
+  H();
+  const done=loadBabyMilestonesDone();
+  if(done[id])delete done[id];else done[id]=new Date().toISOString();
+  localStorage.setItem('babyMsDone'+V,JSON.stringify(done));
+  renderBabySection();
+}
+function toggleBabyNeed(id){
+  H();
+  const done=loadBabyNeedsDone();
+  if(done[id])delete done[id];else done[id]=true;
+  localStorage.setItem('babyNeedsDone'+V,JSON.stringify(done));
+  renderBabySection();
+}
+function applyAppMode(){
+  const born=hasBabyBorn();
+  document.body.classList.toggle('mode-postpartum',born);
+  document.querySelectorAll('.postpartum-only').forEach(el=>{el.style.display=born?'':'none';});
+  document.querySelectorAll('.pregnancy-only').forEach(el=>{el.style.display=born?'none':'';});
+  const clearBtn=document.getElementById('babyBirthClearBtn');
+  if(clearBtn)clearBtn.style.display=born?'block':'none';
+  if(born){
+    renderBabyHero();renderBabySection();
+  }else{
+    const edd=localStorage.getItem('eddDate');
+    if(edd)try{updateAll(edd);}catch(e){}
+  }
+}
+function renderBabyHero(){
+  const age=calcBabyAge(getBabyBirthDate());
+  if(!age)return;
+  const name=(localStorage.getItem('babyName')||'').trim();
+  const gv=localStorage.getItem('babyGender')||'n';
+  const emoji=gv==='g'?'🎀':gv==='b'?'🩵':'👶';
+  const emEl=document.getElementById('ppHeroEmoji');if(emEl)emEl.textContent=emoji;
+  const ageEl=document.getElementById('ppHeroAge');if(ageEl)ageEl.textContent='Малышу '+formatBabyAge(age)+'!';
+  const bDate=age.birthDate.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+  const subEl=document.getElementById('ppHeroSub');if(subEl)subEl.textContent='Родился(лась) '+bDate;
+  const nameEl=document.getElementById('ppHeroName');if(nameEl)nameEl.textContent=name?name:'наш малыш';
+}
+function renderBabySection(){
+  const age=calcBabyAge(getBabyBirthDate());
+  if(!age)return;
+  const stage=getBabyStage(age.monthsInt);
+  const idx=BABY_STAGES.findIndex(s=>s.id===stage.id);
+  const next=BABY_STAGES[idx+1];
+  const gv=localStorage.getItem('babyGender')||'n';
+  const emEl=document.getElementById('babyAgeEmoji');if(emEl)emEl.textContent=gv==='g'?'🎀':gv==='b'?'🩵':'👶';
+  const ageEl=document.getElementById('babyAgeTitle');if(ageEl)ageEl.textContent=formatBabyAge(age);
+  const subEl=document.getElementById('babyAgeSub');
+  if(subEl)subEl.textContent='Этап: '+stage.label+(next?' · дальше — '+next.label:'');
+  const stagesToShow=[stage,next].filter(Boolean);
+  const doneMs=loadBabyMilestonesDone();
+  const msBox=document.getElementById('babyMilestonesBox');
+  if(msBox){
+    msBox.innerHTML=stagesToShow.map((s,si)=>{
+      const head='<div class="baby-milestone-cat">'+(si===0?'✨ Сейчас — ':'🔜 Скоро — ')+s.label+'</div>';
+      const items=s.milestones.map((m,i)=>{
+        const id=s.id+'_'+i;
+        const isDone=!!doneMs[id];
+        return '<div class="bag-item"><div class="bag-item-main" onclick="toggleBabyMilestone(\''+id+'\')"><div class="bag-chk '+(isDone?'done':'')+'"></div><span class="bag-lbl '+(isDone?'done':'')+'">'+escapeHtml(m.c+': '+m.t)+'</span></div></div>';
+      }).join('');
+      return head+items;
+    }).join('')+'<div class="baby-src-note">📚 Ориентиры по данным ВОЗ (WHO Motor Development Study) и CDC «Learn the Signs. Act Early.» — не диагноз, темп у каждого малыша свой. Если что-то тревожит — обсуди с педиатром.</div>';
+  }
+  const doneNeeds=loadBabyNeedsDone();
+  const needsBox=document.getElementById('babyNeedsBox');
+  if(needsBox){
+    needsBox.innerHTML=stagesToShow.map((s,si)=>{
+      const head='<div class="baby-milestone-cat">'+(si===0?'✨ Сейчас — ':'🔜 Скоро — ')+s.label+'</div>';
+      const items=s.needs.map((t,i)=>{
+        const id=s.id+'_'+i;
+        const isDone=!!doneNeeds[id];
+        return '<div class="bag-item"><div class="bag-item-main" onclick="toggleBabyNeed(\''+id+'\')"><div class="bag-chk '+(isDone?'done':'')+'"></div><span class="bag-lbl '+(isDone?'done':'')+'">'+escapeHtml(t)+'</span></div></div>';
+      }).join('');
+      return head+items;
+    }).join('');
+  }
+}
+function saveBabyBirth(){
+  H();
+  const inp=document.getElementById('babyBirthIn');
+  const d=inp&&inp.value;
+  if(!d){toast('Выбери дату рождения');return;}
+  const b=new Date(d+'T00:00:00');
+  if(isNaN(b.getTime())||b.getTime()>Date.now()+86400000){toast('Проверь дату — она в будущем');return;}
+  localStorage.setItem('babyBirthDate',d);
+  const nameIn=document.getElementById('babyNameIn');
+  const name=nameIn?nameIn.value.trim():'';
+  if(name)localStorage.setItem('babyName',name);
+  const bwIn=document.getElementById('babyBirthWeightIn');
+  const bhIn=document.getElementById('babyBirthHeightIn');
+  const bw=bwIn?parseInt(bwIn.value,10):NaN;
+  const bh=bhIn?parseFloat(bhIn.value):NaN;
+  if(bw>=500&&bw<=7000)localStorage.setItem('babyBirthWeight',String(bw));
+  if(bh>=30&&bh<=65)localStorage.setItem('babyBirthHeight',String(bh));
+  if((bw>=500&&bw<=7000)||(bh>=30&&bh<=65)){
+    try{
+      const h=JSON.parse(localStorage.getItem('babyGrowthH'+V)||'{}');
+      h[d]={w:(bw>=500&&bw<=7000)?bw:null,h:(bh>=30&&bh<=65)?bh:null};
+      localStorage.setItem('babyGrowthH'+V,JSON.stringify(h));
+    }catch(e){}
+  }
+  applyAppMode();
+  updateDataStatusUI();
+  const statusEl=document.getElementById('babyBirthStatus');
+  if(statusEl){statusEl.style.display='block';statusEl.textContent='Сохранено! Теперь на Главной — режим заботы о малыше 👶';}
+  if(typeof confetti==='function')confetti({particleCount:200,spread:120,origin:{y:.5},colors:['#E8325A','#FFD700','#C44DFF','#43C8E0','#fff']});
+  toast('Ура, малыш родился! 🎉👶');
+}
+function clearBabyBirth(){
+  H();
+  if(!confirm('Убрать дату родов и вернуться в режим беременности? Записи о малыше не удалятся.'))return;
+  localStorage.removeItem('babyBirthDate');
+  applyAppMode();
+  updateDataStatusUI();
+  toast('Режим беременности снова активен');
+}
+
 let _appTimersSet=false;
 function migrateLegacyStorage(){
   if(localStorage.getItem('legacyMigrated_v8')==='1')return 0;
@@ -4793,7 +5138,7 @@ async function updateDataStatusUI(){
     {b:streak,t:'дней подряд 🔥'},
     {b:total,t:'завершённых дней'},
     {b:bagStats.done+'/'+bagStats.total,t:'вещей в сумке'},
-    {b:localStorage.getItem('eddDate')?'✓':'—',t:'дата родов сохранена'}
+    {b:localStorage.getItem('babyBirthDate')?'✓':(localStorage.getItem('eddDate')?'✓':'—'),t:localStorage.getItem('babyBirthDate')?'дата рождения малыша':'дата родов сохранена'}
   ].map(x=>'<div class="data-status-item"><b>'+escapeHtml(x.b)+'</b>'+escapeHtml(x.t)+'</div>').join('');
 }
 function init(){
@@ -4812,6 +5157,14 @@ function init(){
   if(di)document.getElementById('diaryT').value=di;
   document.getElementById('newEdd').value=edd;
   const savedH=localStorage.getItem('heightCm');if(savedH&&document.getElementById('heightIn'))document.getElementById('heightIn').value=savedH;
+  const bBirth=localStorage.getItem('babyBirthDate');
+  if(bBirth&&document.getElementById('babyBirthIn'))document.getElementById('babyBirthIn').value=bBirth;
+  const bName=localStorage.getItem('babyName');
+  if(bName&&document.getElementById('babyNameIn'))document.getElementById('babyNameIn').value=bName;
+  const bw=localStorage.getItem('babyBirthWeight');
+  if(bw&&document.getElementById('babyBirthWeightIn'))document.getElementById('babyBirthWeightIn').value=bw;
+  const bh=localStorage.getItem('babyBirthHeight');
+  if(bh&&document.getElementById('babyBirthHeightIn'))document.getElementById('babyBirthHeightIn').value=bh;
   // Load gender on startup
   applyGender(localStorage.getItem('babyGender')||'n',false);
   updateAll(edd);
@@ -4841,11 +5194,12 @@ function init(){
   checkAnniv();
   updateDataStatusUI();
   updateBackupReminder();
+  applyAppMode();
   if(migrated>0)toast('Твои записи и настройки сохранены ✓');
   else if(localStorage.getItem('dataMigrateToast_v8')!=='1'&&localStorage.getItem('eddDate')){
     localStorage.setItem('dataMigrateToast_v8','1');
   }
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();updateApptHomeCard();updateWaterHint();}});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();updateApptHomeCard();updateWaterHint();if(hasBabyBorn()){renderBabyHero();renderBabySection();}}});
   if(!_appTimersSet){
     _appTimersSet=true;
     setInterval(()=>updateCD(localStorage.getItem('eddDate')||edd),60000);
@@ -4855,6 +5209,7 @@ function init(){
     setInterval(updateMilestoneCard,60000);
     setInterval(updateApptHomeCard,60000);
     setInterval(updateWaterHint,60000);
+    setInterval(()=>{if(hasBabyBorn()){renderBabyHero();renderBabySection();}},60000);
   }
   setTimeout(showCoachIfNeeded,3000);
   updateOfflinePill();
@@ -4960,7 +5315,7 @@ function getGenderFact(week){
 }
 
 function saveEDD(){H();const d=document.getElementById('eddDate').value;if(!d)return;localStorage.setItem('eddDate',d);document.getElementById('setupScreen').style.display='none';init()}
-function updateEDD(){H();const d=document.getElementById('newEdd').value;if(!d)return;localStorage.setItem('eddDate',d);updateAll(d);renderSchedule(d);renderGallery(d);toast("Дата родов обновлена! ✨")}
+function updateEDD(){H();const d=document.getElementById('newEdd').value;if(!d)return;localStorage.setItem('eddDate',d);updateAll(d);renderSchedule(d);renderGallery(d);applyAppMode();toast("Дата родов обновлена! ✨")}
 
 
 function updateAll(edd){
@@ -6281,8 +6636,8 @@ function toggleHomeSec(id){
   localStorage.setItem('homeSec_'+id+V,open?'1':'0');
 }
 function initHomeSections(){
-  const defaults={support:true,wellness:false,daily:true};
-  ['support','wellness','daily'].forEach(id=>{
+  const defaults={support:true,wellness:false,daily:true,baby:true};
+  ['support','wellness','daily','baby'].forEach(id=>{
     const stored=localStorage.getItem('homeSec_'+id+V);
     const open=stored===null?defaults[id]:stored==='1';
     const body=document.getElementById('sec-'+id);
@@ -7089,7 +7444,7 @@ function switchTab(id,btn){
   if(id==='journal'){renderGallery(localStorage.getItem('eddDate'));renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();}
   if(id==='bag')renderBag();
   if(id==='meds')renderMedWeekChart();
-  if(id==='home'){updateTodayDash();renderWeekWellness();}
+  if(id==='home'){updateTodayDash();renderWeekWellness();if(hasBabyBorn()){renderBabyHero();renderBabySection();}}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function toggleTheme(){H();const d=document.getElementById('thmTog').checked;if(d){document.documentElement.classList.add('dark');localStorage.setItem('theme','dark')}else{document.documentElement.classList.remove('dark');localStorage.setItem('theme','light')}}
@@ -7101,7 +7456,7 @@ async function resetAll(){
   const toDelete=[];
   for(let i=0;i<localStorage.length;i++){
     const k=localStorage.key(i);
-    if(k&&(k.includes(V)||k.startsWith('homeSec_')||['eddDate','husbandPhone','diaryEntry','theme','babyGender','heightCm','uziPh','galPh_v16','photosInIDB_v1','imgMigrated_v2','imgMigrated_v3','kickHist_v16','bagDone_v16','journalLog_v16'].indexOf(k)>=0)){
+    if(k&&(k.includes(V)||k.startsWith('homeSec_')||['eddDate','husbandPhone','diaryEntry','theme','babyGender','heightCm','uziPh','galPh_v16','photosInIDB_v1','imgMigrated_v2','imgMigrated_v3','kickHist_v16','bagDone_v16','journalLog_v16','babyBirthDate','babyName','babyBirthWeight','babyBirthHeight'].indexOf(k)>=0)){
       toDelete.push(k);
     }
   }
