@@ -2339,6 +2339,11 @@ body.mode-postpartum .pregnancy-only{display:none!important}
             <p style="font-size:13px;font-weight:700;color:var(--t3);margin-bottom:12px;line-height:1.6" id="diarySub">Запиши свои мысли. Потом будет так здорово это перечитать вместе!</p>
             <textarea id="diaryT" class="d-area" placeholder="Сегодня ты так сильно пинался, когда папа гладил животик..."></textarea>
             <button class="lq" style="margin-top:12px" onclick="saveDiary()">Сохранить в сердце 💖</button>
+            <div class="journal-export-row" id="lettersExportRow" style="display:none;margin-top:14px">
+              <button type="button" class="journal-export-btn primary" onclick="printLetters()">🖨️ Экспорт писем</button>
+              <button type="button" class="journal-export-btn" onclick="shareLetters()">📤 Поделиться</button>
+            </div>
+            <div class="journal-log" id="lettersLog" style="margin-top:16px"></div>
           </div></div>
         </div>
       
@@ -2697,7 +2702,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v40</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v41</div>
         </div></div>
       </div>
     </div>
@@ -2862,7 +2867,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v40';
+const APP_DATA_VER='v41';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -5766,8 +5771,7 @@ function init(){
   const ph=localStorage.getItem('husbandPhone');
   if(ph){document.getElementById('phoneIn').value=ph;document.getElementById('callBtn').href='tel:'+ph}
   updateCallFab();
-  const di=localStorage.getItem('diaryEntry');
-  if(di)document.getElementById('diaryT').value=di;
+  renderLettersLog();
   document.getElementById('newEdd').value=edd;
   const savedH=localStorage.getItem('heightCm');if(savedH&&document.getElementById('heightIn'))document.getElementById('heightIn').value=savedH;
   const bBirth=localStorage.getItem('babyBirthDate');
@@ -6550,6 +6554,7 @@ function loadStreak(){
 
 // ══ PREMIUM UX — dashboard, journal, backup, kick sessions ══
 const JOURNAL_KEY='journalLog'+V;
+const LETTERS_KEY='babyLetters'+V;
 const KICK_SESSION_MS=2*60*60*1000;
 let kickTimerInterval=null;
 
@@ -7331,18 +7336,6 @@ function loadJournalLog(){
     const raw=localStorage.getItem(JOURNAL_KEY);
     if(raw){const p=JSON.parse(raw);if(Array.isArray(p))return p;}
   }catch(e){}
-  const legacy=localStorage.getItem('diaryEntry');
-  if(legacy&&legacy.trim()){
-    const entry={id:Date.now(),date:new Date().toISOString(),text:legacy.trim()};
-    if(hasBabyBorn()){
-      const age=calcBabyAge(getBabyBirthDate());
-      if(age)entry.babyAge=formatBabyAge(age);
-    }else{
-      entry.week=calcW(localStorage.getItem('eddDate')).week;
-    }
-    localStorage.setItem(JOURNAL_KEY,JSON.stringify([entry]));
-    return [entry];
-  }
   return [];
 }
 function renderJournalLog(){
@@ -8165,7 +8158,123 @@ function checkReset(){
   }
 }
 function savePhone(){H();const p=document.getElementById('phoneIn').value;if(p){localStorage.setItem('husbandPhone',p);document.getElementById('callBtn').href='tel:'+p;updateCallFab();toast("Мой номер сохранён!")}}
-function saveDiary(){H();localStorage.setItem('diaryEntry',document.getElementById('diaryT').value);toast("Письмо сохранено в сердце! 💖")}
+function loadLetters(){
+  try{
+    const raw=localStorage.getItem(LETTERS_KEY);
+    if(raw){const p=JSON.parse(raw);if(Array.isArray(p))return p;}
+  }catch(e){}
+  const legacy=localStorage.getItem('diaryEntry');
+  if(legacy&&legacy.trim()){
+    const entry={id:Date.now(),date:new Date().toISOString(),text:legacy.trim()};
+    if(hasBabyBorn()){
+      const age=calcBabyAge(getBabyBirthDate());
+      if(age)entry.babyAge=formatBabyAge(age);
+    }else{
+      entry.week=calcW(localStorage.getItem('eddDate')).week;
+    }
+    localStorage.setItem(LETTERS_KEY,JSON.stringify([entry]));
+    localStorage.removeItem('diaryEntry');
+    return [entry];
+  }
+  return [];
+}
+function renderLettersLog(){
+  const el=document.getElementById('lettersLog');
+  if(!el)return;
+  const log=loadLetters();
+  const expRow=document.getElementById('lettersExportRow');
+  if(expRow)expRow.style.display=log.length?'flex':'none';
+  if(!log.length){
+    el.innerHTML='<div class="empty-state"><div class="empty-ico">📝</div><div class="empty-title">Первое письмо ещё впереди</div><div class="empty-sub">Напиши малышу пару строк — они сохранятся здесь навсегда</div></div>';
+    return;
+  }
+  const birthISO=getBabyBirthDate();
+  const birthMs=birthISO?new Date(birthISO+'T00:00:00').getTime():null;
+  el.innerHTML=log.map(e=>{
+    const d=new Date(e.date);
+    let tag='';
+    if(e.babyAge){
+      tag=' · '+e.babyAge;
+    }else if(e.week&&!(birthMs&&d.getTime()>=birthMs)){
+      tag=' · '+e.week+' нед.';
+    }
+    return '<div class="journal-entry"><div class="journal-entry-meta">'+d.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'})+tag+'</div><div class="journal-entry-text">'+escapeHtml(e.text).replace(/\n/g,'<br>')+'</div><button type="button" class="journal-del" onclick="deleteLetter('+e.id+')" aria-label="Удалить письмо">✕</button></div>';
+  }).join('');
+}
+function saveDiary(){
+  H();
+  const ta=document.getElementById('diaryT');
+  const text=ta&&ta.value.trim();
+  if(!text){toast('Напиши хотя бы пару строк малышу');return;}
+  const log=loadLetters();
+  const entry={id:Date.now(),date:new Date().toISOString(),text};
+  if(hasBabyBorn()){
+    const age=calcBabyAge(getBabyBirthDate());
+    if(age)entry.babyAge=formatBabyAge(age);
+  }else{
+    entry.week=calcW(localStorage.getItem('eddDate')).week;
+  }
+  log.unshift(entry);
+  try{localStorage.setItem(LETTERS_KEY,JSON.stringify(log.slice(0,200)));}catch(e){toast('Не удалось сохранить письмо');return;}
+  ta.value='';
+  renderLettersLog();
+  toast('Письмо сохранено в сердце! 💖 ('+log.length+')');
+}
+function deleteLetter(id){
+  H();
+  if(!confirm('Удалить это письмо малышу?'))return;
+  const log=loadLetters().filter(e=>e.id!==id);
+  localStorage.setItem(LETTERS_KEY,JSON.stringify(log));
+  renderLettersLog();
+}
+function buildLettersText(){
+  const log=loadLetters();
+  const born=hasBabyBorn();
+  const name=(localStorage.getItem('babyName')||'малыш').trim()||'малыш';
+  let text='ПИСЬМА МАЛЫШУ — Для Индиры\n';
+  text+='Экспорт: '+new Date().toLocaleString('ru-RU')+'\n';
+  if(born){
+    const age=calcBabyAge(getBabyBirthDate());
+    if(age)text+='Возраст '+name+': '+formatBabyAge(age)+'\n';
+  }
+  text+='Писем: '+log.length+'\n';
+  text+='═'.repeat(36)+'\n\n';
+  if(!log.length){text+='(Пока нет писем)\n';return text;}
+  log.slice().reverse().forEach(e=>{
+    const d=new Date(e.date);
+    let tag='';
+    if(e.babyAge)tag=' · '+e.babyAge;
+    else if(e.week)tag=' · '+e.week+' нед.';
+    text+=d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+tag+'\n';
+    text+=e.text+'\n\n';
+  });
+  return text;
+}
+function printLetters(){
+  H();
+  const text=buildLettersText();
+  const w=window.open('','_blank');
+  if(!w){navigator.clipboard?.writeText(text).then(()=>toast('Письма скопированы 📋')).catch(()=>toast('Разреши всплывающие окна'));return;}
+  const safe=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  w.document.write('<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Письма малышу — Для Индиры</title><style>@page{margin:18mm}body{font-family:Georgia,serif;padding:24px;line-height:1.65;color:#111;max-width:720px;margin:0 auto}h1{font-size:18px;margin-bottom:16px;color:#E8325A}pre{white-space:pre-wrap;font-family:Nunito,sans-serif;font-size:13px}</style></head><body><h1>📝 Письма малышу</h1><pre>'+safe+'</pre></body></html>');
+  w.document.close();
+  w.focus();
+  setTimeout(()=>w.print(),400);
+}
+async function shareLetters(){
+  H();
+  const text=buildLettersText();
+  try{
+    if(navigator.share){
+      await navigator.share({title:'Письма малышу — Для Индиры',text});
+      return;
+    }
+  }catch(e){if(e&&e.name==='AbortError')return;}
+  try{
+    await navigator.clipboard.writeText(text);
+    toast('Письма скопированы 📋');
+  }catch(e){toast('Не удалось поделиться');}
+}
 function switchTab(id,btn){
   H();
   document.querySelectorAll('.tab-c').forEach(e=>e.classList.remove('act'));
@@ -8181,7 +8290,7 @@ function switchTab(id,btn){
   if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();updateDataStatusUI();updateBackupReminder();updatePhotoModeUI();}
   if(id==='journal'){renderGallery(localStorage.getItem('eddDate'));renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();if(hasBabyBorn())renderBabyJournalTrackers();}
   if(id==='bag')renderBag();
-  if(id==='meds')renderMedWeekChart();
+  if(id==='meds'){renderMedWeekChart();renderLettersLog();}
   if(id==='home'){updateTodayDash();renderWeekWellness();if(hasBabyBorn()){renderBabyHero();renderBabySection();}}
   window.scrollTo({top:0,behavior:'smooth'});
 }
