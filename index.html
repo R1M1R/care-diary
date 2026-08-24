@@ -1532,6 +1532,29 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 .pp-hs{flex:1;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:16px;padding:10px 4px;backdrop-filter:blur(10px)}
 .pp-hs b{display:block;font-family:'Playfair Display',serif;font-size:18px;font-weight:900;line-height:1.25}
 .pp-hs span{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;opacity:.85;line-height:1.3}
+.pp-hs-btn{cursor:pointer;border:none;font:inherit;color:inherit;appearance:none;-webkit-appearance:none;transition:transform .15s,background .2s}
+.pp-hs-btn:active{transform:scale(.96);background:rgba(255,255,255,.28)}
+.baby-day-card{margin:0 15px 14px;border-radius:24px;overflow:hidden;border:1px solid rgba(232,50,90,.14);background:linear-gradient(160deg,rgba(255,255,255,.92),rgba(232,50,90,.05));box-shadow:var(--sh2)}
+.baby-day-live{display:flex;align-items:center;gap:10px;padding:14px 16px 8px}
+.baby-day-pulse{width:10px;height:10px;border-radius:50%;background:var(--rose);box-shadow:0 0 0 0 rgba(232,50,90,.45);animation:babyDayPulse 1.8s ease-out infinite;flex-shrink:0}
+.baby-day-pulse.sleep{background:#7C6CF0;box-shadow:0 0 0 0 rgba(124,108,240,.45)}
+@keyframes babyDayPulse{0%{box-shadow:0 0 0 0 rgba(232,50,90,.4)}70%{box-shadow:0 0 0 10px rgba(232,50,90,0)}100%{box-shadow:0 0 0 0 rgba(232,50,90,0)}}
+.baby-day-live-txt{flex:1;min-width:0}
+.baby-day-live-t{font-size:15px;font-weight:900;color:var(--t1);line-height:1.3}
+.baby-day-live-s{font-size:12px;font-weight:700;color:var(--t3);line-height:1.45;margin-top:2px}
+.baby-day-rhythm{display:flex;gap:8px;padding:4px 16px 12px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.baby-day-rhythm::-webkit-scrollbar{display:none}
+.baby-day-chip{flex:0 0 auto;padding:7px 11px;border-radius:999px;background:var(--bg2);border:1px solid var(--cb);font-size:11px;font-weight:800;color:var(--t2);white-space:nowrap}
+.baby-day-quick{display:flex;gap:8px;padding:0 16px 14px;flex-wrap:wrap}
+.baby-day-qbtn{flex:1 1 calc(33.33% - 8px);min-width:88px;padding:11px 8px;border-radius:16px;border:1px solid var(--cb);background:var(--card);font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;color:var(--t1);cursor:pointer;box-shadow:var(--sh2)}
+.baby-day-qbtn:active{transform:scale(.96)}
+.baby-day-qbtn.primary{background:linear-gradient(135deg,var(--rose),var(--plum));color:#fff;border:none;box-shadow:0 8px 20px rgba(232,50,90,.25)}
+.visit-jump{display:flex;gap:8px;margin:0 0 12px;overflow-x:auto;scrollbar-width:none}
+.visit-jump::-webkit-scrollbar{display:none}
+.visit-prog{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;padding:10px 12px;border-radius:14px;background:rgba(232,50,90,.06);border:1px solid rgba(232,50,90,.12)}
+.visit-prog-lbl{font-size:12px;font-weight:800;color:var(--t2)}
+.visit-prog-val{font-size:13px;font-weight:900;color:var(--rose)}
+.visit-sec-anchor{scroll-margin-top:12px}
 .postpartum-hero-name{position:relative;z-index:2;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.65);margin-top:14px}
 .pp-hero-letter-btn{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);backdrop-filter:blur(12px);border-radius:50px;padding:9px 18px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;color:#fff;cursor:pointer;transition:transform .15s}
 .pp-hero-letter-btn:active{transform:scale(.95)}
@@ -2054,19 +2077,25 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
         <div class="postpartum-hero-age" id="ppHeroAge">Малышу уже…</div>
         <div class="postpartum-hero-sub" id="ppHeroSub">—</div>
         <div class="postpartum-hero-stats" id="ppHeroStats">
-          <div class="pp-hs"><b id="ppHsFeed">0</b><span>кормл. сегодня</span></div>
-          <div class="pp-hs"><b id="ppHsSleep">0ч</b><span>сна сегодня</span></div>
-          <div class="pp-hs"><b id="ppHsDiaper">0</b><span>подгузников</span></div>
+          <button type="button" class="pp-hs pp-hs-btn" onclick="scrollToBabyTrackers('feed')" aria-label="Кормления сегодня"><b id="ppHsFeed">0</b><span>кормл. сегодня</span></button>
+          <button type="button" class="pp-hs pp-hs-btn" onclick="scrollToBabyTrackers('sleep')" aria-label="Сон сегодня"><b id="ppHsSleep">0ч</b><span>сна сегодня</span></button>
+          <button type="button" class="pp-hs pp-hs-btn" onclick="scrollToBabyTrackers('feed')" aria-label="Подгузники сегодня"><b id="ppHsDiaper">0</b><span>подгузников</span></button>
         </div>
         <div class="postpartum-hero-name" id="ppHeroName">наш малыш</div>
         <button type="button" class="pp-hero-letter-btn" onclick="showBabyCongrats()">💌 Письмо от Эмира</button>
       </div>
 
-      <div class="card postpartum-only home-nudge" id="babyCareNowCard" style="margin:0 15px 14px">
-        <div class="cb">
-          <div class="sh" id="babyCareNowTitle">💤 Сейчас</div>
-          <div class="ssub" id="babyCareNowSub">Кормление и сон — под рукой</div>
-          <div class="journal-export-row" style="margin-top:12px" id="babyCareNowActions"></div>
+      <div class="card postpartum-only baby-day-card home-nudge" id="babyCareNowCard">
+        <div class="cb" style="padding:0">
+          <div class="baby-day-live">
+            <div class="baby-day-pulse" id="babyDayPulse" aria-hidden="true"></div>
+            <div class="baby-day-live-txt">
+              <div class="baby-day-live-t" id="babyCareNowTitle">День с малышом</div>
+              <div class="baby-day-live-s" id="babyCareNowSub">Кормление, сон и туалет — в одном ритме</div>
+            </div>
+          </div>
+          <div class="baby-day-rhythm" id="babyDayRhythm" role="list" aria-label="Ритм дня"></div>
+          <div class="baby-day-quick" id="babyCareNowActions"></div>
         </div>
       </div>
 
@@ -2134,10 +2163,10 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
       </div>
 
       <div class="home-quick-nav postpartum-only" role="navigation" aria-label="Быстрые переходы малыша">
-        <button type="button" class="home-qpill" onclick="switchTabById('journal')">📓 Дневник</button>
-        <button type="button" class="home-qpill" onclick="goHomeSection('baby')">👶 Малыш</button>
-        <button type="button" class="home-qpill" onclick="scrollToBabyTrackers('sleep')">💤 Сон</button>
         <button type="button" class="home-qpill" onclick="scrollToBabyTrackers('feed')">🍼 Кормление</button>
+        <button type="button" class="home-qpill" onclick="scrollToBabyTrackers('sleep')">💤 Сон</button>
+        <button type="button" class="home-qpill" onclick="quickBabyDiaper('pee')">🧷 Туалет</button>
+        <button type="button" class="home-qpill" id="homeVisitPill" style="display:none" onclick="openVisitMode()">🩺 Визит</button>
         <button type="button" class="home-qpill" onclick="goHomeSection('support')">💌 Письма</button>
       </div>
 
@@ -3032,7 +3061,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v58</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v59</div>
         </div></div>
       </div>
     </div>
@@ -3153,7 +3182,13 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
     <div class="ms-hdl"></div>
     <button class="ms-close" onclick="closeVisitMode()" aria-label="Закрыть">✕</button>
     <div style="font-family:'Playfair Display',serif;font-size:24px;font-style:italic;font-weight:900;text-align:center;margin-bottom:8px" id="visitModeMoT">🩺 Режим визита</div>
-    <p style="text-align:center;font-size:12px;font-weight:800;color:var(--t3);margin:0 0 14px;line-height:1.5" id="visitModeMoSub">Всё важное для педиатра</p>
+    <p style="text-align:center;font-size:12px;font-weight:800;color:var(--t3);margin:0 0 10px;line-height:1.5" id="visitModeMoSub">Всё важное для педиатра</p>
+    <div class="visit-jump" id="visitJumpBar" role="navigation" aria-label="Разделы визита">
+      <button type="button" class="journal-jump-pill" onclick="scrollVisitModeSec('summary')">📋 Сводка</button>
+      <button type="button" class="journal-jump-pill" onclick="scrollVisitModeSec('checklist')">✅ Чек-лист</button>
+      <button type="button" class="journal-jump-pill" onclick="scrollVisitModeSec('bag')">👜 Сумка</button>
+      <button type="button" class="journal-jump-pill" onclick="shareVisitBrief()">⚡ Врачу</button>
+    </div>
     <div id="visitModeBody"></div>
     <div class="journal-export-row" style="margin-top:14px">
       <button type="button" class="journal-export-btn primary" onclick="shareVisitBrief()">⚡ Кратко врачу</button>
@@ -3216,7 +3251,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v58';
+const APP_DATA_VER='v59';
 let curGW=null;
 let curBMo=null;
 let photoGalMode='belly'; // belly | baby
@@ -6801,10 +6836,12 @@ function repeatLastBabyFeed(){
     list.push({ts:Date.now(),type:'formula',ml});
     saveBabyFeedList(list);
     renderBabyFeedHist();
-    try{renderBabyHero();}catch(e){}
-    toast('Снова смесь '+ml+' мл 🍼');
-    return;
-  }
+  try{renderBabyHero();}catch(e){}
+  try{updateBabyCareNowCard();}catch(e){}
+  toast('Снова смесь '+ml+' мл 🍼');
+  try{updateTodayDash();}catch(e){}
+  return;
+}
   logBabyFeed(last.type);
 }
 function undoLastBabyFeed(){
@@ -6848,26 +6885,63 @@ function updateBabyCareNowCard(){
   const title=document.getElementById('babyCareNowTitle');
   const sub=document.getElementById('babyCareNowSub');
   const actions=document.getElementById('babyCareNowActions');
+  const pulse=document.getElementById('babyDayPulse');
+  const rhythm=document.getElementById('babyDayRhythm');
   if(!card||!actions)return;
   if(!hasBabyBorn())return;
   const sleep=getActiveBabySleep();
   const last=getLastBabyFeed();
+  const feedsToday=loadBabyFeed().filter(f=>isToday(f.ts));
+  const diapersToday=loadBabyDiaper().filter(d=>isToday(d.ts));
+  const lastDiaper=diapersToday.length?diapersToday[diapersToday.length-1]:null;
   let html='';
+  if(pulse)pulse.classList.toggle('sleep',!!sleep);
   if(sleep){
-    if(title)title.textContent='😴 Сейчас спит';
+    if(title)title.textContent='Сейчас спит';
     if(sub)sub.textContent='Уже '+fmtDurMin(Math.round((Date.now()-sleep.start)/60000))+' · нажми, когда проснётся';
-    html+='<button type="button" class="journal-export-btn primary" onclick="toggleBabySleep()">☀️ Проснулся</button>';
-    html+='<button type="button" class="journal-export-btn" onclick="scrollToBabyTrackers(\'sleep\')">К сну →</button>';
+    html+='<button type="button" class="baby-day-qbtn primary" onclick="toggleBabySleep()">☀️ Проснулся</button>';
+    html+='<button type="button" class="baby-day-qbtn" onclick="scrollToBabyTrackers(\'sleep\')">К сну →</button>';
+    if(last)html+='<button type="button" class="baby-day-qbtn" onclick="repeatLastBabyFeed()">↻ Кормление</button>';
   }else{
-    if(title)title.textContent='🍼 Сейчас';
+    if(title)title.textContent='День с малышом';
     const awake=loadBabySleep().slice(-1)[0];
-    const awakeTxt=awake&&awake.end?('Не спит · '+agoLabel(awake.end)):('Можно отметить сон');
-    if(sub)sub.textContent=(last?('Кормление: '+feedTypeLabel(last)+' · '+agoLabel(last.ts)):'Ещё нет кормлений')+' · '+awakeTxt;
-    if(last)html+='<button type="button" class="journal-export-btn primary" onclick="repeatLastBabyFeed()">↻ Повторить</button>';
-    html+='<button type="button" class="journal-export-btn" onclick="toggleBabySleep()">😴 Заснул</button>';
-    html+='<button type="button" class="journal-export-btn" onclick="scrollToBabyTrackers(\'feed\')">Дневник →</button>';
+    const awakeTxt=awake&&awake.end?('Не спит · '+agoLabel(awake.end)):'Можно отметить сон';
+    const feedTxt=last?('Кормление · '+agoLabel(last.ts)):'Ещё нет кормлений';
+    if(sub)sub.textContent=feedTxt+' · '+awakeTxt;
+    if(last)html+='<button type="button" class="baby-day-qbtn primary" onclick="repeatLastBabyFeed()">↻ Повторить</button>';
+    else html+='<button type="button" class="baby-day-qbtn primary" onclick="scrollToBabyTrackers(\'feed\')">🍼 Кормить</button>';
+    html+='<button type="button" class="baby-day-qbtn" onclick="toggleBabySleep()">😴 Заснул</button>';
+    html+='<button type="button" class="baby-day-qbtn" onclick="quickBabyDiaper(\'pee\')">💧 Туалет</button>';
+    html+='<button type="button" class="baby-day-qbtn" onclick="logBabyFeed(\'bl\')">🤱 Л</button>';
+    html+='<button type="button" class="baby-day-qbtn" onclick="logBabyFeed(\'br\')">🤱 П</button>';
+    html+='<button type="button" class="baby-day-qbtn" onclick="quickBabyDiaper(\'poop\')">💩</button>';
   }
   actions.innerHTML=html;
+  if(rhythm){
+    const chips=[];
+    chips.push('<span class="baby-day-chip" role="listitem">🍼 '+feedsToday.length+' кормл.</span>');
+    chips.push('<span class="baby-day-chip" role="listitem">🧷 '+diapersToday.length+' туалет</span>');
+    if(last)chips.push('<span class="baby-day-chip" role="listitem">'+feedTypeLabel(last)+' · '+agoLabel(last.ts)+'</span>');
+    if(lastDiaper)chips.push('<span class="baby-day-chip" role="listitem">'+diaperTypeLabel(lastDiaper)+' · '+agoLabel(lastDiaper.ts)+'</span>');
+    if(sleep)chips.push('<span class="baby-day-chip" role="listitem">😴 спит сейчас</span>');
+    if(!feedsToday.length&&!diapersToday.length&&!sleep)chips.push('<span class="baby-day-chip" role="listitem">Начни день одной отметкой ✨</span>');
+    rhythm.innerHTML=chips.join('');
+  }
+  const visitPill=document.getElementById('homeVisitPill');
+  if(visitPill){
+    const info=typeof getTodayOrSoonAppt==='function'?getTodayOrSoonAppt():null;
+    const show=!!(info&&info.days<=1);
+    visitPill.style.display=show?'inline-flex':'none';
+    if(show)visitPill.textContent=info.days===0?'🩺 Визит сегодня':'🩺 Визит завтра';
+  }
+}
+function quickBabyDiaper(type){
+  logBabyDiaper(type||'pee');
+}
+function scrollVisitModeSec(which){
+  const map={summary:'visitSecSummary',checklist:'visitSecChecklist',bag:'visitSecBag'};
+  const el=document.getElementById(map[which]||'visitSecSummary');
+  el&&el.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function logBabyFeed(type){
   H();
@@ -6879,6 +6953,7 @@ function logBabyFeed(type){
   try{updateBabyCareNowCard();}catch(e){}
   const lbl=type==='bl'?'левая грудь':type==='br'?'правая грудь':type==='meal'?'приём пищи':'кормление';
   toast((type==='meal'?'Еда записана':'Кормление записано')+' — '+lbl+(type==='meal'?' 🥣':' 🤱'));
+  try{updateTodayDash();}catch(e){}
 }
 function toggleBabyFormulaRow(){
   H();
@@ -6909,7 +6984,10 @@ function logBabyDiaper(type){
   list.push({ts:Date.now(),type});
   saveBabyDiaperList(list);
   renderBabyFeedHist();
-  toast(type==='potty'?'Горшок отмечен ✓':'Подгузник отмечен ✓');
+  try{renderBabyHero();}catch(e){}
+  try{updateBabyCareNowCard();}catch(e){}
+  try{updateTodayDash();}catch(e){}
+  toast(type==='potty'?'Горшок отмечен ✓':type==='poop'?'Подгузник · покакал ✓':type==='both'?'Подгузник · оба ✓':'Подгузник · пописал ✓');
 }
 function isToday(ts){
   const d=new Date(ts),n=new Date();
@@ -8401,6 +8479,7 @@ function updateTodayDash(){
     const dEl=document.getElementById('tdBabyDiaper');if(dEl)dEl.textContent=String(diapers);
     const mEl=document.getElementById('tdMoodBaby');if(mEl)mEl.textContent=mood||'—';
     const mIco=document.getElementById('tdMoodIcoBaby');if(mIco)mIco.textContent=mood||'🤍';
+    try{updateBabyCareNowCard();}catch(e){}
   }else{
     const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
     const {active}=getScheduleMeds();
@@ -8499,16 +8578,25 @@ async function renderGalTimeline(curWeek){
 function updatePerfectDayBadge(){
   const el=document.getElementById('perfectDayBadge');
   if(!el)return;
-  const state=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
-  const {active}=getScheduleMeds();
-  let medPct=100;
-  if(active.length){
-    let done=0;active.forEach(t=>{if(state[t.id])done++});
-    medPct=Math.round(done/active.length*100);
-  }
   const w=JSON.parse(localStorage.getItem('water'+V)||'[]');
   const mood=localStorage.getItem('mood'+V);
-  const perfect=medPct===100&&w.length>=8&&!!mood;
+  let perfect=false;
+  if(hasBabyBorn()){
+    const feeds=loadBabyFeed().filter(f=>isToday(f.ts)).length;
+    const sleeps=loadBabySleep().filter(s=>isToday(s.start)).length;
+    perfect=feeds>=1&&sleeps>=1&&w.length>=6&&!!mood;
+    el.textContent=perfect?'🌟 Тёплый день заботы о малыше — ты молодец!':'🌟 Идеальный день заботы — ты молодец!';
+  }else{
+    const state=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
+    const {active}=getScheduleMeds();
+    let medPct=100;
+    if(active.length){
+      let done=0;active.forEach(t=>{if(state[t.id])done++});
+      medPct=Math.round(done/active.length*100);
+    }
+    perfect=medPct===100&&w.length>=8&&!!mood;
+    el.textContent='🌟 Идеальный день заботы — ты молодец!';
+  }
   const todayKey=new Date().toISOString().slice(0,10);
   const wasPerfect=localStorage.getItem('perfectDay_'+todayKey+V)==='1';
   el.classList.toggle('show',perfect);
@@ -9048,14 +9136,18 @@ function openVisitMode(){
   if(!prepStore[prepKey])prepStore[prepKey]=VISIT_PREP_DEFAULT_BABY.map(x=>({...x,done:false}));
   saveVisitPrep(prepStore);
   const prep=prepStore[prepKey];
+  const prepDone=prep.filter(x=>x.done).length;
 
-  let html='<div class="contr-meta" style="margin-bottom:12px">';
+  let html='<div class="visit-sec-anchor" id="visitSecSummary">';
+  html+='<div class="visit-prog"><span class="visit-prog-lbl">Готовность к визиту</span><span class="visit-prog-val">'+prepDone+'/'+prep.length+'</span></div>';
+  html+='<div class="contr-meta" style="margin-bottom:12px">';
   html+='<div class="contr-stat"><div class="contr-stat-val" style="font-size:14px">'+(age?formatBabyAge(age):'—')+'</div><div class="contr-stat-lbl">'+escapeHtml(name)+'</div></div>';
   html+='<div class="contr-stat"><div class="contr-stat-val">'+(lastG&&lastG.w?lastG.w:'—')+'</div><div class="contr-stat-lbl">вес, г</div></div>';
   html+='<div class="contr-stat"><div class="contr-stat-val">'+(lastG&&lastG.h?lastG.h:'—')+'</div><div class="contr-stat-lbl">рост, см</div></div>';
   html+='</div>';
   html+='<div style="font-size:12px;font-weight:800;color:var(--t3);margin-bottom:8px">Сегодня: еда '+feeds+' · туалет '+diapers+' · сон '+fmtDurMin(sleepMin)+'</div>';
   if(nextVax)html+='<div class="contr-tip" style="margin-bottom:12px">💉 '+escapeHtml(nextVax.group.ageLabel)+' — '+escapeHtml(nextVax.item.name)+(nextVax.overdue?' · актуально':'')+'</div>';
+  html+='</div>';
   if(nextVax&&(nextVax.overdue||nextVax.daysUntil<=7||(info&&info.days===0))){
     html+='<div class="baby-milestone-cat"><span>💉 Прививки · '+escapeHtml(nextVax.group.ageLabel)+'</span></div>';
     const pending=nextVax.pending||nextVax.group.items.filter(it=>!loadBabyVax()[it.id]);
@@ -9081,18 +9173,20 @@ function openVisitMode(){
     html+='<div class="visit-prep-item" onclick="markBabyToothToday(\''+nextTooth.tooth.id+'\')"><div class="visit-prep-chk"></div><span class="visit-prep-lbl">'+escapeHtml(nextTooth.tooth.full||nextTooth.tooth.lbl)+' · прорезался сегодня</span></div>';
     html+='<div class="journal-export-row" style="margin:8px 0 12px"><button type="button" class="journal-export-btn" onclick="closeVisitMode();scrollToBabyTeeth()">Сетка зубов →</button></div>';
   }
-  html+='<div class="baby-milestone-cat"><span>Чек-лист к визиту</span></div>';
+  html+='<div class="visit-sec-anchor" id="visitSecChecklist"><div class="baby-milestone-cat"><span>Чек-лист к визиту</span></div>';
   html+=prep.map((item,j)=>'<div class="visit-prep-item" onclick="toggleVisitPrep(\''+prepKey+'\','+j+');openVisitMode()"><div class="visit-prep-chk'+(item.done?' done':'')+'"></div><span class="visit-prep-lbl'+(item.done?' done':'')+'">'+escapeHtml(item.label)+'</span></div>').join('');
+  html+='</div>';
   const bag=getClinicBagItems();
   const bagDone=loadClinicBag();
   const bagN=bag.filter(i=>bagDone[i.id]).length;
-  html+='<div class="baby-milestone-cat" style="margin-top:14px"><span>👜 В сумку · '+bagN+'/'+bag.length+'</span></div>';
-  if(bagN<bag.length&&info&&info.days===0)html+='<div class="contr-tip" style="margin-bottom:8px">Перед выходом отметь оставшееся — или нажми «Всё собрано» в разделе малыша</div>';
+  html+='<div class="visit-sec-anchor" id="visitSecBag"><div class="baby-milestone-cat" style="margin-top:14px"><span>👜 В сумку · '+bagN+'/'+bag.length+'</span></div>';
+  if(bagN<bag.length&&info&&info.days===0)html+='<div class="contr-tip" style="margin-bottom:8px">Перед выходом отметь оставшееся — или нажми «Всё собрано»</div>';
   html+=bag.map(it=>{
     const on=!!bagDone[it.id];
     return '<div class="visit-prep-item" onclick="toggleClinicBag(\''+it.id+'\');openVisitMode()"><div class="visit-prep-chk'+(on?' done':'')+'"></div><span class="visit-prep-lbl'+(on?' done':'')+'">'+escapeHtml(it.t)+'</span></div>';
   }).join('');
   if(bag.length)html+='<div class="journal-export-row" style="margin-top:8px"><button type="button" class="journal-export-btn" onclick="markClinicBagAll();openVisitMode()">Всё собрано</button><button type="button" class="journal-export-btn" onclick="resetClinicBag();openVisitMode()">Сбросить сумку</button></div>';
+  html+='</div>';
   body.innerHTML=html;
   mo.classList.add('open');
 }
