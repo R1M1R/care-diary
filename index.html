@@ -1578,6 +1578,35 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 .congrats-sign{font-family:'Lora',serif;font-size:14px;font-style:italic;text-align:right;margin-top:14px;color:#C4245A}
 .congrats-btn{position:relative;z-index:2;width:100%;padding:15px;border:none;border-radius:18px;background:#fff;color:#C4245A;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.2)}
 .congrats-btn:active{transform:scale(.97)}
+.congrats-btn.secondary{margin-top:10px;background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35);box-shadow:none}
+.night-strip{display:none;margin:0 15px 14px;padding:16px 18px;border-radius:24px;background:linear-gradient(145deg,#1a1030,#2a1848 55%,#3a2060);color:#f5eefc;box-shadow:0 14px 36px rgba(20,8,40,.35);border:1px solid rgba(255,255,255,.12)}
+body.mode-postpartum .night-strip.show{display:block!important}
+body.mode-postpartum .tog-w.postpartum-only{display:flex!important}
+body.mode-postpartum p.postpartum-only{display:block!important}
+.night-strip-kicker{font-size:10px;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;opacity:.72;margin-bottom:6px}
+.night-strip-t{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;font-weight:900;margin-bottom:4px}
+.night-strip-s{font-size:12px;font-weight:700;line-height:1.5;opacity:.88;margin-bottom:12px}
+.night-strip-row{display:flex;gap:8px;flex-wrap:wrap}
+.night-strip-btn{flex:1 1 calc(33% - 8px);min-width:92px;padding:11px 8px;border-radius:16px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;cursor:pointer;backdrop-filter:blur(8px)}
+.night-strip-btn:active{transform:scale(.96)}
+.night-strip-btn.primary{background:rgba(255,255,255,.92);color:#3a2060;border:none}
+body.night-calm{--sh2:0 6px 18px rgba(0,0,0,.18)}
+body.night-calm .postpartum-hero{filter:saturate(.88) brightness(.92)}
+body.night-calm .baby-day-card{background:linear-gradient(160deg,rgba(255,255,255,.88),rgba(90,70,140,.08));border-color:rgba(90,70,140,.18)}
+body.night-calm .home-qpill,body.night-calm .today-chip{box-shadow:none}
+body.night-calm #nav{background:rgba(18,10,28,.92)}
+.onboard-mo{position:fixed;inset:0;background:rgba(20,4,12,.58);backdrop-filter:blur(14px);z-index:390;display:none;align-items:flex-end;justify-content:center;padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom))}
+.onboard-mo.open{display:flex}
+.onboard-card{width:100%;max-width:420px;border-radius:28px 28px 22px 22px;background:var(--card);border:1px solid var(--cb);box-shadow:0 24px 60px rgba(20,4,12,.35);padding:22px 18px 18px;animation:cIn .35s ease}
+.onboard-step{font-size:10px;font-weight:900;color:var(--rose);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px}
+.onboard-title{font-family:'Playfair Display',serif;font-size:24px;font-style:italic;font-weight:900;margin-bottom:6px;line-height:1.3}
+.onboard-txt{font-size:13px;font-weight:700;color:var(--t3);line-height:1.55;margin-bottom:16px}
+.onboard-dots{display:flex;gap:6px;justify-content:center;margin-bottom:14px}
+.onboard-dot{width:7px;height:7px;border-radius:50%;background:var(--cb)}
+.onboard-dot.on{background:var(--rose);transform:scale(1.15)}
+.onboard-actions{display:flex;gap:8px}
+.onboard-actions .lq{flex:1;margin:0;padding:14px}
+.onboard-skip{flex:0 0 auto;padding:14px 16px;border:none;background:transparent;color:var(--t3);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer}
 .baby-age-card-inner{text-align:center;padding:6px 0}
 .baby-age-emoji{font-size:44px;display:block}
 .baby-age-title{font-family:'Playfair Display',serif;font-size:25px;font-style:italic;font-weight:900;color:var(--rose);margin-top:2px}
@@ -2096,6 +2125,17 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
           </div>
           <div class="baby-day-rhythm" id="babyDayRhythm" role="list" aria-label="Ритм дня"></div>
           <div class="baby-day-quick" id="babyCareNowActions"></div>
+        </div>
+      </div>
+
+      <div class="night-strip" id="nightCalmStrip" role="region" aria-label="Тихая ночь">
+        <div class="night-strip-kicker">Тихая ночь</div>
+        <div class="night-strip-t" id="nightStripTitle">Спокойный режим</div>
+        <div class="night-strip-s" id="nightStripSub">Мягкий свет и быстрые отметки — без лишнего шума</div>
+        <div class="night-strip-row">
+          <button type="button" class="night-strip-btn primary" id="nightFeedBtn" onclick="nightQuickFeed()">🍼 Кормление</button>
+          <button type="button" class="night-strip-btn" onclick="quickBabyDiaper('pee')">🧷 Туалет</button>
+          <button type="button" class="night-strip-btn" id="nightSleepBtn" onclick="toggleBabySleep()">😴 Сон</button>
         </div>
       </div>
 
@@ -3016,6 +3056,8 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 
         <div class="card" id="settingsPrefsBlock"><div class="cb">
           <div class="tog-w"><span style="font-size:15px;font-weight:800">Тёмная тема 🌙</span><label class="tog"><input type="checkbox" id="thmTog" onchange="toggleTheme()"><span class="tog-sl"></span></label></div>
+          <div class="tog-w postpartum-only" id="nightCalmTogRow"><span style="font-size:15px;font-weight:800">Ночной спокойный режим 🌛</span><label class="tog"><input type="checkbox" id="nightCalmTog" onchange="toggleNightCalmPref()"><span class="tog-sl"></span></label></div>
+          <p class="photo-storage-sub postpartum-only" id="nightCalmHint" style="margin-top:-8px;margin-bottom:14px">С 22:00 до 6:00 — мягче экран и быстрые ночные отметки на главной</p>
           <div class="tog-w"><span style="font-size:15px;font-weight:800">Уведомления 🔔</span><button id="notifBtn" onclick="reqNotifs()" style="background:linear-gradient(135deg,#1E9CB0,#30C0D8);color:#fff;border:none;border-radius:50px;padding:9px 20px;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(30,156,176,.3)">Включить</button></div>
           <div class="notif-status" id="notifStatus">Напомню о препаратах — разреши уведомления. На iPhone напоминания приходят, когда приложение открыто или недавно использовалось.</div>
           <p style="font-size:12px;font-weight:700;color:var(--t3);padding:2px 4px 20px;line-height:1.65" id="notifHint">На iPhone напоминания работают, когда приложение установлено на экран «Домой» и периодически открывается.</p>
@@ -3061,7 +3103,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v59</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v60</div>
         </div></div>
       </div>
     </div>
@@ -3117,7 +3159,22 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
       <div class="congrats-letter-text" id="congratsLetterText"></div>
       <p class="congrats-sign">— Твой Эмир ❤️</p>
     </div>
-    <button type="button" class="congrats-btn" onclick="closeBabyCongrats()">Спасибо, любимый 💖</button>
+    <button type="button" class="congrats-btn" onclick="closeBabyCongrats(true)">Дальше — как пользоваться ✨</button>
+    <button type="button" class="congrats-btn secondary" onclick="closeBabyCongrats(false)">Спасибо, любимый 💖</button>
+  </div>
+</div>
+
+<!-- MODAL: POSTPARTUM ONBOARD -->
+<div class="onboard-mo" id="babyOnboardMo" role="dialog" aria-modal="true" aria-labelledby="onboardTitle" onclick="if(event.target===this)skipBabyOnboard()">
+  <div class="onboard-card">
+    <div class="onboard-step" id="onboardStepLbl">Шаг 1 из 3</div>
+    <div class="onboard-title" id="onboardTitle">День с малышом</div>
+    <div class="onboard-txt" id="onboardTxt">На главной — живая карточка: кормление, сон и туалет в один тап.</div>
+    <div class="onboard-dots" id="onboardDots" aria-hidden="true"></div>
+    <div class="onboard-actions">
+      <button type="button" class="onboard-skip" onclick="skipBabyOnboard()">Пропустить</button>
+      <button type="button" class="lq" id="onboardNextBtn" onclick="nextBabyOnboard()">Понятно →</button>
+    </div>
   </div>
 </div>
 
@@ -3251,7 +3308,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v59';
+const APP_DATA_VER='v60';
 let curGW=null;
 let curBMo=null;
 let photoGalMode='belly'; // belly | baby
@@ -5883,6 +5940,7 @@ function applyAppMode(){
   try{renderCareFaq();}catch(e){}
   try{updateBackupReminder();}catch(e){}
   try{updateDataStatusUI();}catch(e){}
+  try{updateNightCalmMode();}catch(e){}
   if(born){
     const bmiSection=document.getElementById('bmiSection');
     const bmiBtn=document.getElementById('bmiToggleBtn');
@@ -6692,7 +6750,7 @@ function saveBabyBirth(){
   updateDataStatusUI();
   const statusEl=document.getElementById('babyBirthStatus');
   if(statusEl){statusEl.style.display='block';statusEl.textContent='Сохранено! Теперь на Главной — режим заботы о малыше 👶';}
-  if(typeof confetti==='function')confetti({particleCount:200,spread:120,origin:{y:.5},colors:['#E8325A','#FFD700','#C44DFF','#43C8E0','#fff']});
+  if(typeof confetti==='function'&&!isNightCalmHours())confetti({particleCount:200,spread:120,origin:{y:.5},colors:['#E8325A','#FFD700','#C44DFF','#43C8E0','#fff']});
   toast('Ура, малыш родился! 🎉👶');
   if(localStorage.getItem('babyCongratsShown'+V)!=='1'){
     setTimeout(showBabyCongrats,700);
@@ -6703,8 +6761,10 @@ function clearBabyBirth(){
   if(!confirm('Убрать дату родов и вернуться в режим беременности? Записи о малыше не удалятся.'))return;
   localStorage.removeItem('babyBirthDate');
   localStorage.removeItem('babyCongratsShown'+V);
+  localStorage.removeItem('babyOnboardDone'+V);
   applyAppMode();
   updateDataStatusUI();
+  updateNightCalmMode();
   toast('Режим беременности снова активен');
 }
 function formatBabyBirthDateRu(iso){
@@ -6751,12 +6811,116 @@ function showBabyCongrats(){
     'Отдыхай, моя хорошая. Ты теперь не просто моя жена — ты мама. Лучшая на свете. 🤍';
 
   document.getElementById('babyCongratsMo').classList.add('open');
-  if(typeof confetti==='function')confetti({particleCount:260,spread:130,origin:{y:.4},colors:['#E8325A','#FFD700','#C44DFF','#43C8E0','#fff']});
+  if(typeof confetti==='function'&&!isNightCalmHours())confetti({particleCount:260,spread:130,origin:{y:.4},colors:['#E8325A','#FFD700','#C44DFF','#43C8E0','#fff']});
   localStorage.setItem('babyCongratsShown'+V,'1');
 }
-function closeBabyCongrats(){
+function closeBabyCongrats(startOnboard){
   H();
   document.getElementById('babyCongratsMo').classList.remove('open');
+  const needTour=localStorage.getItem('babyOnboardDone'+V)!=='1';
+  if(startOnboard){
+    if(needTour)setTimeout(showBabyOnboard,350);
+    else{switchTabById('home');toast('День с малышом на главной 🤍');}
+    return;
+  }
+  if(needTour)setTimeout(()=>{
+    if(localStorage.getItem('babyOnboardDone'+V)==='1')return;
+    if(document.getElementById('babyOnboardMo')?.classList.contains('open'))return;
+    showBabyOnboard();
+  },1200);
+}
+const BABY_ONBOARD_STEPS=[
+  {t:'День с малышом',x:'На главной — живая карточка: кормление, сон и туалет в один тап. Статистика сверху тоже кликабельна.'},
+  {t:'Дневник заботы',x:'Во вкладке «Дневник» — рост, фото по месяцам, прививки и тёплые записи. Jump-bar поможет быстро прыгать.'},
+  {t:'Тихая ночь',x:'С 22:00 до 6:00 включается спокойный режим: мягче экран и ночная полоска с быстрыми отметками. Можно выключить в Настройках.'}
+];
+let babyOnboardIdx=0;
+function showBabyOnboard(){
+  if(!hasBabyBorn())return;
+  H();
+  babyOnboardIdx=0;
+  renderBabyOnboardStep();
+  const mo=document.getElementById('babyOnboardMo');
+  if(mo)mo.classList.add('open');
+}
+function renderBabyOnboardStep(){
+  const step=BABY_ONBOARD_STEPS[babyOnboardIdx]||BABY_ONBOARD_STEPS[0];
+  const lbl=document.getElementById('onboardStepLbl');
+  const title=document.getElementById('onboardTitle');
+  const txt=document.getElementById('onboardTxt');
+  const dots=document.getElementById('onboardDots');
+  const btn=document.getElementById('onboardNextBtn');
+  if(lbl)lbl.textContent='Шаг '+(babyOnboardIdx+1)+' из '+BABY_ONBOARD_STEPS.length;
+  if(title)title.textContent=step.t;
+  if(txt)txt.textContent=step.x;
+  if(dots)dots.innerHTML=BABY_ONBOARD_STEPS.map((_,i)=>'<span class="onboard-dot'+(i===babyOnboardIdx?' on':'')+'"></span>').join('');
+  if(btn)btn.textContent=babyOnboardIdx>=BABY_ONBOARD_STEPS.length-1?'Готово ✨':'Понятно →';
+}
+function nextBabyOnboard(){
+  H();
+  if(babyOnboardIdx>=BABY_ONBOARD_STEPS.length-1){
+    finishBabyOnboard();
+    return;
+  }
+  babyOnboardIdx++;
+  renderBabyOnboardStep();
+}
+function skipBabyOnboard(){H();finishBabyOnboard();}
+function finishBabyOnboard(){
+  localStorage.setItem('babyOnboardDone'+V,'1');
+  const mo=document.getElementById('babyOnboardMo');
+  if(mo)mo.classList.remove('open');
+  switchTabById('home');
+  setTimeout(()=>{
+    const card=document.getElementById('babyCareNowCard');
+    card&&card.scrollIntoView({behavior:'smooth',block:'center'});
+  },250);
+  toast('Готово — день с малышом под рукой 🤍');
+}
+function isNightCalmHours(d){
+  const h=(d||new Date()).getHours();
+  return h>=22||h<6;
+}
+function getNightCalmPref(){
+  const v=localStorage.getItem('nightCalmPref'+V);
+  return v===null?true:v==='1';
+}
+function toggleNightCalmPref(){
+  H();
+  const on=document.getElementById('nightCalmTog')?.checked;
+  localStorage.setItem('nightCalmPref'+V,on?'1':'0');
+  updateNightCalmMode();
+  try{updateBabyCareNowCard();}catch(e){}
+  toast(on?'Ночной режим включён 🌛':'Ночной режим выключен');
+}
+function updateNightCalmMode(){
+  const born=hasBabyBorn();
+  const pref=getNightCalmPref();
+  const night=born&&pref&&isNightCalmHours();
+  document.body.classList.toggle('night-calm',night);
+  const strip=document.getElementById('nightCalmStrip');
+  if(strip)strip.classList.toggle('show',night);
+  const tog=document.getElementById('nightCalmTog');
+  if(tog)tog.checked=pref;
+  const title=document.getElementById('nightStripTitle');
+  const sub=document.getElementById('nightStripSub');
+  const sleepBtn=document.getElementById('nightSleepBtn');
+  const feedBtn=document.getElementById('nightFeedBtn');
+  if(night){
+    const sleep=getActiveBabySleep();
+    const last=getLastBabyFeed();
+    if(title)title.textContent=sleep?'Малыш спит':'Тихая ночь с малышом';
+    if(sub)sub.textContent=sleep
+      ?('Уже '+fmtDurMin(Math.round((Date.now()-sleep.start)/60000))+' · отметь пробуждение мягко')
+      :(last?('Последнее кормление · '+agoLabel(last.ts)):'Быстрые отметки без яркого шума');
+    if(sleepBtn)sleepBtn.textContent=sleep?'☀️ Проснулся':'😴 Заснул';
+    if(feedBtn)feedBtn.textContent=last?'↻ Кормление':'🍼 Кормление';
+  }
+}
+function nightQuickFeed(){
+  const last=getLastBabyFeed();
+  if(last)repeatLastBabyFeed();
+  else scrollToBabyTrackers('feed');
 }
 
 // ── BABY: PEDIATRIC VISITS & VACCINATION REMINDERS ──
@@ -6897,13 +7061,13 @@ function updateBabyCareNowCard(){
   let html='';
   if(pulse)pulse.classList.toggle('sleep',!!sleep);
   if(sleep){
-    if(title)title.textContent='Сейчас спит';
+    if(title)title.textContent=document.body.classList.contains('night-calm')?'Ночь · спит':'Сейчас спит';
     if(sub)sub.textContent='Уже '+fmtDurMin(Math.round((Date.now()-sleep.start)/60000))+' · нажми, когда проснётся';
     html+='<button type="button" class="baby-day-qbtn primary" onclick="toggleBabySleep()">☀️ Проснулся</button>';
     html+='<button type="button" class="baby-day-qbtn" onclick="scrollToBabyTrackers(\'sleep\')">К сну →</button>';
     if(last)html+='<button type="button" class="baby-day-qbtn" onclick="repeatLastBabyFeed()">↻ Кормление</button>';
   }else{
-    if(title)title.textContent='День с малышом';
+    if(title)title.textContent=document.body.classList.contains('night-calm')?'Тихая ночь':'День с малышом';
     const awake=loadBabySleep().slice(-1)[0];
     const awakeTxt=awake&&awake.end?('Не спит · '+agoLabel(awake.end)):'Можно отметить сон';
     const feedTxt=last?('Кормление · '+agoLabel(last.ts)):'Ещё нет кормлений';
@@ -7113,6 +7277,8 @@ function toggleBabySleep(){
   renderBabySleep();
   try{renderBabyHero();}catch(e){}
   try{updateBabyCareNowCard();}catch(e){}
+  try{updateNightCalmMode();}catch(e){}
+  try{updateTodayDash();}catch(e){}
 }
 function renderBabySleep(){
   const list=loadBabySleep();
@@ -7522,7 +7688,7 @@ function init(){
   else if(localStorage.getItem('dataMigrateToast_v8')!=='1'&&localStorage.getItem('eddDate')){
     localStorage.setItem('dataMigrateToast_v8','1');
   }
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();updateApptHomeCard();updateWaterHint();if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();renderBabyFeedHist();updateBabyVisitModeCard();updateBabyPhotoNudgeCard();renderBabyFirstsHome();updateBabyTeethHomeCard();updateBabyCareNowCard();updateBabyGrowthNudgeCard();}}});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();updateApptHomeCard();updateWaterHint();try{updateNightCalmMode();}catch(e){}if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();renderBabyFeedHist();updateBabyVisitModeCard();updateBabyPhotoNudgeCard();renderBabyFirstsHome();updateBabyTeethHomeCard();updateBabyCareNowCard();updateBabyGrowthNudgeCard();}}});
   if(!_appTimersSet){
     _appTimersSet=true;
     setInterval(()=>updateCD(localStorage.getItem('eddDate')||edd),60000);
@@ -7532,7 +7698,7 @@ function init(){
     setInterval(updateMilestoneCard,60000);
     setInterval(updateApptHomeCard,60000);
     setInterval(updateWaterHint,60000);
-    setInterval(()=>{if(hasBabyBorn()){renderBabyHero();renderBabySleep();updateBabyCareNowCard();}},15000);
+    setInterval(()=>{if(hasBabyBorn()){renderBabyHero();renderBabySleep();updateBabyCareNowCard();updateNightCalmMode();}},15000);
   }
   setTimeout(showCoachIfNeeded,3000);
   updateOfflinePill();
@@ -10900,7 +11066,7 @@ function switchTab(id,btn){
   btn.classList.add('act');
   btn.setAttribute('aria-selected','true');
   btn.setAttribute('aria-current','page');
-  if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();updateDataStatusUI();updateBackupReminder();updatePhotoModeUI();}
+  if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();updateDataStatusUI();updateBackupReminder();updatePhotoModeUI();try{updateNightCalmMode();}catch(e){}}
   if(id==='journal'){renderGallery(localStorage.getItem('eddDate'));renderJournalTagRow();renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();try{updateVisitBackupNudge();}catch(e){}if(hasBabyBorn()){renderBabyJournalTrackers();renderBabyGallery();}}
   if(id==='bag')renderBag();
   if(id==='meds'){renderMedWeekChart();renderLettersLog();}
