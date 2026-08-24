@@ -2215,9 +2215,10 @@ body.mode-postpartum .pregnancy-only{display:none!important}
       </div>
 
       <div class="card" id="babyVaxHomeCard" style="display:none">
-        <div class="cb" style="cursor:pointer" onclick="scrollToBabyVax()" role="button" tabindex="0">
-          <div class="sh" id="babyVaxHomeTitle">💉 Ближайшая прививка</div>
+        <div class="cb">
+          <div class="sh" id="babyVaxHomeTitle" style="cursor:pointer" onclick="scrollToBabyVax()">💉 Ближайшая прививка</div>
           <div class="ssub" id="babyVaxHomeSub">—</div>
+          <div class="journal-export-row" style="margin-top:12px" id="babyVaxHomeActions"></div>
         </div>
       </div>
 
@@ -2905,7 +2906,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v52</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v53</div>
         </div></div>
       </div>
     </div>
@@ -3089,7 +3090,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v52';
+const APP_DATA_VER='v53';
 let curGW=null;
 let curBMo=null;
 let photoGalMode='belly'; // belly | baby
@@ -5739,14 +5740,57 @@ const BABY_VAX=[
 ];
 function loadBabyVax(){try{return JSON.parse(localStorage.getItem('babyVaxDone'+V)||'{}');}catch(e){return{};}}
 function saveBabyVax(map){localStorage.setItem('babyVaxDone'+V,JSON.stringify(map));}
+function findBabyVaxItem(id){
+  for(const g of BABY_VAX){
+    const it=g.items.find(x=>x.id===id);
+    if(it)return{group:g,item:it};
+  }
+  return null;
+}
+function refreshBabyVaxUI(){
+  renderBabyVax();
+  try{updateBabyVaxHomeCard();}catch(e){}
+  const mo=document.getElementById('visitModeMo');
+  if(mo&&mo.classList.contains('open')){
+    try{openVisitMode();}catch(e){}
+  }
+}
 function toggleBabyVax(id){
   H();
   const map=loadBabyVax();
   if(map[id])delete map[id];
   else map[id]=new Date().toISOString().slice(0,10);
   saveBabyVax(map);
-  renderBabyVax();
+  refreshBabyVaxUI();
   toast(map[id]?'Прививка отмечена ✓':'Отметку сняли');
+}
+function markBabyVaxDoneToday(id){
+  H();
+  const found=findBabyVaxItem(id);
+  if(!found){toast('Прививка не найдена');return;}
+  const map=loadBabyVax();
+  if(map[id]){toast('Уже отмечена · '+map[id]);return;}
+  map[id]=new Date().toISOString().slice(0,10);
+  saveBabyVax(map);
+  refreshBabyVaxUI();
+  toast('Сделали сегодня: '+found.item.name+' ✓');
+}
+function markBabyVaxGroupToday(ageMo){
+  H();
+  const group=BABY_VAX.find(g=>String(g.ageMo)===String(ageMo));
+  if(!group){
+    const next=getNextPendingVax();
+    if(!next){toast('Все прививки по календарю отмечены ✨');return;}
+    return markBabyVaxGroupToday(next.group.ageMo);
+  }
+  const map=loadBabyVax();
+  const today=new Date().toISOString().slice(0,10);
+  let n=0;
+  group.items.forEach(it=>{if(!map[it.id]){map[it.id]=today;n++;}});
+  if(!n){toast('Этот этап уже отмечен');return;}
+  saveBabyVax(map);
+  refreshBabyVaxUI();
+  toast('Отметили '+n+' '+ruPlural(n,'прививку','прививки','прививок')+' · '+group.ageLabel+' ✓');
 }
 function renderBabyVax(){
   const box=document.getElementById('babyVaxBox');
@@ -5754,7 +5798,15 @@ function renderBabyVax(){
   const done=loadBabyVax();
   const age=calcBabyAge(getBabyBirthDate());
   const mo=age?age.monthsF:0;
-  box.innerHTML=BABY_VAX.map(g=>{
+  const next=getNextPendingVax();
+  let html='';
+  if(next&&(next.overdue||next.daysUntil<=14)){
+    html+='<div class="journal-export-row" style="margin-bottom:10px">';
+    html+='<button type="button" class="journal-export-btn primary" onclick="markBabyVaxDoneToday(\''+next.item.id+'\')">✓ Сделали сегодня · '+escapeHtml(next.item.name.split('(')[0].trim())+'</button>';
+    if(next.pendingCount>1)html+='<button type="button" class="journal-export-btn" onclick="markBabyVaxGroupToday('+next.group.ageMo+')">Весь этап · '+next.pendingCount+'</button>';
+    html+='</div>';
+  }
+  html+=BABY_VAX.map(g=>{
     const due=mo>=g.ageMo-0.2&&g.items.some(it=>!done[it.id]);
     const head='<div class="vax-age"><span>'+escapeHtml(g.ageLabel)+'</span>'+(due?'<span class="vax-due">скоро / актуально</span>':'')+'</div>';
     const items=g.items.map(it=>{
@@ -5763,6 +5815,7 @@ function renderBabyVax(){
     }).join('');
     return '<div class="vax-group">'+head+items+'</div>';
   }).join('');
+  box.innerHTML=html;
   updateBabyVaxHomeCard();
 }
 function getNextPendingVax(){
@@ -5781,7 +5834,7 @@ function getNextPendingVax(){
     const overdue=age.monthsF>=g.ageMo;
     const soon=daysUntil<=14||overdue||age.monthsF>=g.ageMo-0.35;
     if(soon||age.monthsF<g.ageMo){
-      return{group:g,item:pending[0],pendingCount:pending.length,dueDate,daysUntil,overdue:overdue||daysUntil<0};
+      return{group:g,item:pending[0],pending:pending,pendingCount:pending.length,dueDate,daysUntil,overdue:overdue||daysUntil<0};
     }
   }
   return null;
@@ -5790,6 +5843,7 @@ function updateBabyVaxHomeCard(){
   const card=document.getElementById('babyVaxHomeCard');
   const title=document.getElementById('babyVaxHomeTitle');
   const sub=document.getElementById('babyVaxHomeSub');
+  const actions=document.getElementById('babyVaxHomeActions');
   if(!card)return;
   if(!hasBabyBorn()){card.style.display='none';return;}
   const next=getNextPendingVax();
@@ -5801,6 +5855,12 @@ function updateBabyVaxHomeCard(){
       ?('Пора: '+next.group.ageLabel)
       :(next.daysUntil<=0?'Срок подошёл: '+next.group.ageLabel:('Через '+next.daysUntil+' '+pluralDays(next.daysUntil)+' · '+next.group.ageLabel));
     sub.textContent=when+' — '+next.item.name+(next.pendingCount>1?' (+ ещё '+ (next.pendingCount-1)+')':'');
+  }
+  if(actions){
+    let html='<button type="button" class="journal-export-btn primary" onclick="markBabyVaxDoneToday(\''+next.item.id+'\')">✓ Сделали сегодня</button>';
+    if(next.pendingCount>1)html+='<button type="button" class="journal-export-btn" onclick="markBabyVaxGroupToday('+next.group.ageMo+')">Весь этап</button>';
+    else html+='<button type="button" class="journal-export-btn" onclick="scrollToBabyVax()">Список →</button>';
+    actions.innerHTML=html;
   }
 }
 function scrollToBabyVax(){
@@ -8452,6 +8512,13 @@ function openVisitMode(){
   html+='</div>';
   html+='<div style="font-size:12px;font-weight:800;color:var(--t3);margin-bottom:8px">Сегодня: еда '+feeds+' · туалет '+diapers+' · сон '+fmtDurMin(sleepMin)+'</div>';
   if(nextVax)html+='<div class="contr-tip" style="margin-bottom:12px">💉 '+escapeHtml(nextVax.group.ageLabel)+' — '+escapeHtml(nextVax.item.name)+(nextVax.overdue?' · актуально':'')+'</div>';
+  if(nextVax&&(nextVax.overdue||nextVax.daysUntil<=7||(info&&info.days===0))){
+    html+='<div class="baby-milestone-cat"><span>💉 Прививки · '+escapeHtml(nextVax.group.ageLabel)+'</span></div>';
+    const pending=nextVax.pending||nextVax.group.items.filter(it=>!loadBabyVax()[it.id]);
+    html+=pending.map(it=>'<div class="visit-prep-item" onclick="markBabyVaxDoneToday(\''+it.id+'\')"><div class="visit-prep-chk"></div><span class="visit-prep-lbl">'+escapeHtml(it.name)+' · сегодня</span></div>').join('');
+    if(pending.length>1)html+='<div class="journal-export-row" style="margin:8px 0 12px"><button type="button" class="journal-export-btn primary" onclick="markBabyVaxGroupToday('+nextVax.group.ageMo+')">✓ Весь этап сегодня</button><button type="button" class="journal-export-btn" onclick="closeVisitMode();scrollToBabyVax()">Список →</button></div>';
+    else html+='<div class="journal-export-row" style="margin:8px 0 12px"><button type="button" class="journal-export-btn" onclick="closeVisitMode();scrollToBabyVax()">Все прививки →</button></div>';
+  }
   const growthEntries=getBabyGrowthEntries();
   const lastGrowth=growthEntries.length?growthEntries[growthEntries.length-1]:null;
   const prevGrowth=growthEntries.length>=2?growthEntries[growthEntries.length-2]:null;
@@ -8504,7 +8571,14 @@ function markVisitDoneFromMode(){
   updateBabyVisitModeCard();
   closeVisitMode();
   toast('Визит отмечен · сумка сброшена к следующему ✓');
+  const nextVax=getNextPendingVax();
   setTimeout(()=>{
+    if(nextVax&&(nextVax.overdue||nextVax.daysUntil<=3)){
+      if(confirm('Отметить прививку «'+nextVax.item.name+'» как сделанную сегодня?')){
+        markBabyVaxDoneToday(nextVax.item.id);
+        return;
+      }
+    }
     if(confirm('Добавить короткую запись о визите в дневник?'))promptJournalAfterVisit();
   },280);
 }
