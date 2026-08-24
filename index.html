@@ -1677,6 +1677,14 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 .home-quick-nav::-webkit-scrollbar{display:none}
 .home-qpill{flex:0 0 auto;padding:9px 14px;border:1px solid var(--cb);border-radius:999px;background:var(--card);font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--t2);cursor:pointer;white-space:nowrap;box-shadow:var(--sh2)}
 .home-qpill:active{transform:scale(.96)}
+.home-nudge{border:1px solid rgba(232,50,90,.1);background:linear-gradient(165deg,rgba(255,255,255,.92),rgba(232,50,90,.03))}
+.dark .home-nudge{background:linear-gradient(165deg,rgba(40,28,36,.92),rgba(232,50,90,.06))}
+body.mode-postpartum .today-dash.pregnancy-only,
+body.mode-postpartum .home-quick-nav.pregnancy-only{display:none!important}
+body:not(.mode-postpartum) .today-dash.postpartum-only,
+body:not(.mode-postpartum) .home-quick-nav.postpartum-only{display:none!important}
+body.mode-postpartum .today-dash.postpartum-only{display:grid!important}
+body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 .symptom-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .symptom-chip{padding:10px 14px;border:2px solid var(--cb);border-radius:14px;background:var(--bg2);font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:var(--t2);cursor:pointer;transition:all .2s}
 .symptom-chip.on{border-color:var(--rose);background:rgba(232,50,90,.08);color:var(--rose)}
@@ -2012,7 +2020,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         <button type="button" class="pp-hero-letter-btn" onclick="showBabyCongrats()">💌 Письмо от Эмира</button>
       </div>
 
-      <div class="card postpartum-only" id="babyCareNowCard" style="margin:0 15px 14px">
+      <div class="card postpartum-only home-nudge" id="babyCareNowCard" style="margin:0 15px 14px">
         <div class="cb">
           <div class="sh" id="babyCareNowTitle">💤 Сейчас</div>
           <div class="ssub" id="babyCareNowSub">Кормление и сон — под рукой</div>
@@ -2027,11 +2035,18 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         <div class="overdue-banner-meta" id="overdueMeta"></div>
       </div>
 
-      <div class="today-dash" id="todayDash" role="region" aria-label="Сводка на сегодня">
+      <div class="today-dash pregnancy-only" id="todayDash" role="region" aria-label="Сводка на сегодня">
         <button type="button" class="today-chip" onclick="switchTabById('meds')"><span class="today-chip-ico">💊</span><span class="today-chip-val" id="tdMed">0%</span><span class="today-chip-lbl">препараты</span></button>
         <button type="button" class="today-chip" onclick="document.getElementById('waterRow')&&document.getElementById('waterRow').scrollIntoView({behavior:'smooth',block:'center'})"><span class="today-chip-ico">💧</span><span class="today-chip-val" id="tdWater">0/8</span><span class="today-chip-lbl">вода</span></button>
         <button type="button" class="today-chip" onclick="document.querySelector('.mood-row')&&document.querySelector('.mood-row').scrollIntoView({behavior:'smooth',block:'center'})"><span class="today-chip-ico" id="tdMoodIco">🤍</span><span class="today-chip-val" id="tdMood">—</span><span class="today-chip-lbl">настроение</span></button>
         <button type="button" class="today-chip" onclick="switchTabById('journal')"><span class="today-chip-ico">📷</span><span class="today-chip-val" id="tdGal">0</span><span class="today-chip-lbl">фото</span></button>
+      </div>
+
+      <div class="today-dash postpartum-only" id="todayDashBaby" role="region" aria-label="Сводка малыша на сегодня">
+        <button type="button" class="today-chip" onclick="scrollToBabyTrackers('sleep')"><span class="today-chip-ico" id="tdBabySleepIco">💤</span><span class="today-chip-val" id="tdBabySleep">—</span><span class="today-chip-lbl" id="tdBabySleepLbl">сон</span></button>
+        <button type="button" class="today-chip" onclick="scrollToBabyTrackers('feed')"><span class="today-chip-ico">🍼</span><span class="today-chip-val" id="tdBabyFeed">0</span><span class="today-chip-lbl">кормл.</span></button>
+        <button type="button" class="today-chip" onclick="scrollToBabyTrackers('feed')"><span class="today-chip-ico">🧷</span><span class="today-chip-val" id="tdBabyDiaper">0</span><span class="today-chip-lbl">подгузн.</span></button>
+        <button type="button" class="today-chip" onclick="goHomeSection('wellness')"><span class="today-chip-ico" id="tdMoodIcoBaby">🤍</span><span class="today-chip-val" id="tdMoodBaby">—</span><span class="today-chip-lbl">настр.</span></button>
       </div>
 
       <div class="today-meds" id="todayMedsCard" style="display:none" role="region" aria-label="Препараты на сегодня">
@@ -2068,11 +2083,19 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         </div>
       </div>
 
-      <div class="home-quick-nav" role="navigation" aria-label="Быстрые переходы">
+      <div class="home-quick-nav pregnancy-only" role="navigation" aria-label="Быстрые переходы">
         <button type="button" class="home-qpill" onclick="switchTabById('meds')">💊 Забота</button>
         <button type="button" class="home-qpill" onclick="switchTabById('journal')">📓 Дневник</button>
         <button type="button" class="home-qpill" onclick="goHomeSection('wellness')">🌬️ Дыхание</button>
         <button type="button" class="home-qpill" onclick="goHomeSection('daily')">💧 Вода</button>
+        <button type="button" class="home-qpill" onclick="goHomeSection('support')">💌 Письма</button>
+      </div>
+
+      <div class="home-quick-nav postpartum-only" role="navigation" aria-label="Быстрые переходы малыша">
+        <button type="button" class="home-qpill" onclick="switchTabById('journal')">📓 Дневник</button>
+        <button type="button" class="home-qpill" onclick="goHomeSection('baby')">👶 Малыш</button>
+        <button type="button" class="home-qpill" onclick="scrollToBabyTrackers('sleep')">💤 Сон</button>
+        <button type="button" class="home-qpill" onclick="scrollToBabyTrackers('feed')">🍼 Кормление</button>
         <button type="button" class="home-qpill" onclick="goHomeSection('support')">💌 Письма</button>
       </div>
 
@@ -2219,7 +2242,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         </div>
       </div>
 
-      <div class="card" id="babyVaxHomeCard" style="display:none">
+      <div class="card home-nudge" id="babyVaxHomeCard" style="display:none">
         <div class="cb">
           <div class="sh" id="babyVaxHomeTitle" style="cursor:pointer" onclick="scrollToBabyVax()">💉 Ближайшая прививка</div>
           <div class="ssub" id="babyVaxHomeSub">—</div>
@@ -2227,7 +2250,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         </div>
       </div>
 
-      <div class="card" id="babyVisitModeCard" style="display:none">
+      <div class="card home-nudge" id="babyVisitModeCard" style="display:none">
         <div class="cb">
           <div class="sh" id="babyVisitModeTitle">🩺 Визит к педиатру сегодня</div>
           <div class="ssub" id="babyVisitModeSub">Всё нужное — в одном месте</div>
@@ -2238,7 +2261,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         </div>
       </div>
 
-      <div class="card" id="babyGrowthNudgeCard" style="display:none">
+      <div class="card home-nudge" id="babyGrowthNudgeCard" style="display:none">
         <div class="cb">
           <div class="sh">📈 Замер перед визитом</div>
           <div class="ssub" id="babyGrowthNudgeSub">Обнови вес и рост дома — врачу будет удобнее</div>
@@ -2249,7 +2272,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         </div>
       </div>
 
-      <div class="card" id="babyPhotoNudgeCard" style="display:none">
+      <div class="card home-nudge" id="babyPhotoNudgeCard" style="display:none">
         <div class="cb">
           <div class="sh">📷 Фото этого месяца</div>
           <div class="ssub" id="babyPhotoNudgeSub">Сохрани снимок — альбом будет ещё теплее</div>
@@ -2260,7 +2283,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         </div>
       </div>
 
-      <div class="card" id="babyFirstsHomeCard" style="display:none">
+      <div class="card home-nudge" id="babyFirstsHomeCard" style="display:none">
         <div class="cb">
           <div class="sh">✨ Первые разы</div>
           <div class="ssub" id="babyFirstsHomeSub">Самые тёплые моменты</div>
@@ -2269,7 +2292,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         </div>
       </div>
 
-      <div class="card" id="babyTeethHomeCard" style="display:none">
+      <div class="card home-nudge" id="babyTeethHomeCard" style="display:none">
         <div class="cb">
           <div class="sh" id="babyTeethHomeTitle" style="cursor:pointer" onclick="scrollToBabyTeeth()">🦷 Зубки</div>
           <div class="ssub" id="babyTeethHomeSub">Отмечай прорезание — сохранится дата</div>
@@ -2922,7 +2945,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v53</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v55</div>
         </div></div>
       </div>
     </div>
@@ -3106,7 +3129,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v53';
+const APP_DATA_VER='v55';
 let curGW=null;
 let curBMo=null;
 let photoGalMode='belly'; // belly | baby
@@ -5614,6 +5637,7 @@ function applyAppMode(){
     try{renderBabyFirstsHome();}catch(e){}
     try{updateBabyTeethHomeCard();}catch(e){}
     try{updateBabyVisitModeCard();}catch(e){}
+    try{prioritizeHomeNudgeCards();}catch(e){}
   }else{
     ['babyPhotoNudgeCard','babyFirstsHomeCard','babyVisitModeCard','babyVaxHomeCard','babyGrowthNudgeCard','babyTeethHomeCard'].forEach(id=>{
       const el=document.getElementById(id);if(el)el.style.display='none';
@@ -8040,27 +8064,74 @@ function switchTabById(id){
   switchTab(id,document.querySelectorAll('.nb')[idx]);
 }
 function updateTodayDash(){
-  const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
-  const {active}=getScheduleMeds();
-  let done=0;active.forEach(t=>{if(s[t.id])done++});
-  const medPct=active.length?Math.round(done/active.length*100):100;
-  const w=JSON.parse(localStorage.getItem('water'+V)||'[]');
   const mood=localStorage.getItem('mood'+V)||'';
-  const elMed=document.getElementById('tdMed');
-  const elWater=document.getElementById('tdWater');
-  const elMood=document.getElementById('tdMood');
-  const elMoodIco=document.getElementById('tdMoodIco');
-  const elGal=document.getElementById('tdGal');
-  if(elMed)elMed.textContent=medPct+'%';
-  if(elWater)elWater.textContent=w.length+'/8';
-  if(elMood)elMood.textContent=mood||'—';
-  if(elMoodIco)elMoodIco.textContent=mood||'🤍';
-  getPhotoStorageStats().then(st=>{if(elGal)elGal.textContent=String((st.hasUzi?1:0)+st.galCount);}).catch(()=>{});
+  if(hasBabyBorn()){
+    const feeds=loadBabyFeed().filter(f=>isToday(f.ts)).length;
+    const diapers=loadBabyDiaper().filter(d=>isToday(d.ts)).length;
+    const sleep=getActiveBabySleep();
+    const todaySleeps=loadBabySleep().filter(s=>isToday(s.start));
+    const sleepMin=todaySleeps.reduce((sum,s)=>sum+Math.round(((s.end||Date.now())-s.start)/60000),0);
+    const sleepEl=document.getElementById('tdBabySleep');
+    const sleepIco=document.getElementById('tdBabySleepIco');
+    const sleepLbl=document.getElementById('tdBabySleepLbl');
+    if(sleep){
+      if(sleepEl)sleepEl.textContent=fmtDurMin(Math.round((Date.now()-sleep.start)/60000));
+      if(sleepIco)sleepIco.textContent='😴';
+      if(sleepLbl)sleepLbl.textContent='спит';
+    }else{
+      if(sleepEl)sleepEl.textContent=sleepMin?fmtDurMin(sleepMin):'—';
+      if(sleepIco)sleepIco.textContent='💤';
+      if(sleepLbl)sleepLbl.textContent='сон';
+    }
+    const fEl=document.getElementById('tdBabyFeed');if(fEl)fEl.textContent=String(feeds);
+    const dEl=document.getElementById('tdBabyDiaper');if(dEl)dEl.textContent=String(diapers);
+    const mEl=document.getElementById('tdMoodBaby');if(mEl)mEl.textContent=mood||'—';
+    const mIco=document.getElementById('tdMoodIcoBaby');if(mIco)mIco.textContent=mood||'🤍';
+  }else{
+    const s=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
+    const {active}=getScheduleMeds();
+    let done=0;active.forEach(t=>{if(s[t.id])done++});
+    const medPct=active.length?Math.round(done/active.length*100):100;
+    const w=JSON.parse(localStorage.getItem('water'+V)||'[]');
+    const elMed=document.getElementById('tdMed');
+    const elWater=document.getElementById('tdWater');
+    const elMood=document.getElementById('tdMood');
+    const elMoodIco=document.getElementById('tdMoodIco');
+    const elGal=document.getElementById('tdGal');
+    if(elMed)elMed.textContent=medPct+'%';
+    if(elWater)elWater.textContent=w.length+'/8';
+    if(elMood)elMood.textContent=mood||'—';
+    if(elMoodIco)elMoodIco.textContent=mood||'🤍';
+    getPhotoStorageStats().then(st=>{if(elGal)elGal.textContent=String((st.hasUzi?1:0)+st.galCount);}).catch(()=>{});
+  }
   updateNextActionCard();
   updateApptHomeCard();
   updatePerfectDayBadge();
   renderWeekWellness();
   renderTodayMeds();
+  try{prioritizeHomeNudgeCards();}catch(e){}
+}
+function prioritizeHomeNudgeCards(){
+  if(!hasBabyBorn())return;
+  // Keep urgent cards; soft nudges max 2 so home stays calm and premium
+  const soft=[
+    {id:'babyGrowthNudgeCard',keep:false},
+    {id:'babyPhotoNudgeCard',keep:false},
+    {id:'babyTeethHomeCard',keep:(()=>{
+      const age=calcBabyAge(getBabyBirthDate());
+      const next=getNextBabyTooth(age);
+      return!!(next&&next.due);
+    })()},
+    {id:'babyFirstsHomeCard',keep:false}
+  ];
+  let shown=0;
+  soft.forEach(item=>{
+    const el=document.getElementById(item.id);
+    if(!el||el.style.display==='none')return;
+    if(item.keep)return;
+    shown++;
+    if(shown>2)el.style.display='none';
+  });
 }
 function renderTodayMeds(){
   const card=document.getElementById('todayMedsCard');
@@ -8254,6 +8325,7 @@ function goWeekStat(action){
   if(action==='meds'){switchTabById('meds');return;}
   if(action==='mood'){goHomeSection('wellness');return;}
   if(action==='water'){goHomeSection('daily');return;}
+  if(action==='journal'){scrollToBabyTrackers('feed');return;}
   if(action==='bp'){
     switchTabById('journal');
     setTimeout(()=>document.getElementById('bpLogEl')?.scrollIntoView({behavior:'smooth',block:'center'}),300);
@@ -8271,12 +8343,29 @@ function explainWellnessScore(){
   if(score>=70)msg+='отличная неделя заботы! 💚';
   else if(score>=40)msg+='хорошо, но есть куда расти 💛';
   else msg+='начни с малого: вода, настроение, препараты 💗';
-  msg+=' Считается по настроению, воде, лекарствам, давлению и серии за 7 дней.';
+  if(hasBabyBorn())msg+=' Считается по настроению, воде, лекарствам и серии за 7 дней.';
+  else msg+=' Считается по настроению, воде, лекарствам, давлению и серии за 7 дней.';
   toast(msg);
 }
 function updateWellnessHint(score,moodCount,waterDays,bpCount,kickWeek){
   const hint=document.getElementById('weekWellnessHint');
   if(!hint)return;
+  if(hasBabyBorn()){
+    const empty=moodCount===0&&waterDays===0;
+    if(empty&&score<15){
+      hint.style.display='block';
+      hint.textContent='Начни с простого: отметь настроение или воду — или запиши кормление малыша ✨';
+      return;
+    }
+    if(score>=70){hint.style.display='none';return;}
+    hint.style.display='block';
+    const tips=[];
+    if(moodCount<4)tips.push('настроение');
+    if(waterDays<4)tips.push('вода');
+    tips.push('кормление/сон в дневнике');
+    hint.textContent='Подтянуть индекс: '+tips.join(', ')+' — мягко, без гонки 💛';
+    return;
+  }
   const empty=moodCount===0&&waterDays===0&&bpCount===0&&kickWeek===0;
   if(empty&&score<15){
     hint.style.display='block';
@@ -8721,11 +8810,15 @@ function markVisitDoneFromMode(){
   toast('Визит отмечен · сумка сброшена к следующему ✓');
   const nextVax=getNextPendingVax();
   setTimeout(()=>{
+    // One calm prompt — never stack two confirms
     if(nextVax&&(nextVax.overdue||nextVax.daysUntil<=3)){
       if(confirm('Отметить прививку «'+nextVax.item.name+'» как сделанную сегодня?')){
         markBabyVaxDoneToday(nextVax.item.id);
-        return;
+        toast('Можешь ещё коротко записать визит в дневнике 📓');
+      }else if(confirm('Добавить короткую запись о визите в дневник?')){
+        promptJournalAfterVisit();
       }
+      return;
     }
     if(confirm('Добавить короткую запись о визите в дневник?'))promptJournalAfterVisit();
   },280);
@@ -8906,23 +8999,40 @@ function renderWeekWellness(){
   const keys=getLast7DayKeys();
   const moodH=JSON.parse(localStorage.getItem('moodH'+V)||'{}');
   const moodCount=keys.filter(k=>moodH[k]).length;
-  const kickHist=JSON.parse(localStorage.getItem('kickHist'+V)||'[]');
-  const kickWeek=kickHist.filter(h=>keys.includes(h.date.slice(0,10))).length;
-  const bpLog=loadBPLog();
-  const bpCount=keys.filter(k=>bpLog[k]).length;
   const streak=localStorage.getItem('streak'+V)||'0';
   const waterHist=JSON.parse(localStorage.getItem('waterHist'+V)||'{}');
   const todayKey=keys[6];
   const todayWater=JSON.parse(localStorage.getItem('water'+V)||'[]').length;
   const waterDays=keys.filter(k=>(k===todayKey?todayWater:waterHist[k])>=8).length;
   const streakStat=formatStreakWeekStat(streak);
-  grid.innerHTML=[
-    weekStatHtml('🔥',streakStat.val,streakStat.lbl,'meds'),
-    weekStatHtml('😊','<b>'+moodCount+'/7</b> дней','настроение отмечено','mood'),
-    weekStatHtml('💧','<b>'+waterDays+'/7</b> дней','норма воды выполнена','water'),
-    weekStatHtml('🩺','<b>'+bpCount+'/7</b> '+pluralMeasurements(bpCount),'давление записано','bp'),
-    weekStatHtml('🦶','<b>'+kickWeek+'</b> '+pluralSessions(kickWeek),'подсчёт шевелений','kick')
-  ].join('');
+  if(hasBabyBorn()){
+    const feeds=loadBabyFeed();
+    const diapers=loadBabyDiaper();
+    const sleeps=loadBabySleep();
+    const feedDays=keys.filter(k=>feeds.some(f=>new Date(f.ts).toISOString().slice(0,10)===k)).length;
+    const diaperDays=keys.filter(k=>diapers.some(d=>new Date(d.ts).toISOString().slice(0,10)===k)).length;
+    const sleepMinWeek=sleeps.filter(s=>keys.includes(new Date(s.start).toISOString().slice(0,10)))
+      .reduce((sum,s)=>sum+Math.round(((s.end||Date.now())-s.start)/60000),0);
+    grid.innerHTML=[
+      weekStatHtml('🔥',streakStat.val,streakStat.lbl,'meds'),
+      weekStatHtml('😊','<b>'+moodCount+'/7</b> дней','настроение отмечено','mood'),
+      weekStatHtml('💧','<b>'+waterDays+'/7</b> дней','норма воды выполнена','water'),
+      weekStatHtml('🍼','<b>'+feedDays+'/7</b> дней','кормления записаны','journal'),
+      weekStatHtml('💤','<b>'+fmtDurMin(sleepMinWeek)+'</b>','сон за неделю','journal')
+    ].join('');
+  }else{
+    const kickHist=JSON.parse(localStorage.getItem('kickHist'+V)||'[]');
+    const kickWeek=kickHist.filter(h=>keys.includes(h.date.slice(0,10))).length;
+    const bpLog=loadBPLog();
+    const bpCount=keys.filter(k=>bpLog[k]).length;
+    grid.innerHTML=[
+      weekStatHtml('🔥',streakStat.val,streakStat.lbl,'meds'),
+      weekStatHtml('😊','<b>'+moodCount+'/7</b> дней','настроение отмечено','mood'),
+      weekStatHtml('💧','<b>'+waterDays+'/7</b> дней','норма воды выполнена','water'),
+      weekStatHtml('🩺','<b>'+bpCount+'/7</b> '+pluralMeasurements(bpCount),'давление записано','bp'),
+      weekStatHtml('🦶','<b>'+kickWeek+'</b> '+pluralSessions(kickWeek),'подсчёт шевелений','kick')
+    ].join('');
+  }
   const scoreEl=document.getElementById('wellnessScore');
   if(scoreEl){
     const score=getWellnessScore();
@@ -8931,7 +9041,14 @@ function renderWeekWellness(){
     scoreEl.dataset.level=score>=70?'high':score>=40?'mid':'low';
     const wrap=scoreEl.parentElement;
     if(wrap)wrap.title='Индекс заботы: '+score+' из 100 · нажми для пояснения';
-    updateWellnessHint(score,moodCount,waterDays,bpCount,kickWeek);
+    if(hasBabyBorn())updateWellnessHint(score,moodCount,waterDays,0,0);
+    else{
+      const kickHist=JSON.parse(localStorage.getItem('kickHist'+V)||'[]');
+      const kickWeek=kickHist.filter(h=>keys.includes(h.date.slice(0,10))).length;
+      const bpLog=loadBPLog();
+      const bpCount=keys.filter(k=>bpLog[k]).length;
+      updateWellnessHint(score,moodCount,waterDays,bpCount,kickWeek);
+    }
   }
   updateMilestoneCard();
 }
@@ -8969,13 +9086,23 @@ function updateNextActionCard(){
     return;
   }
   if(hasBabyBorn()){
+    const sleep=getActiveBabySleep();
+    if(sleep){
+      setNextAction('😴','Малыш спит','Уже '+fmtDurMin(Math.round((Date.now()-sleep.start)/60000)),()=>{toggleBabySleep();},false);
+      return;
+    }
+    const vax=getNextPendingVax();
+    if(vax&&vax.overdue){
+      setNextAction('💉','Прививка актуальна',vax.group.ageLabel+' — '+vax.item.name,()=>scrollToBabyVax(),true);
+      return;
+    }
     const feeds=loadBabyFeed();
     const lastFeed=feeds[feeds.length-1];
     if(lastFeed){
       const hSince=(now.getTime()-lastFeed.ts)/3600000;
       if(hSince>=2.5){
         const hh=Math.floor(hSince),mm=Math.round((hSince-hh)*60);
-        setNextAction('🍼',hSince>=4?'Пора покормить малыша!':'Скоро кормление?',hh+' ч '+mm+' мин с последнего кормления',()=>switchTabById('journal'),hSince>=4);
+        setNextAction('🍼',hSince>=4?'Пора покормить малыша!':'Скоро кормление?',hh+' ч '+mm+' мин с последнего кормления',()=>scrollToBabyTrackers('feed'),hSince>=4);
         return;
       }
     }
