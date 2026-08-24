@@ -1793,6 +1793,7 @@ body.mode-postpartum .settings-jump .journal-jump-pill.postpartum-only{display:i
 .appt-list{display:flex;flex-direction:column;gap:8px}
 .appt-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:16px;background:var(--bg2);border:1px solid var(--cb);cursor:pointer;transition:transform .2s}
 .appt-item.done{opacity:.55}
+.appt-item.soon{border-color:rgba(232,50,90,.35);box-shadow:0 0 0 1px rgba(232,50,90,.12)}
 .appt-item:active{transform:scale(.98)}
 .appt-date{font-size:11px;font-weight:900;color:var(--rose);min-width:72px}
 .appt-title{font-size:13px;font-weight:800;color:var(--t1);flex:1;line-height:1.35}
@@ -3185,7 +3186,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v64</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v65</div>
         </div></div>
       </div>
     </div>
@@ -3390,7 +3391,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v64';
+const APP_DATA_VER='v65';
 let curGW=null;
 let curBMo=null;
 let photoGalMode='belly'; // belly | baby
@@ -5487,12 +5488,15 @@ const MED_EMOJIS=['💊','☀️','🌿','💎','🌸','🌙','✨','💧','🍋
 let medEditId=null;
 
 function escapeHtml(s){
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 function formatMedDet(det){
   if(!det)return '';
-  if(/<[a-z][\s\S]*>/i.test(det))return det;
-  return escapeHtml(det).replace(/\n/g,'<br>');
+  // Escape everything, then re-enable only safe formatting tags
+  return escapeHtml(det)
+    .replace(/&lt;(\/)?(b|strong|i|em)&gt;/gi,'<$1$2>')
+    .replace(/&lt;br\s*\/?&gt;/gi,'<br>')
+    .replace(/\n/g,'<br>');
 }
 function cloneMeds(arr){return JSON.parse(JSON.stringify(arr));}
 function loadMedRegistry(){
@@ -6205,7 +6209,7 @@ function toggleBabyVax(id){
   H();
   const map=loadBabyVax();
   if(map[id])delete map[id];
-  else map[id]=new Date().toISOString().slice(0,10);
+  else map[id]=getDayKey(new Date());
   saveBabyVax(map);
   refreshBabyVaxUI();
   toast(map[id]?'Прививка отмечена ✓':'Отметку сняли');
@@ -6216,7 +6220,7 @@ function markBabyVaxDoneToday(id){
   if(!found){toast('Прививка не найдена');return;}
   const map=loadBabyVax();
   if(map[id]){toast('Уже отмечена · '+map[id]);return;}
-  map[id]=new Date().toISOString().slice(0,10);
+  map[id]=getDayKey(new Date());
   saveBabyVax(map);
   refreshBabyVaxUI();
   toast('Сделали сегодня: '+found.item.name+' ✓');
@@ -6230,7 +6234,7 @@ function markBabyVaxGroupToday(ageMo){
     return markBabyVaxGroupToday(next.group.ageMo);
   }
   const map=loadBabyVax();
-  const today=new Date().toISOString().slice(0,10);
+  const today=getDayKey(new Date());
   let n=0;
   group.items.forEach(it=>{if(!map[it.id]){map[it.id]=today;n++;}});
   if(!n){toast('Этот этап уже отмечен');return;}
@@ -6366,7 +6370,7 @@ function maybeMarkFirstToothFirst(dateStr){
   const firsts=loadBabyFirsts();
   if(firsts.tooth)return;
   if(getTeethDoneCount()!==1)return;
-  firsts.tooth=dateStr||new Date().toISOString().slice(0,10);
+  firsts.tooth=dateStr||getDayKey(new Date());
   saveBabyFirsts(firsts);
   try{renderBabyFirsts();}catch(e){}
 }
@@ -6380,7 +6384,7 @@ function toggleBabyTooth(id){
     toast('Отметку сняли');
     return;
   }
-  const today=new Date().toISOString().slice(0,10);
+  const today=getDayKey(new Date());
   map[id]=today;
   saveBabyTeeth(map);
   maybeMarkFirstToothFirst(today);
@@ -6394,7 +6398,7 @@ function markBabyToothToday(id){
   if(!t){toast('Зуб не найден');return;}
   const map=loadBabyTeeth();
   if(map[id]){toast('Уже отмечен · '+map[id]);return;}
-  const today=new Date().toISOString().slice(0,10);
+  const today=getDayKey(new Date());
   map[id]=today;
   saveBabyTeeth(map);
   maybeMarkFirstToothFirst(today);
@@ -6511,7 +6515,7 @@ function toggleBabyFirst(id){
     toast('Отметку сняли');
     return;
   }
-  map[id]=new Date().toISOString().slice(0,10);
+  map[id]=getDayKey(new Date());
   saveBabyFirsts(map);
   renderBabyFirsts();
   toast('Сохранили этот «первый раз» ✨');
@@ -7020,7 +7024,7 @@ function nightQuickFeed(){
 function getBabyApptDates(birthISO){
   const b=new Date(birthISO+'T12:00:00');
   if(isNaN(b.getTime()))return[];
-  const addDays=(n)=>{const d=new Date(b.getTime()+n*86400000);return d.toISOString().slice(0,10);};
+  const addDays=(n)=>{const d=new Date(b.getTime()+n*86400000);return getDayKey(d);};
   return [
     {day:3,title:'Патронаж новорождённого (3 дня)'},
     {day:14,title:'Осмотр педиатра (2 недели)'},
@@ -7520,7 +7524,7 @@ function updateBabyGrowthNudgeCard(){
   if(days<0||days>3){card.style.display='none';return;}
   if(localStorage.getItem('babyGrowthNudgeDismiss'+V)===String(next.id)){card.style.display='none';return;}
   const last=getLastGrowthEntry();
-  const today=new Date().toISOString().slice(0,10);
+  const today=getDayKey(new Date());
   let stale=true;
   if(last){
     const ago=growthDaysBetween(last.date,today);
@@ -7552,7 +7556,7 @@ function saveBabyGrowth(){
   const hasH=!isNaN(ht)&&ht>=30&&ht<=130;
   const hasHc=!isNaN(hc)&&hc>=25&&hc<=60;
   if(!hasW&&!hasH&&!hasHc){toast('Заполни хотя бы одно поле — вес, рост или окружность головы');return;}
-  const t=new Date().toISOString().slice(0,10);
+  const t=getDayKey(new Date());
   const prevList=getBabyGrowthEntries();
   const prevBefore=prevList.length?(prevList[prevList.length-1].date===t&&prevList.length>=2?prevList[prevList.length-2]:(prevList[prevList.length-1].date===t?null:prevList[prevList.length-1])):null;
   let h=loadBabyGrowthMap();
@@ -7699,14 +7703,22 @@ function shiftDayKey(key,delta){
 function isSameDayKey(ts,key){
   return getDayKey(new Date(ts))===key;
 }
+function sleepMinutesOnDay(s,key){
+  const dayStart=new Date(key+'T00:00:00').getTime();
+  const isTodayKey=key===getDayKey(new Date());
+  const dayEnd=isTodayKey?Date.now():new Date(key+'T23:59:59.999').getTime();
+  const end=s.end!=null?s.end:(isTodayKey?Date.now():null);
+  if(end==null)return 0;
+  const a=Math.max(s.start,dayStart);
+  const b=Math.min(end,dayEnd);
+  return Math.max(0,Math.round((b-a)/60000));
+}
 function getBabyDayStatsForKey(key){
   const feeds=loadBabyFeed().filter(f=>isSameDayKey(f.ts,key));
   const diapers=loadBabyDiaper().filter(d=>isSameDayKey(d.ts,key));
-  const sleeps=loadBabySleep().filter(s=>isSameDayKey(s.start,key));
-  const sleepMin=sleeps.reduce((n,s)=>{
-    const end=s.end||(key===getDayKey(new Date())?Date.now():s.start);
-    return n+Math.max(0,Math.round((end-s.start)/60000));
-  },0);
+  const allSleep=loadBabySleep();
+  const sleeps=allSleep.filter(s=>sleepMinutesOnDay(s,key)>0||isSameDayKey(s.start,key));
+  const sleepMin=allSleep.reduce((n,s)=>n+sleepMinutesOnDay(s,key),0);
   return{feeds:feeds.length,diapers:diapers.length,sleeps:sleeps.length,sleepMin};
 }
 function renderBabyDayCompare(){
@@ -9218,7 +9230,7 @@ function updatePerfectDayBadge(){
     perfect=medPct===100&&w.length>=8&&!!mood;
     el.textContent='🌟 Идеальный день заботы — ты молодец!';
   }
-  const todayKey=new Date().toISOString().slice(0,10);
+  const todayKey=getDayKey(new Date());
   const wasPerfect=localStorage.getItem('perfectDay_'+todayKey+V)==='1';
   el.classList.toggle('show',perfect);
   if(perfect&&!wasPerfect){
@@ -9412,7 +9424,7 @@ function updateMilestoneCard(){
     const vax=getNextPendingVax();
     if(vax){
       const days=vax.overdue?0:Math.max(0,vax.daysUntil);
-      candidates.push({date:vax.dueDate.toISOString().slice(0,10),title:vax.item.name+' · '+vax.group.ageLabel,ico:'💉',days:vax.overdue?0:days,kind:'vax'});
+      candidates.push({date:getDayKey(vax.dueDate),title:vax.item.name+' · '+vax.group.ageLabel,ico:'💉',days:vax.overdue?0:days,kind:'vax'});
     }
     const appt=getNextAppt();
     if(appt){
@@ -9696,7 +9708,7 @@ async function exportBabyAlbum(){
   }finally{hideImgCompressOverlay();}
 }
 function getTodayOrSoonAppt(){
-  const today=new Date().toISOString().slice(0,10);
+  const today=getDayKey(new Date());
   const list=loadAppts().filter(a=>!a.done).sort((a,b)=>a.date.localeCompare(b.date));
   const todayAppt=list.find(a=>a.date===today);
   if(todayAppt)return{appt:todayAppt,days:0};
@@ -9779,7 +9791,7 @@ function openVisitMode(){
   const growthEntries=getBabyGrowthEntries();
   const lastGrowth=growthEntries.length?growthEntries[growthEntries.length-1]:null;
   const prevGrowth=growthEntries.length>=2?growthEntries[growthEntries.length-2]:null;
-  const todayISO=new Date().toISOString().slice(0,10);
+  const todayISO=getDayKey(new Date());
   if(!lastGrowth)html+='<div class="contr-tip" style="margin-bottom:12px">📈 Домашнего замера ещё нет — <span style="text-decoration:underline;cursor:pointer" onclick="closeVisitMode();scrollToBabyGrowth()">внести сейчас</span></div>';
   else{
     const ago=growthDaysBetween(lastGrowth.date,todayISO);
@@ -10117,7 +10129,7 @@ function updateNextActionCard(){
   const card=document.getElementById('nextActionCard');
   if(!card)return;
   const now=new Date();
-  const today=now.toISOString().slice(0,10);
+  const today=getDayKey(now);
   const state=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
   const {active}=getScheduleMeds(now);
   const nowM=now.getHours()*60+now.getMinutes();
@@ -10414,7 +10426,7 @@ function getMilestoneDates(edd){
   const conception=new Date(eD.getTime()-280*86400000);
   const addDays=(n)=>{
     const d=new Date(conception.getTime()+n*86400000);
-    return d.toISOString().slice(0,10);
+    return getDayKey(d);
   };
   const milestones=[
     {day:140,title:'УЗИ 2 триместра (20 нед.)'},
@@ -10422,7 +10434,7 @@ function getMilestoneDates(edd){
     {day:196,title:'Консультация 3 триместра'},
     {day:252,title:'УЗИ перед родами (36 нед.)'}
   ];
-  const today=new Date().toISOString().slice(0,10);
+  const today=getDayKey(new Date());
   return milestones.map(m=>({date:addDays(m.day),title:m.title})).filter(m=>m.date>=today||Math.abs((new Date(m.date)-new Date())/86400000)<=14);
 }
 function ensureMilestoneAppts(){
@@ -10451,7 +10463,7 @@ function renderAppts(){
     const d=new Date(a.date+'T12:00:00');
     const days=Math.ceil((d-new Date())/86400000);
     const soon=days>=0&&days<=3;
-    return '<div class="appt-item'+(soon?' style="border-color:rgba(232,50,90,.35);box-shadow:0 0 0 1px rgba(232,50,90,.12)"':'')+'" onclick="toggleAppt('+a.id+')"><span class="appt-date">'+d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+'</span><span class="appt-title">'+escapeHtml(a.title)+(soon&&days===0?' · <b style="color:var(--rose)">сегодня!</b>':soon?' · через '+days+' дн.':'')+'</span></div>';
+    return '<div class="appt-item'+(soon?' soon':'')+'" onclick="toggleAppt('+a.id+')"><span class="appt-date">'+d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+'</span><span class="appt-title">'+escapeHtml(a.title)+(soon&&days===0?' · <b style="color:var(--rose)">сегодня!</b>':soon?' · через '+days+' дн.':'')+'</span></div>';
   }).join('');
   const doneHtml=done.length?'<div style="font-size:10px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px">Прошедшие</div>'+done.map(a=>'<div class="appt-item done" onclick="toggleAppt('+a.id+')"><span class="appt-date">'+new Date(a.date+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+'</span><span class="appt-title">'+escapeHtml(a.title)+' ✓</span></div>').join(''):'';
   el.innerHTML=html+doneHtml;
@@ -10480,10 +10492,12 @@ function toggleAppt(id){
   list[i].done=!list[i].done;
   saveAppts(list);
   renderAppts();
+  renderVisitPrep();
   updateApptHomeCard();
+  try{updateVisitBackupNudge();}catch(e){}
 }
 function getNextAppt(){
-  const today=new Date().toISOString().slice(0,10);
+  const today=getDayKey(new Date());
   return loadAppts().filter(a=>!a.done&&a.date>=today).sort((a,b)=>a.date.localeCompare(b.date))[0]||null;
 }
 const SYMPTOM_KEY='symptomsLog'+V;
@@ -10505,7 +10519,7 @@ function loadBPLog(){
 }
 function toggleSymptom(id){
   H();
-  const today=new Date().toISOString().slice(0,10);
+  const today=getDayKey(new Date());
   const log=loadSymptomsLog();
   if(!log[today])log[today]=[];
   const i=log[today].indexOf(id);
@@ -10521,7 +10535,7 @@ function saveBP(){
   const sys=parseInt(document.getElementById('bpSys').value,10);
   const dia=parseInt(document.getElementById('bpDia').value,10);
   if(isNaN(sys)||isNaN(dia)||sys<70||sys>220||dia<40||dia>140){toast('Проверь значения (верхнее 70–220, нижнее 40–140)');return;}
-  const today=new Date().toISOString().slice(0,10);
+  const today=getDayKey(new Date());
   const log=loadBPLog();
   log[today]={sys,dia,at:new Date().toISOString()};
   localStorage.setItem(BP_KEY,JSON.stringify(log));
@@ -10532,7 +10546,7 @@ function saveBP(){
 function renderSymptomsUI(){
   const row=document.getElementById('symptomRow');
   const bpEl=document.getElementById('bpLogEl');
-  const today=new Date().toISOString().slice(0,10);
+  const today=getDayKey(new Date());
   const sym=loadSymptomsLog()[today]||[];
   if(row){
     row.innerHTML=SYMPTOM_TYPES.map(s=>'<button type="button" class="symptom-chip'+(sym.includes(s.id)?' on':'')+'" onclick="toggleSymptom(\''+s.id+'\')">'+s.emoji+' '+s.label+'</button>').join('');
@@ -10927,23 +10941,46 @@ async function importBackup(ev){
   if(!confirm('Восстановить данные из файла? Текущие записи и фото будут заменены.'))return;
   if(!confirm('Точно? После восстановления страница перезагрузится.'))return;
   showImgCompressOverlay('Восстанавливаем…');
+  const snapshot={};
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(k)snapshot[k]=localStorage.getItem(k);
+    }
+  }catch(e){}
   try{
     const text=await f.text();
     const data=JSON.parse(text);
-    if(!data||!data.local)throw new Error('BAD_BACKUP');
-    revokeAllPhotoUrls();
-    await photoDBClear();
-    Object.keys(data.local).forEach(k=>localStorage.setItem(k,data.local[k]));
-    if(data.photos){
+    if(!data||!data.local||typeof data.local!=='object')throw new Error('BAD_BACKUP');
+    const allowKey=k=>{
+      if(!k||typeof k!=='string')return false;
+      if(k.includes(V))return true;
+      if(k.startsWith('homeSec_')||k.startsWith('bgal_')||k.startsWith('galPh'))return true;
+      return ['eddDate','husbandPhone','diaryEntry','theme','babyGender','heightCm','uziPh','photosInIDB_v1','imgMigrated_v2','imgMigrated_v3','babyBirthDate','babyName','babyBirthWeight','babyBirthHeight','legacyMigrated_v8','photosMigrated_v10','apptsMigrated_v7'].indexOf(k)>=0;
+    };
+    const allowPhoto=k=>!!(k&&(k==='uziPh'||k.startsWith('galPh')||k.startsWith('bgal_')));
+    const entries=Object.entries(data.local).filter(([k,v])=>allowKey(k)&&typeof v==='string');
+    if(!entries.length)throw new Error('EMPTY_BACKUP');
+    const photoEntries=[];
+    if(data.photos&&typeof data.photos==='object'){
       for(const [k,v] of Object.entries(data.photos)){
-        if(v)await photoDBPut(k,dataUrlToBlob(v));
+        if(allowPhoto(k)&&typeof v==='string'&&v){
+          try{photoEntries.push([k,dataUrlToBlob(v)]);}catch(e){console.warn('skip photo',k,e);}
+        }
       }
     }
+    revokeAllPhotoUrls();
+    await photoDBClear();
+    for(const [k,blob] of photoEntries)await photoDBPut(k,blob);
+    entries.forEach(([k,v])=>localStorage.setItem(k,v));
     toast('Данные восстановлены — перезагружаем…');
     setTimeout(()=>location.reload(),800);
   }catch(e){
     console.error('importBackup',e);
-    toast('Не удалось восстановить файл');
+    try{
+      Object.keys(snapshot).forEach(k=>{if(snapshot[k]!=null)localStorage.setItem(k,snapshot[k]);});
+    }catch(e2){}
+    toast('Не удалось восстановить файл — прежние данные сохранены');
     hideImgCompressOverlay();
   }
 }
@@ -11256,7 +11293,7 @@ function checkNotifs(){
       }
     }
   });
-  const today=now.toISOString().slice(0,10);
+  const today=getDayKey(now);
   loadAppts().forEach(a=>{
     if(a.done||a.date!==today)return;
     const last=localStorage.getItem('apptNtf_'+a.id+V);
@@ -11268,7 +11305,7 @@ function checkNotifs(){
   });
   const tomorrow=new Date(now);
   tomorrow.setDate(tomorrow.getDate()+1);
-  const tomorrowStr=tomorrow.toISOString().slice(0,10);
+  const tomorrowStr=getDayKey(tomorrow);
   loadAppts().forEach(a=>{
     if(a.done||a.date!==tomorrowStr)return;
     const last=localStorage.getItem('apptNtfEve_'+a.id+V);
@@ -11316,7 +11353,7 @@ function checkBabyNotifs(now){
   }
   const vax=getNextPendingVax();
   if(vax&&(vax.overdue||vax.daysUntil<=3)&&now.getHours()>=10&&now.getHours()<21){
-    const today=now.toISOString().slice(0,10);
+    const today=getDayKey(now);
     const key='babyVaxNtf'+V;
     if(localStorage.getItem(key)!==today){
       new Notification(vax.overdue?'Прививка актуальна 💉':'Скоро прививка 💉',{
@@ -11356,7 +11393,7 @@ function checkReset(){
   if(localStorage.getItem('lastD'+V)!==d){
     const prevDay=localStorage.getItem('lastD'+V);
     if(prevDay){
-      const prevIso=new Date(new Date().getTime()-86400000).toISOString().slice(0,10);
+      const prevIso=getDayKey(new Date(Date.now()-86400000));
       const prevWater=JSON.parse(localStorage.getItem('water'+V)||'[]');
       if(prevWater.length){
         let wh=JSON.parse(localStorage.getItem('waterHist'+V)||'{}');
@@ -11534,15 +11571,21 @@ async function resetAll(){
   H();
   if(!confirm("Родная, это удалит все данные и фотографии. Точно сбрасываем?"))return;
   revokeAllPhotoUrls();
-  try{await photoDBClear();}catch(e){}
+  try{await photoDBClear();}catch(e){toast('Не удалось очистить фото — попробуй ещё раз');return;}
   const toDelete=[];
   for(let i=0;i<localStorage.length;i++){
     const k=localStorage.key(i);
-    if(k&&(k.includes(V)||k.startsWith('homeSec_')||['eddDate','husbandPhone','diaryEntry','theme','babyGender','heightCm','uziPh','galPh_v16','photosInIDB_v1','imgMigrated_v2','imgMigrated_v3','kickHist_v16','bagDone_v16','journalLog_v16','babyBirthDate','babyName','babyBirthWeight','babyBirthHeight'].indexOf(k)>=0)){
+    if(k&&(k.includes(V)||k.startsWith('homeSec_')||k.startsWith('bgal_')||k.startsWith('galPh')||['eddDate','husbandPhone','diaryEntry','theme','babyGender','heightCm','uziPh','galPh_v16','photosInIDB_v1','imgMigrated_v2','imgMigrated_v3','kickHist_v16','bagDone_v16','journalLog_v16','babyBirthDate','babyName','babyBirthWeight','babyBirthHeight','legacyMigrated_v8','photosMigrated_v10','apptsMigrated_v7'].indexOf(k)>=0)){
       toDelete.push(k);
     }
   }
   toDelete.forEach(k=>localStorage.removeItem(k));
+  try{
+    if(window.caches&&caches.keys){
+      const keys=await caches.keys();
+      await Promise.all(keys.map(k=>caches.delete(k)));
+    }
+  }catch(e){}
   location.reload();
 }
 
@@ -11729,7 +11772,7 @@ function buildReportText(){
   const moodLines=Object.keys(moodH).sort().slice(-7).map(k=>'  '+k+': '+moodH[k]);
   const streak=localStorage.getItem('streak'+V)||'0';
   const totalFinished=localStorage.getItem('totalFinishedDays'+V)||'0';
-  const todayISO=now.toISOString().slice(0,10);
+  const todayISO=getDayKey(now);
   const appts=loadAppts().filter(a=>!a.done&&a.date>=todayISO).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,5).map(a=>'  '+new Date(a.date+'T12:00:00').toLocaleDateString('ru-RU')+': '+a.title);
 
   const headerLines=born?(function(){
