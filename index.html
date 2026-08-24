@@ -1584,6 +1584,25 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 .journal-jump::-webkit-scrollbar{display:none}
 .journal-jump-pill{flex:0 0 auto;padding:9px 14px;border:1px solid var(--cb);border-radius:999px;background:var(--card);font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--t2);cursor:pointer;white-space:nowrap;box-shadow:var(--sh2)}
 .journal-jump-pill:active{transform:scale(.96)}
+body.mode-postpartum .journal-jump.postpartum-only{display:flex!important}
+body.mode-postpartum .lg.postpartum-only{display:grid!important}
+body.mode-postpartum .meds-jump .journal-jump-pill.postpartum-only{display:inline-flex!important}
+body.mode-postpartum .meds-soft.postpartum-only{display:block!important}
+.meds-jump{display:flex;gap:8px;margin:0 0 16px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.meds-jump::-webkit-scrollbar{display:none}
+.meds-soft{margin:0 0 16px;padding:16px 18px;border-radius:22px;background:linear-gradient(135deg,rgba(232,50,90,.07),rgba(196,77,255,.06));border:1px solid rgba(232,50,90,.14);box-shadow:var(--sh2)}
+.meds-soft-t{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;font-weight:900;color:var(--t1);margin-bottom:4px}
+.meds-soft-s{font-size:12px;font-weight:700;color:var(--t3);line-height:1.55;margin-bottom:12px}
+.meds-soft-row{display:flex;gap:8px;flex-wrap:wrap}
+.meds-empty{text-align:center;padding:28px 18px 22px;margin:4px 0 8px;border-radius:24px;background:linear-gradient(160deg,rgba(255,255,255,.7),rgba(232,50,90,.05));border:1px dashed rgba(232,50,90,.22)}
+.meds-empty-ico{font-size:36px;margin-bottom:8px;filter:drop-shadow(0 6px 14px rgba(232,50,90,.2))}
+.meds-empty-t{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;font-weight:900;margin-bottom:6px}
+.meds-empty-s{font-size:13px;font-weight:700;color:var(--t3);line-height:1.55;max-width:280px;margin:0 auto 16px}
+.meds-empty-btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;border:none;border-radius:999px;background:linear-gradient(135deg,var(--rose),var(--plum));color:#fff;font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 8px 22px rgba(232,50,90,.28)}
+.meds-empty-btn:active{transform:scale(.97)}
+.mood-row .mb.pregnancy-only,.mood-row .mb.postpartum-only{display:none}
+body:not(.mode-postpartum) .mood-row .mb.pregnancy-only{display:inline-flex!important}
+body.mode-postpartum .mood-row .mb.postpartum-only{display:inline-flex!important}
 .baby-growth-inp{width:100%;font-size:14px;padding:12px;text-align:center;font-weight:800;border:2px solid var(--cb);border-radius:14px;background:var(--bg2);color:var(--t1);font-family:'Nunito',sans-serif;outline:none}
 .baby-growth-inp:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(232,50,90,.1)}
 .baby-hist-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
@@ -2386,14 +2405,21 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 
       <div class="card">
         <div class="cb">
-          <div class="sh">💌 Письма от меня</div>
-          <div class="ssub">Выбери что чувствуешь сейчас — я написал это специально для тебя</div>
-          <div class="lg">
+          <div class="sh" id="lettersCardTitle">💌 Письма от меня</div>
+          <div class="ssub" id="lettersCardSub">Выбери что чувствуешь сейчас — я написал это специально для тебя</div>
+          <div class="lg pregnancy-only" id="lettersGridPreg">
             <button class="lb lb1" onclick="openLetter('anxiety')"><em>🥺</em>Мне тревожно</button>
             <button class="lb lb2" onclick="openLetter('tired')"><em>😫</em>Я устала</button>
             <button class="lb lb3" onclick="openLetter('sad')"><em>😢</em>Мне грустно</button>
             <button class="lb lb4" onclick="openLetter('love')"><em>❤️</em>Скучаю</button>
             <button class="lb lb1" onclick="openLetter('games')" style="grid-column:span 2;background:rgba(99,102,241,.13)"><em>🎮</em>Хочу поиграть вместе</button>
+          </div>
+          <div class="lg postpartum-only" id="lettersGridPP">
+            <button class="lb lb1" onclick="openLetter('anxiety')"><em>🥺</em>Мне тревожно</button>
+            <button class="lb lb2" onclick="openLetter('tired')"><em>😫</em>Я вымотана</button>
+            <button class="lb lb3" onclick="openLetter('sad')"><em>😢</em>Мне тяжело</button>
+            <button class="lb lb4" onclick="openLetter('love')"><em>❤️</em>Обними меня</button>
+            <button class="lb lb1" onclick="openLetter('proud')" style="grid-column:span 2;background:rgba(232,50,90,.1)"><em>✨</em>Горжусь нами</button>
           </div>
         </div>
       </div>
@@ -2413,13 +2439,14 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 
       <div class="card">
         <div class="cb">
-          <div class="sh">✨ Как ты себя чувствуешь?</div>
-          <div class="ssub">Отметь настроение — я хочу знать 💕</div>
+          <div class="sh" id="moodCardTitle">✨ Как ты себя чувствуешь?</div>
+          <div class="ssub" id="moodCardSub">Отметь настроение — я хочу знать 💕</div>
           <div class="mood-row" role="group" aria-label="Выбери настроение">
             <button class="mb" onclick="saveMood('😊',this)" aria-label="Хорошее настроение" aria-pressed="false">😊</button>
-            <button class="mb" onclick="saveMood('🥰',this)" aria-label="Романтичное настроение" aria-pressed="false">🥰</button>
+            <button class="mb" onclick="saveMood('🥰',this)" aria-label="Нежное настроение" aria-pressed="false">🥰</button>
             <button class="mb" onclick="saveMood('🥱',this)" aria-label="Устала" aria-pressed="false">🥱</button>
-            <button class="mb" onclick="saveMood('🤢',this)" aria-label="Тошнит" aria-pressed="false">🤢</button>
+            <button class="mb pregnancy-only" onclick="saveMood('🤢',this)" aria-label="Тошнит" aria-pressed="false">🤢</button>
+            <button class="mb postpartum-only" onclick="saveMood('🥺',this)" aria-label="Тревожно или тяжело" aria-pressed="false">🥺</button>
             <button class="mb" onclick="saveMood('✨',this)" aria-label="Сияю" aria-pressed="false">✨</button>
           </div>
           <div class="mood-resp" id="moodR"></div>
@@ -2469,7 +2496,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
       <div class="card">
         <div class="cb">
           <div class="sh">💧 Водичка</div>
-          <div class="ssub">Пей за двоих, родная! Норма: 8 стаканов в день</div>
+          <div class="ssub" id="waterCardSub">Пей за двоих, родная! Норма: 8 стаканов в день</div>
           <div class="water-hint" id="waterHint" style="display:none"></div>
           <div class="water-prog"><div class="water-prog-fill" id="waterProgFill" style="width:0%"></div></div>
           <div class="water-row" id="waterRow"></div>
@@ -2530,8 +2557,23 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
     <!-- ── MEDS ── -->
     <div id="tab-meds" class="tab-c">
       <div style="padding-top:16px">
-        <div class="page-h1">План заботы</div>
-        <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:18px">Отмечай приём, добавляй и редактируй препараты — всё сохраняется на телефоне 💊</p>
+        <div class="page-h1" id="medsPageH1">План заботы</div>
+        <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:14px" id="medsPageSub">Отмечай приём, добавляй и редактируй препараты — всё сохраняется на телефоне 💊</p>
+        <div class="meds-jump" id="medsJumpBar" role="navigation" aria-label="Быстрый переход по заботе">
+          <button type="button" class="journal-jump-pill" onclick="scrollToCareSection('meds')">💊 Препараты</button>
+          <button type="button" class="journal-jump-pill" onclick="scrollToCareSection('letter')">📝 Письмо</button>
+          <button type="button" class="journal-jump-pill" onclick="scrollToCareSection('report')">📋 Отчёт</button>
+          <button type="button" class="journal-jump-pill postpartum-only" onclick="goHomeSection('wellness')">🤍 Настроение</button>
+        </div>
+        <div class="meds-soft postpartum-only" id="medsCareStrip">
+          <div class="meds-soft-t">Ты тоже важна</div>
+          <div class="meds-soft-s">Препараты — по назначению. Письмо малышу и мягкая поддержка — когда нужно выдохнуть.</div>
+          <div class="meds-soft-row">
+            <button type="button" class="journal-jump-pill" onclick="scrollToCareSection('letter')">📝 Написать малышу</button>
+            <button type="button" class="journal-jump-pill" onclick="goHomeSection('support')">💌 Письмо от меня</button>
+          </div>
+        </div>
+        <div id="careMedsBlock">
         <div class="med-toolbar">
           <button type="button" class="med-add-btn" onclick="openMedForm(null)">＋ Добавить препарат</button>
           <div class="med-next-pill" id="medNextPill"><span class="mnp-lbl">Следующий:</span> <b>—</b></div>
@@ -2543,7 +2585,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
           <div class="pg-track"><div class="pg-fill" id="pgBar" style="width:0%"></div></div>
           <div id="medsInfo" style="font-size:12px;font-weight:700;color:var(--t3);margin-top:10px;text-align:center"></div>
           <div class="trend-block" style="margin-top:14px;padding-top:0;border:none">
-            <div class="trend-label">Приём препаратов · 7 дней</div>
+            <div class="trend-label" id="medWeekLbl">Приём препаратов · 7 дней</div>
             <div class="med-week-chart" id="medWeekChart"></div>
           </div>
         </div></div>
@@ -2552,7 +2594,8 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
           <button class="lq" onclick="finishDay()" id="finBtn">🌟 Завершить день!</button>
           <p id="finMsg" style="display:none;text-align:center;font-size:18px;font-weight:900;color:var(--rose);margin-top:14px;padding:18px;background:rgba(232,50,90,.09);border-radius:20px;border:1px solid rgba(232,50,90,.18)">Умничка! Я так тобой горжусь ❤️</p>
         </div>
-        <div style="margin-top:30px">
+        </div>
+        <div style="margin-top:30px" id="careLetterBlock">
           <div style="font-family:'Playfair Display',serif;font-size:30px;font-style:italic;font-weight:900;margin-bottom:14px" id="diaryTitle">Письмо малышу 📝</div>
           <div class="card"><div class="cb">
             <p style="font-size:13px;font-weight:700;color:var(--t3);margin-bottom:12px;line-height:1.6" id="diarySub">Запиши свои мысли. Потом будет так здорово это перечитать вместе!</p>
@@ -2566,11 +2609,11 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
           </div></div>
         </div>
       
-        <div style="margin-top:20px">
+        <div style="margin-top:20px" id="careReportBlock">
           <div style="font-family:'Playfair Display',serif;font-size:30px;font-style:italic;font-weight:900;margin-bottom:14px" id="doctorReportH1">Отчёт для врача 📋</div>
           <div class="card"><div class="cb">
             <p style="font-size:13px;font-weight:700;color:var(--t3);margin-bottom:14px;line-height:1.6" id="doctorReportSub">Сформируй сводку приёма препаратов и самочувствия — удобно показать врачу!</p>
-            <button class="report-btn" onclick="generateReport()">📊 Сформировать отчёт</button>
+            <button class="report-btn" onclick="generateReport()" id="doctorReportBtn">📊 Сформировать отчёт</button>
             <textarea class="report-area" id="reportArea" style="display:none" readonly></textarea>
             <div class="report-actions" id="reportActions" style="display:none">
               <button type="button" class="report-action-btn primary" onclick="copyReport()">📋 Скопировать</button>
@@ -2829,8 +2872,8 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
     <!-- ── BAG ── -->
     <div id="tab-bag" class="tab-c">
       <div style="padding-top:16px">
-        <div class="page-h1">Сумка в роддом</div>
-        <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:14px">Отмечай, редактируй список и добавляй свои вещи — всё сохраняется на телефоне!</p>
+        <div class="page-h1" id="bagPageH1">Сумка в роддом</div>
+        <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:14px" id="bagPageSub">Отмечай, редактируй список и добавляй свои вещи — всё сохраняется на телефоне!</p>
         <div class="bag-toolbar">
           <button type="button" class="bag-add-btn" onclick="openBagForm(null,false)">＋ Добавить вещь</button>
           <button type="button" class="bag-add-btn secondary" onclick="openBagForm(null,true)">＋ Раздел</button>
@@ -2968,7 +3011,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v56</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v57</div>
         </div></div>
       </div>
     </div>
@@ -2981,7 +3024,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
     <button class="nb act" role="tab" aria-selected="true" aria-current="page" aria-label="Главная" onclick="switchTab('home',this)"><span>🤍</span>Главная</button>
     <button class="nb" role="tab" aria-selected="false" aria-label="Забота и препараты" onclick="switchTab('meds',this)"><span>💊</span>Забота</button>
     <button class="nb" role="tab" aria-selected="false" aria-label="Дневник" onclick="switchTab('journal',this)"><span>📓</span>Дневник</button>
-    <button class="nb" role="tab" aria-selected="false" aria-label="Сумка в роддом" onclick="switchTab('bag',this)"><span>👜</span>Сумка</button>
+    <button class="nb" id="nbBag" role="tab" aria-selected="false" aria-label="Сумка в роддом" onclick="switchTab('bag',this)"><span>👜</span>Сумка</button>
     <button class="nb" role="tab" aria-selected="false" aria-label="Настройки" onclick="switchTab('settings',this)"><span>⚙️</span>Настройки</button>
   </div>
 </div>
@@ -3152,7 +3195,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v56';
+const APP_DATA_VER='v57';
 let curGW=null;
 let curBMo=null;
 let photoGalMode='belly'; // belly | baby
@@ -4426,6 +4469,33 @@ const letters={
     "Алтыным, я иногда сижу за компьютером работаю над игрой и думаю: вот бы ты сидела рядом. Тот вечер с джойстиками был особенным. Скоро снова так посидим — уже втроём, малыш будет смотреть на нас большими глазами и не понимать что происходит 😄 Берегу это время для нас.",
     "Жанымка, я уже придумал первую игру для нашего малыша 😄 Но пока он подрастает — давай мы с тобой поиграем вечером? Это обещание от мужа! 🎮❤️"]}
 };
+const lettersPP={
+  anxiety:{title:'Мне тревожно 🥺',ls:[
+    "Родная, тревога мамы — это любовь, которая иногда шумит слишком громко. Сделай вдох. Малыш в безопасности. Ты справляешься. Позвони мне — я услышу. 🤍",
+    "Жаным, после родов мозг на высоком алерт-режиме. Это нормально. Не гугли страшилки. Доверься врачу и мне. Ты не одна — мы трое.",
+    "Алтыным, если сердце колотится — 4-7-8 три раза. Я делаю это мысленно с тобой. Ты уже прошла самое сложное. Дальше — шаг за шагом."
+  ]},
+  tired:{title:'Я вымотана 😫',ls:[
+    "Любимая, недосып — не твоя вина. Ляг, когда малыш спит. Я заберу быт и ночные часы, когда смогу. Ты герой каждый день.",
+    "Моя трудяжка, тело восстанавливается и кормит одновременно. Это марафон. Отдых — не роскошь, а топливо. Брось дела. Я рядом.",
+    "Жанымка, усталость не делает тебя плохой мамой. Она делает тебя человеком. Выпей воды, закрой глаза. Я горжусь тобой."
+  ]},
+  sad:{title:'Мне тяжело 😢',ls:[
+    "Мой ёжик, если хочется поплакать — плачь. Гормоны, любовь и усталость смешались. Я вытру слёзы и обниму вас обоих.",
+    "Бусинка, грусть после родов бывает. Ты не обязана сиять каждый час. Позволь себе тишину. Я люблю тебя любой.",
+    "Солнышко, тяжесть пройдёт волнами. Не борись с ней в одиночку. Напиши или позвони — я здесь."
+  ]},
+  love:{title:'Обними меня ❤️',ls:[
+    "Обнимаю крепко — тебя и малыша. Ты мой дом. Спасибо, что выдержала всё это ради нашей семьи.",
+    "Жаным, я скучаю по твоей руке в моей. Скоро буду рядом. А пока — держи этот поцелуй через экран.",
+    "Алтыным, ты — смысл. Люблю вас сильнее, чем умею словами. Держись, моя семья."
+  ]},
+  proud:{title:'Горжусь нами ✨',ls:[
+    "Я горжусь тобой без меры. Ты родила нашу жизнь. Каждый день с малышом — ваша общая победа.",
+    "Мы справились. Ты справилась. Смотри на малыша — это мы. Я самый счастливый муж и папа.",
+    "Индира, ты сильная и нежная одновременно. Это редкий дар. Берегу вас обоих всем сердцем. 💕"
+  ]}
+};
 
 // COUPONS — 20 штук
 const coupons=[
@@ -5124,6 +5194,16 @@ const faqs={
     {q:"Можно ли «ускорить» роды дома?",a:"Лёгкая ходьба, отдых, секс при отсутствии противопоказаний — иногда обсуждают с врачом. Касторовое масло, жёсткие нагрузки и «народные» схемы без согласия врача — нет."},
     {q:"Когда ехать в роддом на 41–42 неделе?",a:"Схватки каждые 5–7 минут около часа, воды отошли, сильная боль, кровотечение, нет шевелений — едем сразу. Эмир знает маршрут, сумка и документы готовы."},
     {q:"Я очень тревожусь — это нормально?",a:"Да. Ждать дольше ПДР эмоционально тяжело. Дыхание 4-7-8, мои письма поддержки и звонок мне — для этого. Ты не одна. Мы дождёмся малыша вместе. 🤍"},
+  ],
+  pp:[
+    {q:"Нормально ли плакать и уставать после родов?",a:"Да. Гормоны, недосып и огромная любовь — это буря. Слёзы не значит, что ты «плохая мама». Отдыхай, когда можешь. Я рядом. Если тяжесть не отпускает неделями — скажи мне и врачу."},
+    {q:"Как понять, хватает ли малышу молока?",a:"Ориентиры: мокрые подгузники (обычно 6+ в сутки после прихода молока), спокойнее после кормления, набор веса по графику педиатра. Сомнение — к консультанту по ГВ или врачу, без паники из интернета."},
+    {q:"Малыш почти не спит днём — это плохо?",a:"Новорождённые спят кусками. Днём короткие сны — норма. Главное — безопасный сон (на спине, твёрдая поверхность) и чтобы ты тоже отдыхала, когда он спит."},
+    {q:"Когда звонить врачу с малышом?",a:"Высокая температура, вялость, отказ от еды, редкие мокрые подгузники, сыпь с ухудшением, дыхание с трудом — не жди «до завтра». Лучше лишний раз уточнить."},
+    {q:"Можно ли оставить малыша с кем-то на час?",a:"Да, если тебе нужно. Короткая пауза — не эгоизм, а забота о себе. Доверь надёжному человеку и выйди подышать. Ты возвращаешься сильнее."},
+    {q:"Тело после родов не «моё» — что делать?",a:"Восстановление занимает месяцы. Мягкая ходьба, вода, сон кусками, без жёстких диет. Ты уже сделала самое важное. Красота сейчас — в заботе, не в сроках."},
+    {q:"Что такое «бэби-блюз» и послеродовая депрессия?",a:"Бэби-блюз — слёзы и перепады в первые 1–2 недели, часто проходит. Если тоска, вина, пустота или страх держатся дольше 2 недель — это повод обратиться к врачу. Ты не одна, мы разберёмся вместе."},
+    {q:"Как совмещать кормления ночью и мой сон?",a:"Поочерёдный «ночной дежурный» с папой, затемнённая комната, минимум стимулов. Отмечай сон и кормления в дневнике — так легче увидеть ритм и попросить помощи вовремя."},
   ]
 };
 
@@ -5181,6 +5261,13 @@ const moodR={
   '🥱':["Поспи, родная. Тебе и нашему малышу нужен отдых. Всё остальное подождёт! ☕","Дела подождут! Забирайся под плед и отдыхай. Я всё сделаю сам.","Бедняжка моя устала... Обязательно полежи сегодня. Ты заслужила.","Твоему организму сейчас тяжело. Дай ему отдохнуть. Я рядом всегда. ☕"],
   '🤢':["Бедняжка моя... Попробуй сухарик и воду с лимоном. Я так хочу забрать твою тошноту себе! 💔","Подыши глубоко и медленно. Скоро это пройдёт, ты у меня сильная!","Съешь что-то лёгкое — крекер или яблоко. Потерпи, любимая. Мы справимся.","Открой окно, подышии свежим воздухом. Имбирный чай тоже помогает! 🌬️"],
   '✨':["Ты просто сияешь! Беременность делает тебя ещё прекраснее, это правда! 👑","Моя королева! Ты выглядишь потрясающе каждый день. Не сомневайся!","Идеальная женщина, идеальная жена, идеальная будущая мама. Это про тебя.","Ослепительная! Я так горжусь тобой и восхищаюсь каждый день. 🌟"]
+};
+const moodRP={
+  '😊':["Твоя улыбка — лучший свет в доме. Малыш это чувствует. Я тоже 🌟","Спасибо, что делишься радостью. Ты справляешься лучше, чем думаешь.","Сегодня хороший день — береги его. Я рядом, даже если далеко."],
+  '🥰':["Обнимаю вас обоих через экран. Ты моя семья 💕","Нежность к малышу и ко мне — это твоя суперсила. Люблю.","Ты — самый тёплый дом для нашего ребёнка. И для меня."],
+  '🥱':["Спи кусками, родная. Я возьму ночь, когда смогу. Ты не обязана тянуть всё одна ☕","Усталость мамы — не слабость. Положи голову. Я горжусь тобой.","Закрой глаза хоть на 20 минут. Мир подождёт. Малыш в безопасности."],
+  '🥺':["Тревога после родов — частая гостья. Дыши со мной. Ты не одна 🤍","Положи руку на грудь: вдох на 4, выдох на 6. Я с тобой. Позвони, если тяжело.","Ты уже лучшая мама, потому что заботишься. Тревога не отменяет этого."],
+  '✨':["Ты сияешь по-новому — как мама. Это прекрасно 👑","Я так горжусь тобой. Каждый день с малышом — твоя победа.","Ослепительная. Не только снаружи — внутри, где растёт сила."]
 };
 
 // DEFAULT MEDS (seed — копируется в localStorage при первом запуске)
@@ -5644,6 +5731,8 @@ function applyAppMode(){
   if(dSub)dSub.textContent=born?'Запиши, что чувствуешь как мама. Малыш прочитает это, когда подрастёт!':'Запиши свои мысли. Потом будет так здорово это перечитать вместе!';
   const dArea=document.getElementById('diaryT');
   if(dArea)dArea.placeholder=born?'Сегодня ты первый раз улыбнулся(лась) мне...':'Сегодня ты так сильно пинался, когда папа гладил животик...';
+  const dTitle=document.getElementById('diaryTitle');
+  if(dTitle)dTitle.textContent=born?'Письмо малышу 📝':'Письмо малышу 📝';
   const jArea=document.getElementById('journalNewT');
   if(jArea)jArea.placeholder=born?'Сегодня малыш впервые удержал(а) головку...':'Сегодня малыш так сильно пинался, когда папа гладил животик…';
   const wtSub=document.getElementById('wtTrackerSub');
@@ -5654,6 +5743,42 @@ function applyAppMode(){
   if(drS)drS.textContent=born
     ?'Сводка по росту, прививкам, зубам и дню малыша — удобно показать педиатру!'
     :'Сформируй сводку приёма препаратов и самочувствия — удобно показать врачу!';
+  const drBtn=document.getElementById('doctorReportBtn');
+  if(drBtn)drBtn.textContent=born?'📊 Сформировать карточку':'📊 Сформировать отчёт';
+  const medsH=document.getElementById('medsPageH1');
+  if(medsH)medsH.textContent=born?'Забота о вас':'План заботы';
+  const medsS=document.getElementById('medsPageSub');
+  if(medsS)medsS.textContent=born
+    ?'Препараты по назначению, письмо малышу и карточка для педиатра — спокойно и по делу'
+    :'Отмечай приём, добавляй и редактируй препараты — всё сохраняется на телефоне 💊';
+  const medWeek=document.getElementById('medWeekLbl');
+  if(medWeek)medWeek.textContent=born?'Приём · 7 дней':'Приём препаратов · 7 дней';
+  const moodT=document.getElementById('moodCardTitle');
+  if(moodT)moodT.textContent=born?'✨ Как ты сегодня, мама?':'✨ Как ты себя чувствуешь?';
+  const moodS=document.getElementById('moodCardSub');
+  if(moodS)moodS.textContent=born?'Честно отметь — я рядом и хочу знать 💕':'Отметь настроение — я хочу знать 💕';
+  const letT=document.getElementById('lettersCardTitle');
+  if(letT)letT.textContent=born?'💌 Письма от меня':'💌 Письма от меня';
+  const letS=document.getElementById('lettersCardSub');
+  if(letS)letS.textContent=born
+    ?'Выбери чувство — я написал это для тебя уже как для мамы'
+    :'Выбери что чувствуешь сейчас — я написал это специально для тебя';
+  const waterS=document.getElementById('waterCardSub');
+  if(waterS)waterS.textContent=born
+    ?'Вода помогает восстановлению и лактации. Норма: 8 стаканов в день'
+    :'Пей за двоих, родная! Норма: 8 стаканов в день';
+  const bagH=document.getElementById('bagPageH1');
+  if(bagH)bagH.textContent=born?'Сумка на визит / в клинику':'Сумка в роддом';
+  const bagS=document.getElementById('bagPageSub');
+  if(bagS)bagS.textContent=born
+    ?'Чек-лист вещей к педиатру или в больницу — отмечай и дополняй под себя'
+    :'Отмечай, редактируй список и добавляй свои вещи — всё сохраняется на телефоне!';
+  const nbBag=document.getElementById('nbBag');
+  if(nbBag){
+    nbBag.setAttribute('aria-label',born?'Сумка на визит':'Сумка в роддом');
+    nbBag.innerHTML='<span>👜</span>'+(born?'Визит':'Сумка');
+  }
+  try{renderCareFaq();}catch(e){}
   if(born){
     const bmiSection=document.getElementById('bmiSection');
     const bmiBtn=document.getElementById('bmiToggleBtn');
@@ -5681,6 +5806,7 @@ function applyAppMode(){
   try{renderJournalTagRow();}catch(e){}
   try{updateVisitBackupNudge();}catch(e){}
   try{updateBabyGrowthNudgeCard();}catch(e){}
+  try{renderSchedule();}catch(e){}
 }
 function renderBabyHero(){
   const age=calcBabyAge(getBabyBirthDate());
@@ -7445,9 +7571,11 @@ function updateAll(edd){
   }
   const faqK=tri===1?'t1':tri===2?'t2':'t3';
   const fSubs={t1:'Вопросы 1-го триместра (недели 1-13)',t2:'Вопросы 2-го триместра (недели 14-27)',t3:week>=41?'После ПДР · поздний срок':'Вопросы 3-го триместра (недели 28-40)'};
-  document.getElementById('faqSub').textContent=fSubs[faqK]+' — неделя '+week;
-  const faqList=week>=41?(faqs.late||faqs.t3):faqs[faqK];
-  document.getElementById('faqBox').innerHTML=faqList.map((f,i)=>`<div class="faq-item"><div class="faq-q" id="fq${i}" onclick="tFaq(${i})"><span>${f.q}</span><span class="faq-ic">▾</span></div><div class="faq-a" id="fa${i}">${f.a}</div></div>`).join('');
+  if(!hasBabyBorn()){
+    document.getElementById('faqSub').textContent=fSubs[faqK]+' — неделя '+week;
+    const faqList=week>=41?(faqs.late||faqs.t3):faqs[faqK];
+    document.getElementById('faqBox').innerHTML=faqList.map((f,i)=>`<div class="faq-item"><div class="faq-q" id="fq${i}" onclick="tFaq(${i})"><span>${f.q}</span><span class="faq-ic">▾</span></div><div class="faq-a" id="fa${i}">${f.a}</div></div>`).join('');
+  }
   const tips=getSmartTips(week);
   document.getElementById('smartTips').innerHTML=tips.slice(0,3).map(t=>`<div class="stip ${t.c}"><div class="stip-ic">${t.i}</div><div class="stip-txt">${t.t}</div></div>`).join('');
   injectApptTip();
@@ -7576,7 +7704,7 @@ function renderCareTip(){
 function babyKiss(){H();confetti({particleCount:65,spread:95,origin:{y:.6},colors:['#E8325A','#C44DFF','#FFB347','#FFD6E0']});const el=document.getElementById('babyT');el.style.opacity='0';setTimeout(()=>{el.textContent=babyMsgs[Math.floor(Math.random()*babyMsgs.length)];el.style.opacity='1'},300);toast("💋 Малыш почувствовал твою любовь!")}
 
 // MOOD
-function saveMood(m,btn){H();document.querySelectorAll('.mb').forEach(b=>{b.classList.remove('sel');b.setAttribute('aria-pressed','false')});btn.classList.add('sel');btn.setAttribute('aria-pressed','true');localStorage.setItem('mood'+V,m);const rs=moodR[m];if(!rs)return;const el=document.getElementById('moodR');el.innerHTML=rs[Math.floor(Math.random()*rs.length)];el.style.display='block';el.style.animation='none';el.offsetHeight;el.style.animation='cIn .4s ease';saveMoodH(m);updateTodayDash();toast("Настроение сохранено 🤍")}
+function saveMood(m,btn){H();document.querySelectorAll('.mb').forEach(b=>{b.classList.remove('sel');b.setAttribute('aria-pressed','false')});btn.classList.add('sel');btn.setAttribute('aria-pressed','true');localStorage.setItem('mood'+V,m);const pool=(hasBabyBorn()&&moodRP[m])?moodRP[m]:moodR[m];if(!pool)return;const el=document.getElementById('moodR');el.innerHTML=pool[Math.floor(Math.random()*pool.length)];el.style.display='block';el.style.animation='none';el.offsetHeight;el.style.animation='cIn .4s ease';saveMoodH(m);updateTodayDash();toast("Настроение сохранено 🤍")}
 function loadMoodState(){const m=localStorage.getItem('mood'+V);if(!m)return;document.querySelectorAll('.mb').forEach(b=>{const sel=b.textContent.trim()===m;b.classList.toggle('sel',sel);b.setAttribute('aria-pressed',sel?'true':'false');})}
 function saveMoodH(m){const t=new Date().toISOString().split('T')[0];let h=JSON.parse(localStorage.getItem('moodH'+V)||'{}');h[t]=m;const k=Object.keys(h).sort().slice(-14);const r={};k.forEach(k2=>r[k2]=h[k2]);localStorage.setItem('moodH'+V,JSON.stringify(r));renderMoodHist()}
 function renderMoodHist(){const h=JSON.parse(localStorage.getItem('moodH'+V)||'{}');const el=document.getElementById('mhGrid');if(!el)return;const d=Object.keys(h).sort().slice(-14);if(!d.length){el.innerHTML='<p style="color:var(--t3);font-size:13px;font-weight:700;padding-bottom:20px">Настроение ещё не отмечено!</p>';return}el.innerHTML=d.map(k=>{const dt=new Date(k);return`<div class="mh-dot" title="${k}">${h[k]}<div class="mh-date">${dt.getDate()}/${dt.getMonth()+1}</div></div>`}).join('')}
@@ -8087,7 +8215,17 @@ function renderSchedule(edd){
   const state=JSON.parse(localStorage.getItem('tasks'+V)||'{}');
   const {active,expired,paused}=getScheduleMeds(now);
   let html='';
-  if(!active.length&&!paused.length)html+='<p style="font-size:13px;font-weight:700;color:var(--t3);padding:8px 4px 16px;line-height:1.55">Добавь первый препарат кнопкой выше — расписание появится здесь 💊</p>';
+  if(!active.length&&!paused.length){
+    const born=hasBabyBorn();
+    html+=`<div class="meds-empty">
+      <div class="meds-empty-ico">${born?'🤍':'💊'}</div>
+      <div class="meds-empty-t">${born?'Пока без расписания':'Добавь первый препарат'}</div>
+      <div class="meds-empty-s">${born
+        ?'Витамины, железо или то, что назначил врач — появится здесь с напоминаниями. Пока можно написать письмо малышу ниже.'
+        :'Добавь витамины и назначения — расписание и прогресс появятся на этом экране.'}</div>
+      <button type="button" class="meds-empty-btn" onclick="openMedForm(null)">＋ Добавить препарат</button>
+    </div>`;
+  }
   active.forEach(t=>{html+=renderScheduleItem(t,state,now)});
   if(paused.length){
     html+=`<div style="margin-top:18px;margin-bottom:8px;font-size:12px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px">На паузе</div>`;
@@ -10049,7 +10187,32 @@ function addKick(){
 }
 
 // LETTERS & COUPON
-function openLetter(type){H();const d=letters[type];if(!d)return;const pool=d.ls.filter(Boolean);const l=pool[Math.floor(Math.random()*pool.length)]||'...';document.getElementById('lTitle').textContent=d.title;document.getElementById('lBody').textContent=l;document.getElementById('letterMo').classList.add('open')}
+function openLetter(type){H();const pack=hasBabyBorn()?(lettersPP[type]||letters[type]):letters[type];if(!pack)return;const pool=pack.ls.filter(Boolean);const l=pool[Math.floor(Math.random()*pool.length)]||'...';document.getElementById('lTitle').textContent=pack.title;document.getElementById('lBody').textContent=l;document.getElementById('letterMo').classList.add('open')}
+function scrollToCareSection(which){
+  H();
+  switchTabById('meds');
+  setTimeout(()=>{
+    const map={meds:'careMedsBlock',letter:'careLetterBlock',report:'careReportBlock'};
+    const el=document.getElementById(map[which]||'careMedsBlock');
+    el&&el.scrollIntoView({behavior:'smooth',block:'start'});
+    if(which==='letter'){
+      const ta=document.getElementById('diaryT');
+      ta&&setTimeout(()=>ta.focus(),280);
+    }
+  },220);
+}
+function renderCareFaq(){
+  const title=document.getElementById('faqTitle');
+  const sub=document.getElementById('faqSub');
+  const box=document.getElementById('faqBox');
+  if(!box)return;
+  if(hasBabyBorn()){
+    if(title)title.textContent='🫂 Спокойствие мамы';
+    if(sub)sub.textContent='Первые недели дома с малышом — честные ответы';
+    const list=faqs.pp||[];
+    box.innerHTML=list.map((f,i)=>`<div class="faq-item"><div class="faq-q" id="fq${i}" onclick="tFaq(${i})"><span>${f.q}</span><span class="faq-ic">▾</span></div><div class="faq-a" id="fa${i}">${f.a}</div></div>`).join('');
+  }
+}
 function closeLetter(){document.getElementById('letterMo').classList.remove('open')}
 function openCoupon(){H();document.getElementById('cpnBody').textContent=coupons[Math.floor(Math.random()*coupons.length)];document.getElementById('couponMo').classList.add('open')}
 function closeCoupon(){document.getElementById('couponMo').classList.remove('open')}
