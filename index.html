@@ -1575,6 +1575,18 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 .baby-quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2px}
 .baby-q-btn{flex:1;min-width:88px;padding:13px 8px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:900;cursor:pointer;box-shadow:0 6px 16px rgba(232,50,90,.24);transition:transform .15s}
 .baby-q-btn:active{transform:scale(.95)}
+.baby-tracker-card{border:1px solid rgba(232,50,90,.1)}
+.baby-live-strip{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;margin:0 0 12px;border-radius:14px;background:linear-gradient(135deg,rgba(232,50,90,.07),rgba(212,160,23,.05));border:1px solid rgba(232,50,90,.1);font-size:12px;font-weight:800;color:var(--t2);line-height:1.4}
+.baby-live-strip.on{background:linear-gradient(135deg,rgba(30,156,176,.1),rgba(82,184,130,.08));border-color:rgba(30,156,176,.2);color:#0F6A78}
+.baby-live-strip b{color:var(--rose);font-weight:900}
+.baby-live-strip.on b{color:#0F6A78}
+.journal-jump{display:flex;gap:8px;margin:0 0 16px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.journal-jump::-webkit-scrollbar{display:none}
+.journal-jump-pill{flex:0 0 auto;padding:9px 14px;border:1px solid var(--cb);border-radius:999px;background:var(--card);font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;color:var(--t2);cursor:pointer;white-space:nowrap;box-shadow:var(--sh2)}
+.journal-jump-pill:active{transform:scale(.96)}
+.baby-growth-inp{width:100%;font-size:14px;padding:12px;text-align:center;font-weight:800;border:2px solid var(--cb);border-radius:14px;background:var(--bg2);color:var(--t1);font-family:'Nunito',sans-serif;outline:none}
+.baby-growth-inp:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(232,50,90,.1)}
+.baby-hist-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .baby-today-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:14px 0 4px}
 .baby-today-stat{padding:10px 6px;border-radius:14px;background:var(--bg2);border:1px solid var(--cb);text-align:center}
 .baby-today-stat b{display:block;font-size:16px;font-weight:900;color:var(--rose);line-height:1.3}
@@ -2575,7 +2587,14 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
     <div id="tab-journal" class="tab-c">
       <div style="padding-top:16px">
         <div class="page-h1">Дневник</div>
-        <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:18px">История настроений, вес, записи и наш животик по неделям</p>
+        <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:14px" id="journalPageSub">История настроений, вес, записи и наш животик по неделям</p>
+        <div class="journal-jump postpartum-only" id="journalJumpBar" role="navigation" aria-label="Быстрый переход по дневнику">
+          <button type="button" class="journal-jump-pill" onclick="scrollToBabyTrackers('feed')">🍼 Кормление</button>
+          <button type="button" class="journal-jump-pill" onclick="scrollToBabyTrackers('sleep')">💤 Сон</button>
+          <button type="button" class="journal-jump-pill" onclick="scrollToBabyTrackers('growth')">📈 Рост</button>
+          <button type="button" class="journal-jump-pill" onclick="scrollToBabyTrackers('notes')">📓 Записи</button>
+          <button type="button" class="journal-jump-pill" onclick="scrollToBabyTrackers('photos')">📷 Фото</button>
+        </div>
         <div class="card visit-prep-card" id="visitPrepCard" style="display:none"><div class="cb">
           <div class="sh">✅ Подготовка к визиту</div>
           <div class="ssub" id="visitPrepSub">Отметь что уже готово — не забудешь ничего важного</div>
@@ -2590,42 +2609,22 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
             <button type="button" class="journal-export-btn" onclick="dismissVisitBackupNudge()">Позже</button>
           </div>
         </div></div>
-        <div class="card"><div class="cb">
-          <div class="sh" id="journalCardTitle">📓 Записи по дням</div>
-          <div class="ssub" id="journalCardSub">Мысли, события и воспоминания — с датой и неделей беременности</div>
-          <input type="search" class="journal-search" id="journalSearch" placeholder="🔍 Искать в записях…" oninput="renderJournalLog()" aria-label="Поиск по дневнику">
-          <div class="journal-tag-row" id="journalFilterRow" aria-label="Фильтр по тегам"></div>
-          <div class="journal-export-row">
-            <button type="button" class="journal-export-btn primary" onclick="printJournal()">🖨️ Экспорт дневника</button>
-            <button type="button" class="journal-export-btn" onclick="shareJournal()">📤 Поделиться</button>
-          </div>
-          <div class="journal-tag-row" id="journalTagRow" aria-label="Теги новой записи"></div>
-          <textarea id="journalNewT" class="journal-new" placeholder="Сегодня малыш так сильно пинался, когда папа гладил животик…"></textarea>
-          <button type="button" class="lq" style="margin-top:12px" onclick="saveJournalEntry()">Сохранить запись 💖</button>
-          <div class="journal-log" id="journalLog"></div>
-        </div></div>
-        <div class="card"><div class="cb">
-          <div class="sh">🗓️ Визиты к врачу</div>
-          <div class="ssub">Скрининг, УЗИ, анализы — отмечай и не пропусти</div>
-          <div class="appt-form">
-            <input type="date" class="appt-inp appt-date-inp" id="apptDate">
-            <input type="text" class="appt-inp" id="apptTitle" placeholder="Скрининг, УЗИ…" maxlength="80">
-            <button type="button" class="wt-save-btn" style="flex:0 0 auto;padding:12px 16px" onclick="addAppt()">＋</button>
-          </div>
-          <div class="appt-list" id="apptList"></div>
-        </div></div>
 
-        <!-- ── BABY: FEEDING & DIAPERS (postpartum) ── -->
-        <div class="card postpartum-only" id="babyFeedCard"><div class="cb">
+        <!-- ── BABY TRACKERS first (postpartum) ── -->
+        <div class="card postpartum-only baby-tracker-card" id="babyFeedCard"><div class="cb">
           <div class="sh" id="babyFeedTitle">🍼 Кормления и подгузники</div>
           <div class="ssub" id="babyFeedSub">Отмечай за секунду — увидишь историю дня</div>
+          <div class="baby-live-strip" id="babyFeedLiveStrip"><span>Пока нет записей сегодня</span></div>
           <div class="baby-quick-row" id="babyFeedBtns">
             <button type="button" class="baby-q-btn" onclick="logBabyFeed('bl')">🤱 Грудь Л</button>
             <button type="button" class="baby-q-btn" onclick="logBabyFeed('br')">🤱 Грудь П</button>
             <button type="button" class="baby-q-btn" onclick="toggleBabyFormulaRow()">🍼 Смесь</button>
             <button type="button" class="baby-q-btn" id="babyMealBtn" style="display:none" onclick="logBabyFeed('meal')">🥣 Еда</button>
           </div>
-          <button type="button" class="journal-export-btn" id="babyFeedRepeatBtn" style="width:100%;margin-top:10px;display:none" onclick="repeatLastBabyFeed()">↻ Повторить последнее</button>
+          <div class="baby-hist-actions" id="babyFeedQuickActions" style="display:none">
+            <button type="button" class="journal-export-btn" id="babyFeedRepeatBtn" style="flex:1;display:none" onclick="repeatLastBabyFeed()">↻ Повторить</button>
+            <button type="button" class="journal-export-btn" id="babyFeedUndoBtn" style="flex:1;display:none" onclick="undoLastBabyFeed()">↩ Отменить</button>
+          </div>
           <div class="appt-form" id="babyFormulaRow" style="display:none;margin-top:10px">
             <input type="number" class="appt-inp" id="babyFormulaMl" placeholder="мл" min="10" max="400" style="max-width:110px">
             <button type="button" class="wt-save-btn" style="flex:0 0 auto;padding:12px 16px" onclick="logBabyFeedFormula()">Записать</button>
@@ -2640,10 +2639,10 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
           <div class="contr-hist" id="babyFeedHist"></div>
         </div></div>
 
-        <!-- ── BABY: SLEEP (postpartum) ── -->
-        <div class="card postpartum-only" id="babySleepCard"><div class="cb">
+        <div class="card postpartum-only baby-tracker-card" id="babySleepCard"><div class="cb">
           <div class="sh">💤 Сон малыша</div>
           <div class="ssub" id="babySleepSub">Нажми, когда малыш уснёт — и когда проснётся</div>
+          <div class="baby-live-strip" id="babySleepLiveStrip"><span>Можно отметить начало сна</span></div>
           <div class="contr-meta">
             <div class="contr-stat"><div class="contr-stat-val" id="babySleepToday">0ч 0м</div><div class="contr-stat-lbl">сон сегодня</div></div>
             <div class="contr-stat"><div class="contr-stat-val" id="babySleepCount">0</div><div class="contr-stat-lbl">снов сегодня</div></div>
@@ -2653,20 +2652,19 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
           <div class="contr-hist" id="babySleepHist"></div>
         </div></div>
 
-        <!-- ── BABY: GROWTH (postpartum) ── -->
-        <div class="card postpartum-only" id="babyGrowthCard"><div class="cb">
+        <div class="card postpartum-only baby-tracker-card" id="babyGrowthCard"><div class="cb">
           <div class="sh">📈 Рост малыша</div>
-          <div class="ssub">Вес и рост — с нормами ВОЗ прямо на графике, удобно показать педиатру</div>
+          <div class="ssub" id="babyGrowthCardSub">Вес и рост — с нормами ВОЗ прямо на графике, удобно показать педиатру</div>
           <div class="wt-input-row">
             <div class="wt-input-wrap">
               <input type="number" class="wt-inp-v2" id="babyWtIn" placeholder="3200" step="10" min="500" max="30000">
               <span class="wt-unit">г</span>
             </div>
-            <button onclick="saveBabyGrowth()" class="wt-save-btn">Записать</button>
+            <button type="button" onclick="saveBabyGrowth()" class="wt-save-btn">Записать</button>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 4px">
-            <input type="number" id="babyHtIn" placeholder="Рост, см" step="0.5" min="30" max="130" style="font-size:14px;padding:12px;text-align:center;font-weight:800">
-            <input type="number" id="babyHcIn" placeholder="Голова, см" step="0.1" min="25" max="60" style="font-size:14px;padding:12px;text-align:center;font-weight:800">
+            <input type="number" class="baby-growth-inp" id="babyHtIn" placeholder="Рост, см" step="0.5" min="30" max="130">
+            <input type="number" class="baby-growth-inp" id="babyHcIn" placeholder="Голова, см" step="0.1" min="25" max="60">
           </div>
           <div class="baby-growth-hint" id="babyGrowthHint"></div>
           <div class="baby-growth-chartwrap" id="babyGrowthChartWrap">
@@ -2679,7 +2677,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
           <div class="baby-src-note">📚 Диапазон и медиана — WHO Child Growth Standards (2006), 0–5 лет. Ориентир, а не диагноз — обсуди динамику с педиатром.</div>
         </div></div>
 
-        <div class="card postpartum-only" id="babyPhotoCard"><div class="cb">
+        <div class="card postpartum-only baby-tracker-card" id="babyPhotoCard"><div class="cb">
           <div class="sh">📷 Малыш по месяцам</div>
           <div class="ssub">Одно фото на месяц — потом будет трогательный альбом роста</div>
           <button type="button" class="gal-add-primary" onclick="openBabyGalCurrent()">📷 Добавить фото · <span id="babyGalCurLbl">этот месяц</span></button>
@@ -2692,6 +2690,31 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
             <button type="button" class="gal-compare-btn" id="babyCompareBtn" onclick="openBabyCompareModal()">↔ Сравнить месяцы</button>
             <button type="button" class="gal-compare-btn" onclick="exportBabyAlbum()">🖼️ Альбом / печать</button>
           </div>
+        </div></div>
+
+        <div class="card" id="journalNotesCard"><div class="cb">
+          <div class="sh" id="journalCardTitle">📓 Записи по дням</div>
+          <div class="ssub" id="journalCardSub">Мысли, события и воспоминания — с датой и неделей беременности</div>
+          <input type="search" class="journal-search" id="journalSearch" placeholder="🔍 Искать в записях…" oninput="renderJournalLog()" aria-label="Поиск по дневнику">
+          <div class="journal-tag-row" id="journalFilterRow" aria-label="Фильтр по тегам"></div>
+          <div class="journal-export-row">
+            <button type="button" class="journal-export-btn primary" onclick="printJournal()">🖨️ Экспорт дневника</button>
+            <button type="button" class="journal-export-btn" onclick="shareJournal()">📤 Поделиться</button>
+          </div>
+          <div class="journal-tag-row" id="journalTagRow" aria-label="Теги новой записи"></div>
+          <textarea id="journalNewT" class="journal-new" placeholder="Сегодня малыш так сильно пинался, когда папа гладил животик…"></textarea>
+          <button type="button" class="lq" style="margin-top:12px" onclick="saveJournalEntry()">Сохранить запись 💖</button>
+          <div class="journal-log" id="journalLog"></div>
+        </div></div>
+        <div class="card"><div class="cb">
+          <div class="sh" id="apptCardTitle">🗓️ Визиты к врачу</div>
+          <div class="ssub" id="apptCardSub">Скрининг, УЗИ, анализы — отмечай и не пропусти</div>
+          <div class="appt-form">
+            <input type="date" class="appt-inp appt-date-inp" id="apptDate">
+            <input type="text" class="appt-inp" id="apptTitle" placeholder="Скрининг, УЗИ…" maxlength="80">
+            <button type="button" class="wt-save-btn" style="flex:0 0 auto;padding:12px 16px" onclick="addAppt()">＋</button>
+          </div>
+          <div class="appt-list" id="apptList"></div>
         </div></div>
 
         <div class="card pregnancy-only"><div class="cb">
@@ -2945,7 +2968,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v55</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v56</div>
         </div></div>
       </div>
     </div>
@@ -3129,7 +3152,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v55';
+const APP_DATA_VER='v56';
 let curGW=null;
 let curBMo=null;
 let photoGalMode='belly'; // belly | baby
@@ -5607,6 +5630,16 @@ function applyAppMode(){
   if(jTitle)jTitle.textContent=born?'📓 Дневник малыша':'📓 Записи по дням';
   const jSub=document.getElementById('journalCardSub');
   if(jSub)jSub.textContent=born?'Мысли, события и первые «впервые» — с датой':'Мысли, события и воспоминания — с датой и неделей беременности';
+  const pageSub=document.getElementById('journalPageSub');
+  if(pageSub)pageSub.textContent=born
+    ?'Кормление, сон, рост и тёплые записи — всё под рукой'
+    :'История настроений, вес, записи и наш животик по неделям';
+  const apptTitle=document.getElementById('apptCardTitle');
+  if(apptTitle)apptTitle.textContent=born?'🗓️ Визиты к педиатру':'🗓️ Визиты к врачу';
+  const apptSub=document.getElementById('apptCardSub');
+  if(apptSub)apptSub.textContent=born?'Плановые осмотры и прививки — отмечай и не пропусти':'Скрининг, УЗИ, анализы — отмечай и не пропусти';
+  const apptInp=document.getElementById('apptTitle');
+  if(apptInp)apptInp.placeholder=born?'Педиатр, прививка…':'Скрининг, УЗИ…';
   const dSub=document.getElementById('diarySub');
   if(dSub)dSub.textContent=born?'Запиши, что чувствуешь как мама. Малыш прочитает это, когда подрастёт!':'Запиши свои мысли. Потом будет так здорово это перечитать вместе!';
   const dArea=document.getElementById('diaryT');
@@ -6579,13 +6612,40 @@ function repeatLastBabyFeed(){
   }
   logBabyFeed(last.type);
 }
+function undoLastBabyFeed(){
+  H();
+  const feeds=loadBabyFeed();
+  const diapers=loadBabyDiaper();
+  const lastFeed=feeds.length?feeds[feeds.length-1]:null;
+  const lastDiaper=diapers.length?diapers[diapers.length-1]:null;
+  if(!lastFeed&&!lastDiaper){toast('Нечего отменять');return;}
+  const feedNewer=!lastDiaper||(lastFeed&&lastFeed.ts>=lastDiaper.ts);
+  if(feedNewer&&lastFeed){
+    feeds.pop();
+    saveBabyFeedList(feeds);
+    renderBabyFeedHist();
+    try{renderBabyHero();}catch(e){}
+    try{updateBabyCareNowCard();}catch(e){}
+    toast('Убрали последнее кормление');
+    return;
+  }
+  diapers.pop();
+  saveBabyDiaperList(diapers);
+  renderBabyFeedHist();
+  try{renderBabyHero();}catch(e){}
+  toast('Убрали последнюю отметку туалета');
+}
 function scrollToBabyTrackers(which){
   H();
   switchTabById('journal');
   setTimeout(()=>{
-    const id=which==='sleep'?'babySleepCard':'babyFeedCard';
-    const el=document.getElementById(id);
+    const map={sleep:'babySleepCard',feed:'babyFeedCard',growth:'babyGrowthCard',notes:'journalNotesCard',photos:'babyPhotoCard'};
+    const el=document.getElementById(map[which]||'babyFeedCard');
     el&&el.scrollIntoView({behavior:'smooth',block:'start'});
+    if(which==='notes'){
+      const ta=document.getElementById('journalNewT');
+      ta&&setTimeout(()=>ta.focus(),280);
+    }
   },220);
 }
 function updateBabyCareNowCard(){
@@ -6682,7 +6742,7 @@ function updateBabyTrackerCopy(){
   const mealBtn=document.getElementById('babyMealBtn');
   const pottyBtn=document.getElementById('babyPottyBtn');
   const sleepSub=document.getElementById('babySleepSub');
-  const growthSub=document.querySelector('#babyGrowthCard .ssub');
+  const growthSub=document.getElementById('babyGrowthCardSub');
   if(mealBtn)mealBtn.style.display=mo>=6?'':'none';
   if(pottyBtn)pottyBtn.style.display=mo>=18?'':'none';
   if(title){
@@ -6712,15 +6772,31 @@ function renderBabyFeedHist(){
   const statsEl=document.getElementById('babyTodayStats');
   const histEl=document.getElementById('babyFeedHist');
   const repeatBtn=document.getElementById('babyFeedRepeatBtn');
+  const undoBtn=document.getElementById('babyFeedUndoBtn');
+  const quick=document.getElementById('babyFeedQuickActions');
+  const live=document.getElementById('babyFeedLiveStrip');
   if(!statsEl&&!histEl&&!repeatBtn)return;
   const feeds=loadBabyFeed().filter(f=>isToday(f.ts));
   const diapers=loadBabyDiaper().filter(d=>isToday(d.ts));
   const last=getLastBabyFeed();
+  const allDiapers=loadBabyDiaper();
+  const hasAny=!!(last||allDiapers.length);
+  if(quick)quick.style.display=hasAny?'flex':'none';
   if(repeatBtn){
     if(last){
       repeatBtn.style.display='block';
-      repeatBtn.textContent='↻ Повторить: '+feedTypeLabel(last)+' · '+agoLabel(last.ts);
+      repeatBtn.textContent='↻ Повторить: '+feedTypeLabel(last);
     }else repeatBtn.style.display='none';
+  }
+  if(undoBtn)undoBtn.style.display=hasAny?'block':'none';
+  if(live){
+    if(last){
+      live.classList.add('on');
+      live.innerHTML='<span>Последнее: <b>'+feedTypeLabel(last)+'</b> · '+agoLabel(last.ts)+'</span><span>'+feeds.length+' сегодня</span>';
+    }else{
+      live.classList.remove('on');
+      live.innerHTML='<span>Ещё нет кормлений сегодня — отметь первое</span>';
+    }
   }
   if(statsEl){
     const wetCount=diapers.filter(d=>d.type==='pee'||d.type==='both'||d.type==='potty').length;
@@ -6738,7 +6814,7 @@ function renderBabyFeedHist(){
       ...feeds.map(f=>({ts:f.ts,txt:feedTypeLabel(f)})),
       ...diapers.map(d=>({ts:d.ts,txt:diaperTypeLabel(d)}))
     ].sort((a,b)=>b.ts-a.ts).slice(0,14);
-    histEl.innerHTML=items.length?items.map(it=>'<div class="contr-hist-item"><span>'+new Date(it.ts).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'</span><span>'+it.txt+'</span></div>').join(''):'<div class="empty-sub" style="text-align:center;padding:8px 0">Пока пусто — отметь первое кормление</div>';
+    histEl.innerHTML=items.length?items.map(it=>'<div class="contr-hist-item"><span>'+new Date(it.ts).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'</span><span>'+it.txt+'</span></div>').join(''):'<div class="empty-state" style="padding:16px 8px"><div class="empty-ico">🍼</div><div class="empty-title">Тихий старт дня</div><div class="empty-sub">Отметь кормление или подгузник — история появится здесь</div></div>';
   }
   try{updateBabyCareNowCard();}catch(e){}
 }
@@ -6771,8 +6847,24 @@ function renderBabySleep(){
   const active=last&&!last.end;
   const btn=document.getElementById('babySleepBtn');
   const subEl=document.getElementById('babySleepSub');
-  if(btn)btn.textContent=active?'☀️ Малыш проснулся':'😴 Малыш заснул';
+  const live=document.getElementById('babySleepLiveStrip');
+  if(btn){
+    btn.textContent=active?'☀️ Малыш проснулся':'😴 Малыш заснул';
+    btn.classList.toggle('recording',!!active);
+  }
   if(subEl)subEl.textContent=active?'Идёт сон — нажми, когда малыш проснётся':'Нажми, когда малыш уснёт — и когда проснётся';
+  if(live){
+    if(active){
+      live.classList.add('on');
+      live.innerHTML='<span>Сейчас спит · <b>'+fmtDurMin(Math.round((Date.now()-last.start)/60000))+'</b></span><span>с '+new Date(last.start).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'</span>';
+    }else if(last&&last.end){
+      live.classList.remove('on');
+      live.innerHTML='<span>Не спит · <b>'+agoLabel(last.end)+'</b></span><span>прошлый сон '+fmtDurMin(Math.round((last.end-last.start)/60000))+'</span>';
+    }else{
+      live.classList.remove('on');
+      live.innerHTML='<span>Можно отметить начало сна</span>';
+    }
+  }
   const curEl=document.getElementById('babySleepCur');
   if(curEl)curEl.textContent=active?fmtDurMin(Math.round((Date.now()-last.start)/60000)):'—';
   const todaySessions=list.filter(s=>isToday(s.start));
@@ -6788,7 +6880,7 @@ function renderBabySleep(){
       const st=new Date(s.start).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
       const dur=s.end?fmtDurMin(Math.round((s.end-s.start)/60000)):'идёт…';
       return '<div class="contr-hist-item"><span>'+st+'</span><span>'+dur+'</span></div>';
-    }).join(''):'<div class="empty-sub" style="text-align:center;padding:8px 0">Пока нет записей сна</div>';
+    }).join(''):'<div class="empty-state" style="padding:16px 8px"><div class="empty-ico">💤</div><div class="empty-title">Снов ещё нет</div><div class="empty-sub">Когда малыш уснёт — нажми кнопку выше</div></div>';
   }
   try{updateBabyCareNowCard();}catch(e){}
 }
@@ -6837,14 +6929,11 @@ function buildGrowthDeltaText(prev,cur){
   return 'С прошлого раза'+(days?(' · '+days+' '+ruPlural(days,'день','дня','дней')):'')+': '+bits.join(' · ');
 }
 function scrollToBabyGrowth(){
-  H();
-  switchTabById('journal');
+  scrollToBabyTrackers('growth');
   setTimeout(()=>{
-    const el=document.getElementById('babyGrowthCard');
-    el&&el.scrollIntoView({behavior:'smooth',block:'start'});
     const w=document.getElementById('babyWtIn');
     w&&w.focus();
-  },220);
+  },320);
 }
 function updateBabyGrowthNudgeCard(){
   const card=document.getElementById('babyGrowthNudgeCard');
