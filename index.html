@@ -2006,6 +2006,14 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         <button type="button" class="pp-hero-letter-btn" onclick="showBabyCongrats()">💌 Письмо от Эмира</button>
       </div>
 
+      <div class="card postpartum-only" id="babyCareNowCard" style="margin:0 15px 14px">
+        <div class="cb">
+          <div class="sh" id="babyCareNowTitle">💤 Сейчас</div>
+          <div class="ssub" id="babyCareNowSub">Кормление и сон — под рукой</div>
+          <div class="journal-export-row" style="margin-top:12px" id="babyCareNowActions"></div>
+        </div>
+      </div>
+
       <div class="overdue-banner pregnancy-only" id="overdueBanner" role="status" aria-live="polite">
         <div class="overdue-banner-kicker" id="overdueKicker">После ПДР</div>
         <div class="overdue-banner-title" id="overdueTitle">Ты на финальном этапе 🤍</div>
@@ -2565,6 +2573,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
             <button type="button" class="baby-q-btn" onclick="toggleBabyFormulaRow()">🍼 Смесь</button>
             <button type="button" class="baby-q-btn" id="babyMealBtn" style="display:none" onclick="logBabyFeed('meal')">🥣 Еда</button>
           </div>
+          <button type="button" class="journal-export-btn" id="babyFeedRepeatBtn" style="width:100%;margin-top:10px;display:none" onclick="repeatLastBabyFeed()">↻ Повторить последнее</button>
           <div class="appt-form" id="babyFormulaRow" style="display:none;margin-top:10px">
             <input type="number" class="appt-inp" id="babyFormulaMl" placeholder="мл" min="10" max="400" style="max-width:110px">
             <button type="button" class="wt-save-btn" style="flex:0 0 auto;padding:12px 16px" onclick="logBabyFeedFormula()">Записать</button>
@@ -2883,7 +2892,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v50</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v51</div>
         </div></div>
       </div>
     </div>
@@ -3067,7 +3076,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v50';
+const APP_DATA_VER='v51';
 let curGW=null;
 let curBMo=null;
 let photoGalMode='belly'; // belly | baby
@@ -5593,7 +5602,7 @@ function renderBabyHero(){
   const emEl=document.getElementById('ppHeroEmoji');if(emEl)emEl.textContent=emoji;
   const ageEl=document.getElementById('ppHeroAge');if(ageEl)ageEl.textContent='Малышу '+formatBabyAge(age)+'!';
   const bDate=age.birthDate.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
-  const subEl=document.getElementById('ppHeroSub');if(subEl)subEl.textContent='Родился(лась) '+bDate;
+  const subEl=document.getElementById('ppHeroSub');
   const nameEl=document.getElementById('ppHeroName');if(nameEl)nameEl.textContent=name?name:'наш малыш';
   const dayEl=document.getElementById('ppHeroDay');if(dayEl)dayEl.textContent='🌙 '+(age.days+1)+'-й день жизни';
   const feeds=loadBabyFeed().filter(f=>isToday(f.ts));
@@ -5603,6 +5612,16 @@ function renderBabyHero(){
   const fEl=document.getElementById('ppHsFeed');if(fEl)fEl.textContent=String(feeds.length);
   const sEl=document.getElementById('ppHsSleep');if(sEl)sEl.textContent=(sleepMin/60).toFixed(1).replace('.0','')+'ч';
   const dEl=document.getElementById('ppHsDiaper');if(dEl)dEl.textContent=String(diapers.length);
+  const activeSleep=getActiveBabySleep();
+  if(subEl){
+    if(activeSleep)subEl.textContent='Сейчас спит · '+fmtDurMin(Math.round((Date.now()-activeSleep.start)/60000));
+    else{
+      const lastFeed=getLastBabyFeed();
+      if(lastFeed)subEl.textContent='Последнее кормление · '+agoLabel(lastFeed.ts);
+      else subEl.textContent='Родился(лась) '+bDate;
+    }
+  }
+  try{updateBabyCareNowCard();}catch(e){}
 }
 function babyProgressHead(text,done,total){
   const pct=total?Math.round(done/total*100):0;
@@ -6285,12 +6304,83 @@ function loadBabyFeed(){try{const r=JSON.parse(localStorage.getItem(BABY_FEED_KE
 function saveBabyFeedList(list){localStorage.setItem(BABY_FEED_KEY,JSON.stringify(list.slice(-300)));}
 function loadBabyDiaper(){try{const r=JSON.parse(localStorage.getItem(BABY_DIAPER_KEY)||'[]');return Array.isArray(r)?r:[];}catch(e){return[];}}
 function saveBabyDiaperList(list){localStorage.setItem(BABY_DIAPER_KEY,JSON.stringify(list.slice(-300)));}
+function getLastBabyFeed(){
+  const list=loadBabyFeed();
+  return list.length?list[list.length-1]:null;
+}
+function getActiveBabySleep(){
+  const list=loadBabySleep();
+  const last=list[list.length-1];
+  return(last&&!last.end)?last:null;
+}
+function agoLabel(ts){
+  const min=Math.max(0,Math.round((Date.now()-ts)/60000));
+  if(min<1)return'только что';
+  if(min<60)return min+' '+ruPlural(min,'минуту','минуты','минут')+' назад';
+  const h=Math.floor(min/60),m=min%60;
+  if(h<48)return h+' '+ruPlural(h,'час','часа','часов')+(m?(' '+m+'м'):'')+' назад';
+  return Math.floor(h/24)+' дн. назад';
+}
+function repeatLastBabyFeed(){
+  H();
+  const last=getLastBabyFeed();
+  if(!last){toast('Пока нет кормлений для повтора');return;}
+  if(last.type==='formula'){
+    const ml=parseInt(last.ml,10)||0;
+    if(ml<10){toast('Не удалось повторить смесь');return;}
+    const list=loadBabyFeed();
+    list.push({ts:Date.now(),type:'formula',ml});
+    saveBabyFeedList(list);
+    renderBabyFeedHist();
+    try{renderBabyHero();}catch(e){}
+    toast('Снова смесь '+ml+' мл 🍼');
+    return;
+  }
+  logBabyFeed(last.type);
+}
+function scrollToBabyTrackers(which){
+  H();
+  switchTabById('journal');
+  setTimeout(()=>{
+    const id=which==='sleep'?'babySleepCard':'babyFeedCard';
+    const el=document.getElementById(id);
+    el&&el.scrollIntoView({behavior:'smooth',block:'start'});
+  },220);
+}
+function updateBabyCareNowCard(){
+  const card=document.getElementById('babyCareNowCard');
+  const title=document.getElementById('babyCareNowTitle');
+  const sub=document.getElementById('babyCareNowSub');
+  const actions=document.getElementById('babyCareNowActions');
+  if(!card||!actions)return;
+  if(!hasBabyBorn())return;
+  const sleep=getActiveBabySleep();
+  const last=getLastBabyFeed();
+  let html='';
+  if(sleep){
+    if(title)title.textContent='😴 Сейчас спит';
+    if(sub)sub.textContent='Уже '+fmtDurMin(Math.round((Date.now()-sleep.start)/60000))+' · нажми, когда проснётся';
+    html+='<button type="button" class="journal-export-btn primary" onclick="toggleBabySleep()">☀️ Проснулся</button>';
+    html+='<button type="button" class="journal-export-btn" onclick="scrollToBabyTrackers(\'sleep\')">К сну →</button>';
+  }else{
+    if(title)title.textContent='🍼 Сейчас';
+    const awake=loadBabySleep().slice(-1)[0];
+    const awakeTxt=awake&&awake.end?('Не спит · '+agoLabel(awake.end)):('Можно отметить сон');
+    if(sub)sub.textContent=(last?('Кормление: '+feedTypeLabel(last)+' · '+agoLabel(last.ts)):'Ещё нет кормлений')+' · '+awakeTxt;
+    if(last)html+='<button type="button" class="journal-export-btn primary" onclick="repeatLastBabyFeed()">↻ Повторить</button>';
+    html+='<button type="button" class="journal-export-btn" onclick="toggleBabySleep()">😴 Заснул</button>';
+    html+='<button type="button" class="journal-export-btn" onclick="scrollToBabyTrackers(\'feed\')">Дневник →</button>';
+  }
+  actions.innerHTML=html;
+}
 function logBabyFeed(type){
   H();
   const list=loadBabyFeed();
   list.push({ts:Date.now(),type});
   saveBabyFeedList(list);
   renderBabyFeedHist();
+  try{renderBabyHero();}catch(e){}
+  try{updateBabyCareNowCard();}catch(e){}
   const lbl=type==='bl'?'левая грудь':type==='br'?'правая грудь':type==='meal'?'приём пищи':'кормление';
   toast((type==='meal'?'Еда записана':'Кормление записано')+' — '+lbl+(type==='meal'?' 🥣':' 🤱'));
 }
@@ -6313,6 +6403,8 @@ function logBabyFeedFormula(){
   if(inp)inp.value='';
   document.getElementById('babyFormulaRow').style.display='none';
   renderBabyFeedHist();
+  try{renderBabyHero();}catch(e){}
+  try{updateBabyCareNowCard();}catch(e){}
   toast('Кормление смесью '+ml+' мл записано 🍼');
 }
 function logBabyDiaper(type){
@@ -6378,9 +6470,17 @@ function renderBabyFeedHist(){
   updateBabyTrackerCopy();
   const statsEl=document.getElementById('babyTodayStats');
   const histEl=document.getElementById('babyFeedHist');
-  if(!statsEl&&!histEl)return;
+  const repeatBtn=document.getElementById('babyFeedRepeatBtn');
+  if(!statsEl&&!histEl&&!repeatBtn)return;
   const feeds=loadBabyFeed().filter(f=>isToday(f.ts));
   const diapers=loadBabyDiaper().filter(d=>isToday(d.ts));
+  const last=getLastBabyFeed();
+  if(repeatBtn){
+    if(last){
+      repeatBtn.style.display='block';
+      repeatBtn.textContent='↻ Повторить: '+feedTypeLabel(last)+' · '+agoLabel(last.ts);
+    }else repeatBtn.style.display='none';
+  }
   if(statsEl){
     const wetCount=diapers.filter(d=>d.type==='pee'||d.type==='both'||d.type==='potty').length;
     const dirtyCount=diapers.filter(d=>d.type==='poop'||d.type==='both').length;
@@ -6399,6 +6499,7 @@ function renderBabyFeedHist(){
     ].sort((a,b)=>b.ts-a.ts).slice(0,14);
     histEl.innerHTML=items.length?items.map(it=>'<div class="contr-hist-item"><span>'+new Date(it.ts).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'</span><span>'+it.txt+'</span></div>').join(''):'<div class="empty-sub" style="text-align:center;padding:8px 0">Пока пусто — отметь первое кормление</div>';
   }
+  try{updateBabyCareNowCard();}catch(e){}
 }
 
 // ── BABY: SLEEP ──
@@ -6420,6 +6521,8 @@ function toggleBabySleep(){
     toast('Отметили начало сна 😴');
   }
   renderBabySleep();
+  try{renderBabyHero();}catch(e){}
+  try{updateBabyCareNowCard();}catch(e){}
 }
 function renderBabySleep(){
   const list=loadBabySleep();
@@ -6446,6 +6549,7 @@ function renderBabySleep(){
       return '<div class="contr-hist-item"><span>'+st+'</span><span>'+dur+'</span></div>';
     }).join(''):'<div class="empty-sub" style="text-align:center;padding:8px 0">Пока нет записей сна</div>';
   }
+  try{updateBabyCareNowCard();}catch(e){}
 }
 function fmtDurMin(min){
   if(min<60)return min+'м';
@@ -6692,7 +6796,7 @@ function init(){
   else if(localStorage.getItem('dataMigrateToast_v8')!=='1'&&localStorage.getItem('eddDate')){
     localStorage.setItem('dataMigrateToast_v8','1');
   }
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();updateApptHomeCard();updateWaterHint();if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();updateBabyVisitModeCard();updateBabyPhotoNudgeCard();renderBabyFirstsHome();}}});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();updateApptHomeCard();updateWaterHint();if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();renderBabyFeedHist();updateBabyVisitModeCard();updateBabyPhotoNudgeCard();renderBabyFirstsHome();updateBabyCareNowCard();}}});
   if(!_appTimersSet){
     _appTimersSet=true;
     setInterval(()=>updateCD(localStorage.getItem('eddDate')||edd),60000);
@@ -6702,7 +6806,7 @@ function init(){
     setInterval(updateMilestoneCard,60000);
     setInterval(updateApptHomeCard,60000);
     setInterval(updateWaterHint,60000);
-    setInterval(()=>{if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();}},60000);
+    setInterval(()=>{if(hasBabyBorn()){renderBabyHero();renderBabySleep();updateBabyCareNowCard();}},15000);
   }
   setTimeout(showCoachIfNeeded,3000);
   updateOfflinePill();
@@ -9827,7 +9931,7 @@ function switchTab(id,btn){
   if(id==='journal'){renderGallery(localStorage.getItem('eddDate'));renderJournalTagRow();renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();try{updateVisitBackupNudge();}catch(e){}if(hasBabyBorn()){renderBabyJournalTrackers();renderBabyGallery();}}
   if(id==='bag')renderBag();
   if(id==='meds'){renderMedWeekChart();renderLettersLog();}
-  if(id==='home'){updateTodayDash();renderWeekWellness();if(hasBabyBorn()){renderBabyHero();renderBabySection();}}
+  if(id==='home'){updateTodayDash();renderWeekWellness();if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();renderBabyFeedHist();updateBabyCareNowCard();}}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function toggleTheme(){H();const d=document.getElementById('thmTog').checked;if(d){document.documentElement.classList.add('dark');localStorage.setItem('theme','dark')}else{document.documentElement.classList.remove('dark');localStorage.setItem('theme','light')}}
