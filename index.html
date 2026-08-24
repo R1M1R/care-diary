@@ -1578,6 +1578,35 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 .baby-today-stat{padding:10px 6px;border-radius:14px;background:var(--bg2);border:1px solid var(--cb);text-align:center}
 .baby-today-stat b{display:block;font-size:16px;font-weight:900;color:var(--rose);line-height:1.3}
 .baby-today-stat span{font-size:9.5px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.4px}
+.vax-group{margin-top:14px}
+.vax-group:first-child{margin-top:0}
+.vax-age{font-size:11px;font-weight:900;color:var(--plum);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.vax-age .vax-due{font-size:10px;font-weight:800;color:var(--rose);letter-spacing:0;text-transform:none}
+.vax-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--cb);cursor:pointer}
+.vax-item:last-child{border-bottom:none}
+.vax-item .bag-chk{margin-top:2px;flex-shrink:0}
+.vax-body{flex:1;min-width:0}
+.vax-name{font-size:13px;font-weight:900;color:var(--t1);line-height:1.35}
+.vax-name.done{text-decoration:line-through;opacity:.55}
+.vax-meta{font-size:11px;font-weight:700;color:var(--t3);margin-top:3px;line-height:1.4}
+.teeth-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px}
+.tooth-btn{appearance:none;border:1.5px solid var(--cb);background:var(--bg2);border-radius:14px;padding:10px 4px 8px;cursor:pointer;text-align:center;transition:transform .15s,border-color .2s,background .2s;font-family:'Nunito',sans-serif}
+.tooth-btn:active{transform:scale(.96)}
+.tooth-btn.on{border-color:rgba(232,50,90,.45);background:linear-gradient(160deg,rgba(232,50,90,.12),rgba(255,255,255,.4));box-shadow:0 4px 14px rgba(232,50,90,.12)}
+.tooth-ico{font-size:20px;line-height:1;display:block}
+.tooth-lbl{font-size:9px;font-weight:900;color:var(--t2);margin-top:4px;line-height:1.25}
+.tooth-age{font-size:8px;font-weight:800;color:var(--t3);margin-top:2px}
+.tooth-btn.on .tooth-lbl{color:var(--rose)}
+.firsts-list{display:flex;flex-direction:column;gap:0;margin-top:4px}
+.first-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--cb);cursor:pointer}
+.first-item:last-child{border-bottom:none}
+.first-ico{font-size:22px;width:28px;text-align:center;flex-shrink:0;line-height:1}
+.first-body{flex:1;min-width:0}
+.first-title{font-size:13px;font-weight:900;color:var(--t1);line-height:1.3}
+.first-title.done{color:var(--rose)}
+.first-date{font-size:11px;font-weight:700;color:var(--t3);margin-top:2px}
+.first-chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--cb);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;background:transparent}
+.first-chk.on{background:linear-gradient(135deg,var(--rose),var(--rose2));border-color:transparent}
 .bag-prog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;font-weight:900;color:var(--t2)}
 .bag-prog-sub{font-size:11px;font-weight:700;color:var(--t3);margin-top:8px;text-align:center}
 .kick-session-bar{display:flex;justify-content:space-between;align-items:center;background:var(--bg2);border:1px solid var(--cb);border-radius:14px;padding:10px 14px;margin-bottom:14px;font-size:12px;font-weight:800;color:var(--t2)}
@@ -2190,6 +2219,34 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         </div>
       </div>
 
+      <div class="card">
+        <div class="cb">
+          <div class="sh">💉 Календарь прививок</div>
+          <div class="ssub">Национальный календарь КР до 3 лет — отмечай сделанные</div>
+          <div id="babyVaxBox"></div>
+          <div class="baby-src-note">📚 Ориентир: национальный календарь КР (privivka.kg / Минздрав). Точные сроки и препараты — у вашего педиатра.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cb">
+          <div class="sh">🦷 Зубки</div>
+          <div class="ssub">Отмечай, какие молочные зубки уже прорезались</div>
+          <div id="babyTeethProg" class="baby-milestone-cat" style="margin-top:0"><span>Прогресс</span><span class="baby-progress-badge" id="babyTeethBadge">0/10</span></div>
+          <div class="baby-progress-bar"><div class="baby-progress-fill" id="babyTeethFill" style="width:0%"></div></div>
+          <div class="teeth-grid" id="babyTeethGrid"></div>
+          <div class="baby-src-note">Возраст рядом с зубком — типичные сроки прорезывания (ориентир AAP/стоматология).</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cb">
+          <div class="sh">✨ Первые разы</div>
+          <div class="ssub">Улыбка, шаг, слово — сохрани дату, чтобы не забыть</div>
+          <div id="babyFirstsBox" class="firsts-list"></div>
+        </div>
+      </div>
+
       </div><!-- /sec-baby -->
 
       <button type="button" class="home-sec-h" onclick="toggleHomeSec('support')"><span>💌 Поддержка и душа</span><span class="home-sec-chev" id="chev-support">▾</span></button>
@@ -2740,7 +2797,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v44</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v45</div>
         </div></div>
       </div>
     </div>
@@ -2905,7 +2962,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v44';
+const APP_DATA_VER='v45';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -5478,6 +5535,172 @@ function renderBabySection(){
       return head+items;
     }).join('');
   }
+  try{renderBabyVax();}catch(e){}
+  try{renderBabyTeeth();}catch(e){}
+  try{renderBabyFirsts();}catch(e){}
+}
+
+// ── BABY: VACCINES (KR national calendar, 0–3y) ──
+// Источник ориентира: privivka.kg / календарь Минздрава КР. Не замена медкарте.
+const BABY_VAX=[
+  {ageMo:0,ageLabel:'Роддом / первые сутки',items:[
+    {id:'hepb0',name:'ВГВ (гепатит B)',note:'В течение 24 часов после рождения'},
+    {id:'bcg0',name:'БЦЖ (туберкулёз)',note:'В роддоме'}
+  ]},
+  {ageMo:2,ageLabel:'2 месяца',items:[
+    {id:'penta1',name:'ПЕНТА (АКДС‑ВГВ‑ХИБ)',note:'1-я доза'},
+    {id:'pcv1',name:'ПКВ (пневмококк)',note:'1-я доза'},
+    {id:'opv1',name:'ОПВ (полиомиелит)',note:'1-я доза'},
+    {id:'rv1',name:'РВ (ротавирус)',note:'1-я доза'}
+  ]},
+  {ageMo:3.5,ageLabel:'3,5 месяца',items:[
+    {id:'penta2',name:'ПЕНТА (АКДС‑ВГВ‑ХИБ)',note:'2-я доза'},
+    {id:'ipv1',name:'ИПВ + ОПВ (полиомиелит)',note:'по схеме поликлиники'},
+    {id:'rv2',name:'РВ (ротавирус)',note:'2-я доза'}
+  ]},
+  {ageMo:5,ageLabel:'5 месяцев',items:[
+    {id:'penta3',name:'ПЕНТА (АКДС‑ВГВ‑ХИБ)',note:'3-я доза'},
+    {id:'pcv2',name:'ПКВ (пневмококк)',note:'2-я доза'},
+    {id:'opv3',name:'ОПВ (полиомиелит)',note:'очередная доза'},
+    {id:'rv3',name:'РВ (ротавирус)',note:'3-я доза'}
+  ]},
+  {ageMo:9,ageLabel:'9 месяцев',items:[
+    {id:'ipv9',name:'ИПВ (полиомиелит)',note:'по календарю КР'}
+  ]},
+  {ageMo:12,ageLabel:'12 месяцев',items:[
+    {id:'mmr1',name:'КПК (корь, паротит, краснуха)',note:'1-я доза'},
+    {id:'pcv3',name:'ПКВ (пневмококк)',note:'3-я доза'}
+  ]},
+  {ageMo:24,ageLabel:'2 года',items:[
+    {id:'dtp_b',name:'АКДС (ревакцинация)',note:'1-я ревакцинация'},
+    {id:'mmr2',name:'КПК (ревакцинация)',note:'2-я доза'}
+  ]}
+];
+function loadBabyVax(){try{return JSON.parse(localStorage.getItem('babyVaxDone'+V)||'{}');}catch(e){return{};}}
+function saveBabyVax(map){localStorage.setItem('babyVaxDone'+V,JSON.stringify(map));}
+function toggleBabyVax(id){
+  H();
+  const map=loadBabyVax();
+  if(map[id])delete map[id];
+  else map[id]=new Date().toISOString().slice(0,10);
+  saveBabyVax(map);
+  renderBabyVax();
+  toast(map[id]?'Прививка отмечена ✓':'Отметку сняли');
+}
+function renderBabyVax(){
+  const box=document.getElementById('babyVaxBox');
+  if(!box)return;
+  const done=loadBabyVax();
+  const age=calcBabyAge(getBabyBirthDate());
+  const mo=age?age.monthsF:0;
+  box.innerHTML=BABY_VAX.map(g=>{
+    const due=mo>=g.ageMo-0.2&&g.items.some(it=>!done[it.id]);
+    const head='<div class="vax-age"><span>'+escapeHtml(g.ageLabel)+'</span>'+(due?'<span class="vax-due">скоро / актуально</span>':'')+'</div>';
+    const items=g.items.map(it=>{
+      const isDone=!!done[it.id];
+      return '<div class="vax-item" onclick="toggleBabyVax(\''+it.id+'\')"><div class="bag-chk '+(isDone?'done':'')+'"></div><div class="vax-body"><div class="vax-name'+(isDone?' done':'')+'">'+escapeHtml(it.name)+'</div><div class="vax-meta">'+escapeHtml(it.note)+(isDone?' · '+done[it.id]:'')+'</div></div></div>';
+    }).join('');
+    return '<div class="vax-group">'+head+items+'</div>';
+  }).join('');
+}
+
+// ── BABY: TEETH ──
+const BABY_TEETH=[
+  {id:'li1',ico:'🦷',lbl:'Н. резцы',age:'6–10 мес'},
+  {id:'ui1',ico:'🦷',lbl:'В. резцы',age:'8–12 мес'},
+  {id:'ui2',ico:'🦷',lbl:'В. бок.',age:'9–13 мес'},
+  {id:'li2',ico:'🦷',lbl:'Н. бок.',age:'10–16 мес'},
+  {id:'um1',ico:'🦷',lbl:'В. 1 мол.',age:'13–19 мес'},
+  {id:'lm1',ico:'🦷',lbl:'Н. 1 мол.',age:'14–18 мес'},
+  {id:'uc',ico:'🦷',lbl:'В. клыки',age:'16–22 мес'},
+  {id:'lc',ico:'🦷',lbl:'Н. клыки',age:'17–23 мес'},
+  {id:'um2',ico:'🦷',lbl:'В. 2 мол.',age:'25–33 мес'},
+  {id:'lm2',ico:'🦷',lbl:'Н. 2 мол.',age:'23–31 мес'}
+];
+function loadBabyTeeth(){try{return JSON.parse(localStorage.getItem('babyTeethDone'+V)||'{}');}catch(e){return{};}}
+function saveBabyTeeth(map){localStorage.setItem('babyTeethDone'+V,JSON.stringify(map));}
+function toggleBabyTooth(id){
+  H();
+  const map=loadBabyTeeth();
+  if(map[id])delete map[id];
+  else map[id]=new Date().toISOString().slice(0,10);
+  saveBabyTeeth(map);
+  renderBabyTeeth();
+  toast(map[id]?'Зубок отмечен 🦷':'Отметку сняли');
+}
+function renderBabyTeeth(){
+  const grid=document.getElementById('babyTeethGrid');
+  if(!grid)return;
+  const done=loadBabyTeeth();
+  const n=Object.keys(done).length;
+  const badge=document.getElementById('babyTeethBadge');
+  const fill=document.getElementById('babyTeethFill');
+  if(badge)badge.textContent=n+'/'+BABY_TEETH.length;
+  if(fill)fill.style.width=(n/BABY_TEETH.length*100)+'%';
+  grid.innerHTML=BABY_TEETH.map(t=>{
+    const on=!!done[t.id];
+    return '<button type="button" class="tooth-btn'+(on?' on':'')+'" onclick="toggleBabyTooth(\''+t.id+'\')"><span class="tooth-ico">'+(on?'😁':t.ico)+'</span><span class="tooth-lbl">'+escapeHtml(t.lbl)+'</span><span class="tooth-age">'+(on?done[t.id]:escapeHtml(t.age))+'</span></button>';
+  }).join('');
+}
+
+// ── BABY: FIRSTS ──
+const BABY_FIRSTS=[
+  {id:'smile',ico:'😊',t:'Первая улыбка'},
+  {id:'laugh',ico:'😄',t:'Первый смех'},
+  {id:'roll',ico:'🔄',t:'Перевернулся'},
+  {id:'sit',ico:'🪑',t:'Сел сам'},
+  {id:'crawl',ico:'🐛',t:'Пополз'},
+  {id:'stand',ico:'🧍',t:'Встал у опоры'},
+  {id:'walk',ico:'👣',t:'Первые шаги'},
+  {id:'word',ico:'🗣️',t:'Первое слово'},
+  {id:'tooth',ico:'🦷',t:'Первый зуб'},
+  {id:'solid',ico:'🥣',t:'Первый прикорм'},
+  {id:'wave',ico:'👋',t:'Помахал «пока»'},
+  {id:'name',ico:'📣',t:'Отозвался на имя'},
+  {id:'potty',ico:'🚽',t:'Сходил на горшок'},
+  {id:'phrase',ico:'💬',t:'Фраза из 2 слов'},
+  {id:'draw',ico:'✏️',t:'Первый рисунок'}
+];
+function loadBabyFirsts(){try{return JSON.parse(localStorage.getItem('babyFirstsDone'+V)||'{}');}catch(e){return{};}}
+function saveBabyFirsts(map){localStorage.setItem('babyFirstsDone'+V,JSON.stringify(map));}
+function toggleBabyFirst(id){
+  H();
+  const map=loadBabyFirsts();
+  if(map[id]){
+    delete map[id];
+    saveBabyFirsts(map);
+    renderBabyFirsts();
+    toast('Отметку сняли');
+    return;
+  }
+  map[id]=new Date().toISOString().slice(0,10);
+  saveBabyFirsts(map);
+  renderBabyFirsts();
+  toast('Сохранили этот «первый раз» ✨');
+}
+function renderBabyFirsts(){
+  const box=document.getElementById('babyFirstsBox');
+  if(!box)return;
+  const done=loadBabyFirsts();
+  const age=calcBabyAge(getBabyBirthDate());
+  box.innerHTML=BABY_FIRSTS.map(f=>{
+    const d=done[f.id];
+    const on=!!d;
+    let ageTxt='';
+    if(on&&age){
+      const b=age.birthDate;
+      const when=new Date(d+'T12:00:00');
+      if(!isNaN(when.getTime())){
+        const days=Math.max(0,Math.floor((when-b)/86400000));
+        if(days<60)ageTxt=' · в '+Math.floor(days/7)+' '+ruPlural(Math.floor(days/7),'неделю','недели','недель');
+        else{
+          const mo=Math.floor(days/30.4368);
+          ageTxt=' · в '+mo+' '+ruPlural(mo,'месяц','месяца','месяцев');
+        }
+      }
+    }
+    return '<div class="first-item" onclick="toggleBabyFirst(\''+f.id+'\')"><span class="first-ico">'+f.ico+'</span><div class="first-body"><div class="first-title'+(on?' done':'')+'">'+escapeHtml(f.t)+'</div><div class="first-date">'+(on?(d+ageTxt):'Нажми, когда случится')+'</div></div><div class="first-chk'+(on?' on':'')+'">'+(on?'✓':'')+'</div></div>';
+  }).join('');
 }
 function saveBabyBirth(){
   H();
