@@ -1594,10 +1594,15 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 .tooth-btn{appearance:none;border:1.5px solid var(--cb);background:var(--bg2);border-radius:14px;padding:10px 4px 8px;cursor:pointer;text-align:center;transition:transform .15s,border-color .2s,background .2s;font-family:'Nunito',sans-serif}
 .tooth-btn:active{transform:scale(.96)}
 .tooth-btn.on{border-color:rgba(232,50,90,.45);background:linear-gradient(160deg,rgba(232,50,90,.12),rgba(255,255,255,.4));box-shadow:0 4px 14px rgba(232,50,90,.12)}
+.tooth-btn.soon{border-color:rgba(212,160,23,.45);background:linear-gradient(160deg,rgba(212,160,23,.1),rgba(255,255,255,.35));box-shadow:0 4px 12px rgba(212,160,23,.1)}
+.tooth-btn.soon .tooth-lbl{color:#8A5800}
 .tooth-ico{font-size:20px;line-height:1;display:block}
 .tooth-lbl{font-size:9px;font-weight:900;color:var(--t2);margin-top:4px;line-height:1.25}
 .tooth-age{font-size:8px;font-weight:800;color:var(--t3);margin-top:2px}
 .tooth-btn.on .tooth-lbl{color:var(--rose)}
+.teeth-next-card{margin-top:12px;padding:12px 14px;border-radius:16px;background:linear-gradient(145deg,rgba(232,50,90,.07),rgba(212,160,23,.06));border:1px solid rgba(232,50,90,.12)}
+.teeth-next-title{font-size:13px;font-weight:900;color:var(--t1);line-height:1.35}
+.teeth-next-sub{font-size:11px;font-weight:700;color:var(--t3);margin-top:4px;line-height:1.45}
 .firsts-list{display:flex;flex-direction:column;gap:0;margin-top:4px}
 .first-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--cb);cursor:pointer}
 .first-item:last-child{border-bottom:none}
@@ -2264,6 +2269,16 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         </div>
       </div>
 
+      <div class="card" id="babyTeethHomeCard" style="display:none">
+        <div class="cb">
+          <div class="sh" id="babyTeethHomeTitle" style="cursor:pointer" onclick="scrollToBabyTeeth()">🦷 Зубки</div>
+          <div class="ssub" id="babyTeethHomeSub">Отмечай прорезание — сохранится дата</div>
+          <div class="baby-progress-bar" style="margin-top:10px"><div class="baby-progress-fill" id="babyTeethHomeFill" style="width:0%"></div></div>
+          <div id="babyTeethHomeNext" class="teeth-next-card" style="display:none"></div>
+          <div class="journal-export-row" style="margin-top:12px" id="babyTeethHomeActions"></div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="cb">
           <div class="sh">🌱 Что малыш умеет и скоро научится</div>
@@ -2300,11 +2315,12 @@ body.mode-postpartum .pregnancy-only{display:none!important}
       <div class="card">
         <div class="cb">
           <div class="sh">🦷 Зубки</div>
-          <div class="ssub">Отмечай, какие молочные зубки уже прорезались</div>
+          <div class="ssub" id="babyTeethCardSub">Отмечай, какие молочные зубки уже прорезались</div>
           <div id="babyTeethProg" class="baby-milestone-cat" style="margin-top:0"><span>Прогресс</span><span class="baby-progress-badge" id="babyTeethBadge">0/10</span></div>
           <div class="baby-progress-bar"><div class="baby-progress-fill" id="babyTeethFill" style="width:0%"></div></div>
+          <div id="babyTeethNextInline" class="teeth-next-card" style="display:none"></div>
           <div class="teeth-grid" id="babyTeethGrid"></div>
-          <div class="baby-src-note">Возраст рядом с зубком — типичные сроки прорезывания (ориентир AAP/стоматология).</div>
+          <div class="baby-src-note">Возраст рядом с зубком — типичные сроки прорезывания (ориентир AAP/стоматология). Подсветка — «скорее всего сейчас».</div>
         </div>
       </div>
 
@@ -5596,9 +5612,10 @@ function applyAppMode(){
     try{updateBabyVaxHomeCard();}catch(e){}
     try{updateBabyPhotoNudgeCard();}catch(e){}
     try{renderBabyFirstsHome();}catch(e){}
+    try{updateBabyTeethHomeCard();}catch(e){}
     try{updateBabyVisitModeCard();}catch(e){}
   }else{
-    ['babyPhotoNudgeCard','babyFirstsHomeCard','babyVisitModeCard','babyVaxHomeCard','babyGrowthNudgeCard'].forEach(id=>{
+    ['babyPhotoNudgeCard','babyFirstsHomeCard','babyVisitModeCard','babyVaxHomeCard','babyGrowthNudgeCard','babyTeethHomeCard'].forEach(id=>{
       const el=document.getElementById(id);if(el)el.style.display='none';
     });
     const edd=localStorage.getItem('eddDate');
@@ -5876,27 +5893,136 @@ function scrollToBabyVax(){
 
 // ── BABY: TEETH ──
 const BABY_TEETH=[
-  {id:'li1',ico:'🦷',lbl:'Н. резцы',age:'6–10 мес'},
-  {id:'ui1',ico:'🦷',lbl:'В. резцы',age:'8–12 мес'},
-  {id:'ui2',ico:'🦷',lbl:'В. бок.',age:'9–13 мес'},
-  {id:'li2',ico:'🦷',lbl:'Н. бок.',age:'10–16 мес'},
-  {id:'um1',ico:'🦷',lbl:'В. 1 мол.',age:'13–19 мес'},
-  {id:'lm1',ico:'🦷',lbl:'Н. 1 мол.',age:'14–18 мес'},
-  {id:'uc',ico:'🦷',lbl:'В. клыки',age:'16–22 мес'},
-  {id:'lc',ico:'🦷',lbl:'Н. клыки',age:'17–23 мес'},
-  {id:'um2',ico:'🦷',lbl:'В. 2 мол.',age:'25–33 мес'},
-  {id:'lm2',ico:'🦷',lbl:'Н. 2 мол.',age:'23–31 мес'}
+  {id:'li1',ico:'🦷',lbl:'Н. резцы',full:'Нижние центральные резцы',age:'6–10 мес',from:6,to:10},
+  {id:'ui1',ico:'🦷',lbl:'В. резцы',full:'Верхние центральные резцы',age:'8–12 мес',from:8,to:12},
+  {id:'ui2',ico:'🦷',lbl:'В. бок.',full:'Верхние боковые резцы',age:'9–13 мес',from:9,to:13},
+  {id:'li2',ico:'🦷',lbl:'Н. бок.',full:'Нижние боковые резцы',age:'10–16 мес',from:10,to:16},
+  {id:'um1',ico:'🦷',lbl:'В. 1 мол.',full:'Верхние первые моляры',age:'13–19 мес',from:13,to:19},
+  {id:'lm1',ico:'🦷',lbl:'Н. 1 мол.',full:'Нижние первые моляры',age:'14–18 мес',from:14,to:18},
+  {id:'uc',ico:'🦷',lbl:'В. клыки',full:'Верхние клыки',age:'16–22 мес',from:16,to:22},
+  {id:'lc',ico:'🦷',lbl:'Н. клыки',full:'Нижние клыки',age:'17–23 мес',from:17,to:23},
+  {id:'um2',ico:'🦷',lbl:'В. 2 мол.',full:'Верхние вторые моляры',age:'25–33 мес',from:25,to:33},
+  {id:'lm2',ico:'🦷',lbl:'Н. 2 мол.',full:'Нижние вторые моляры',age:'23–31 мес',from:23,to:31}
 ];
 function loadBabyTeeth(){try{return JSON.parse(localStorage.getItem('babyTeethDone'+V)||'{}');}catch(e){return{};}}
 function saveBabyTeeth(map){localStorage.setItem('babyTeethDone'+V,JSON.stringify(map));}
+function getTeethDoneCount(){return Object.keys(loadBabyTeeth()).length;}
+function getNextBabyTooth(age){
+  const done=loadBabyTeeth();
+  const mo=age?age.monthsInt:0;
+  // Prefer age-due, else first unmarked in eruption order
+  const due=BABY_TEETH.find(t=>!done[t.id]&&mo>=t.from-1&&mo<=t.to+2);
+  if(due)return{tooth:due,due:true};
+  const next=BABY_TEETH.find(t=>!done[t.id]);
+  return next?{tooth:next,due:mo>=next.from-1}:null;
+}
+function toothAgeAtMark(dateStr,birth){
+  if(!dateStr||!birth)return'';
+  const when=new Date(dateStr+'T12:00:00');
+  if(isNaN(when.getTime()))return'';
+  const days=Math.max(0,Math.floor((when-birth)/86400000));
+  if(days<60)return'в '+Math.floor(days/7)+' '+ruPlural(Math.floor(days/7),'неделю','недели','недель');
+  const mo=Math.floor(days/30.4368);
+  return'в '+mo+' '+ruPlural(mo,'месяц','месяца','месяцев');
+}
+function refreshBabyTeethUI(){
+  renderBabyTeeth();
+  try{updateBabyTeethHomeCard();}catch(e){}
+  const mo=document.getElementById('visitModeMo');
+  if(mo&&mo.classList.contains('open')){
+    try{openVisitMode();}catch(e){}
+  }
+}
+function maybeMarkFirstToothFirst(dateStr){
+  const firsts=loadBabyFirsts();
+  if(firsts.tooth)return;
+  if(getTeethDoneCount()!==1)return;
+  firsts.tooth=dateStr||new Date().toISOString().slice(0,10);
+  saveBabyFirsts(firsts);
+  try{renderBabyFirsts();}catch(e){}
+}
 function toggleBabyTooth(id){
   H();
   const map=loadBabyTeeth();
-  if(map[id])delete map[id];
-  else map[id]=new Date().toISOString().slice(0,10);
+  if(map[id]){
+    delete map[id];
+    saveBabyTeeth(map);
+    refreshBabyTeethUI();
+    toast('Отметку сняли');
+    return;
+  }
+  const today=new Date().toISOString().slice(0,10);
+  map[id]=today;
   saveBabyTeeth(map);
-  renderBabyTeeth();
-  toast(map[id]?'Зубок отмечен 🦷':'Отметку сняли');
+  maybeMarkFirstToothFirst(today);
+  refreshBabyTeethUI();
+  const t=BABY_TEETH.find(x=>x.id===id);
+  toast(t?('Прорезались: '+(t.full||t.lbl)+' 🦷'):'Зубок отмечен 🦷');
+}
+function markBabyToothToday(id){
+  H();
+  const t=BABY_TEETH.find(x=>x.id===id);
+  if(!t){toast('Зуб не найден');return;}
+  const map=loadBabyTeeth();
+  if(map[id]){toast('Уже отмечен · '+map[id]);return;}
+  const today=new Date().toISOString().slice(0,10);
+  map[id]=today;
+  saveBabyTeeth(map);
+  maybeMarkFirstToothFirst(today);
+  refreshBabyTeethUI();
+  toast('Отметили сегодня: '+(t.full||t.lbl)+' 🦷');
+}
+function scrollToBabyTeeth(){
+  H();
+  switchTabById('home');
+  setTimeout(()=>{
+    const sec=document.getElementById('sec-baby');
+    if(sec&&!sec.classList.contains('open'))toggleHomeSec('baby');
+    const el=document.getElementById('babyTeethGrid')||document.getElementById('babyTeethHomeCard');
+    el&&el.scrollIntoView({behavior:'smooth',block:'start'});
+  },200);
+}
+function renderBabyTeethNextBlock(el,next,age){
+  if(!el)return;
+  if(!next){el.style.display='none';el.innerHTML='';return;}
+  el.style.display='block';
+  const hint=next.due
+    ?('Типичный срок '+next.tooth.age+(age?(' · малышу '+formatBabyAge(age)):'') )
+    :('Ориентир '+next.tooth.age+' — можно отметить, когда прорежется');
+  el.innerHTML='<div class="teeth-next-title">Следующий: '+escapeHtml(next.tooth.full||next.tooth.lbl)+'</div><div class="teeth-next-sub">'+escapeHtml(hint)+'</div>';
+}
+function updateBabyTeethHomeCard(){
+  const card=document.getElementById('babyTeethHomeCard');
+  const title=document.getElementById('babyTeethHomeTitle');
+  const sub=document.getElementById('babyTeethHomeSub');
+  const fill=document.getElementById('babyTeethHomeFill');
+  const nextBox=document.getElementById('babyTeethHomeNext');
+  const actions=document.getElementById('babyTeethHomeActions');
+  if(!card)return;
+  if(!hasBabyBorn()){card.style.display='none';return;}
+  const age=calcBabyAge(getBabyBirthDate());
+  const mo=age?age.monthsInt:0;
+  // Hide until teething window (~5 mo) unless already have teeth
+  const n=getTeethDoneCount();
+  if(mo<5&&n===0){card.style.display='none';return;}
+  card.style.display='block';
+  if(title)title.textContent=n?('🦷 Зубки · '+n+'/'+BABY_TEETH.length):'🦷 Первые зубки';
+  if(fill)fill.style.width=(n/BABY_TEETH.length*100)+'%';
+  const next=getNextBabyTooth(age);
+  if(sub){
+    if(n>=BABY_TEETH.length)sub.textContent='Все 10 молочных групп отмечены — красота';
+    else if(next&&next.due)sub.textContent='Сейчас по срокам может выйти: '+(next.tooth.full||next.tooth.lbl);
+    else if(next)sub.textContent='Дальше по порядку: '+(next.tooth.full||next.tooth.lbl);
+    else sub.textContent='Отмечай прорезание — сохранится дата';
+  }
+  renderBabyTeethNextBlock(nextBox,n>=BABY_TEETH.length?null:next,age);
+  if(actions){
+    if(n>=BABY_TEETH.length){
+      actions.innerHTML='<button type="button" class="journal-export-btn" onclick="scrollToBabyTeeth()">Сетка зубов →</button>';
+    }else if(next){
+      actions.innerHTML='<button type="button" class="journal-export-btn primary" onclick="markBabyToothToday(\''+next.tooth.id+'\')">✓ Прорезался сегодня</button><button type="button" class="journal-export-btn" onclick="scrollToBabyTeeth()">Все зубки →</button>';
+    }else actions.innerHTML='';
+  }
 }
 function renderBabyTeeth(){
   const grid=document.getElementById('babyTeethGrid');
@@ -5905,12 +6031,25 @@ function renderBabyTeeth(){
   const n=Object.keys(done).length;
   const badge=document.getElementById('babyTeethBadge');
   const fill=document.getElementById('babyTeethFill');
+  const sub=document.getElementById('babyTeethCardSub');
+  const age=calcBabyAge(getBabyBirthDate());
+  const birth=age?age.birthDate:null;
+  const next=getNextBabyTooth(age);
   if(badge)badge.textContent=n+'/'+BABY_TEETH.length;
   if(fill)fill.style.width=(n/BABY_TEETH.length*100)+'%';
+  if(sub){
+    if(n===0)sub.textContent='Отмечай, какие молочные зубки уже прорезались — дата сохранится';
+    else if(n>=BABY_TEETH.length)sub.textContent='Все группы отмечены — можно показать стоматологу';
+    else sub.textContent='Отмечено '+n+' из '+BABY_TEETH.length+(next?(' · дальше — '+(next.tooth.full||next.tooth.lbl)):'');
+  }
+  renderBabyTeethNextBlock(document.getElementById('babyTeethNextInline'),n>=BABY_TEETH.length?null:next,age);
   grid.innerHTML=BABY_TEETH.map(t=>{
     const on=!!done[t.id];
-    return '<button type="button" class="tooth-btn'+(on?' on':'')+'" onclick="toggleBabyTooth(\''+t.id+'\')"><span class="tooth-ico">'+(on?'😁':t.ico)+'</span><span class="tooth-lbl">'+escapeHtml(t.lbl)+'</span><span class="tooth-age">'+(on?done[t.id]:escapeHtml(t.age))+'</span></button>';
+    const soon=!!(next&&next.tooth.id===t.id&&!on);
+    const ageTxt=on?(done[t.id]+(birth?(' · '+toothAgeAtMark(done[t.id],birth)):'')):escapeHtml(t.age);
+    return '<button type="button" class="tooth-btn'+(on?' on':'')+(soon?' soon':'')+'" onclick="toggleBabyTooth(\''+t.id+'\')" aria-pressed="'+(on?'true':'false')+'" title="'+escapeHtml(t.full||t.lbl)+'"><span class="tooth-ico">'+(on?'😁':t.ico)+'</span><span class="tooth-lbl">'+escapeHtml(t.lbl)+'</span><span class="tooth-age">'+ageTxt+'</span></button>';
   }).join('');
+  try{updateBabyTeethHomeCard();}catch(e){}
 }
 
 // ── BABY: FIRSTS ──
@@ -6209,7 +6348,9 @@ function buildVisitBriefText(){
   const delta=buildGrowthDeltaText(prev,last);
   if(delta)t+=delta+'\n';
   t+='Сегодня: еда '+feeds+', туалет '+diapers+', сон '+fmtDurMin(sleepMin)+'\n';
-  t+='Зубы: '+teeth+'\n';
+  t+='Зубы: '+teeth+(teeth?(' из '+BABY_TEETH.length):'')+'\n';
+  const nextTooth=getNextBabyTooth(age);
+  if(nextTooth&&nextTooth.due)t+='Следующий зуб (ориентир): '+ (nextTooth.tooth.full||nextTooth.tooth.lbl)+' · '+nextTooth.tooth.age+'\n';
   if(nextVax)t+='Прививки: '+nextVax.group.ageLabel+' — '+nextVax.item.name+(nextVax.overdue?' (актуально)':'')+'\n';
   t+='\n(из приложения «Для Индиры»)';
   return t;
@@ -6977,7 +7118,7 @@ function init(){
   else if(localStorage.getItem('dataMigrateToast_v8')!=='1'&&localStorage.getItem('eddDate')){
     localStorage.setItem('dataMigrateToast_v8','1');
   }
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();updateApptHomeCard();updateWaterHint();if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();renderBabyFeedHist();updateBabyVisitModeCard();updateBabyPhotoNudgeCard();renderBabyFirstsHome();updateBabyCareNowCard();updateBabyGrowthNudgeCard();}}});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();updateApptHomeCard();updateWaterHint();if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();renderBabyFeedHist();updateBabyVisitModeCard();updateBabyPhotoNudgeCard();renderBabyFirstsHome();updateBabyTeethHomeCard();updateBabyCareNowCard();updateBabyGrowthNudgeCard();}}});
   if(!_appTimersSet){
     _appTimersSet=true;
     setInterval(()=>updateCD(localStorage.getItem('eddDate')||edd),60000);
@@ -8529,6 +8670,13 @@ function openVisitMode(){
     const delta=buildGrowthDeltaText(prevGrowth,lastGrowth);
     if(ago>=14)html+='<div class="contr-tip" style="margin-bottom:12px">📈 Последний замер '+ago+' дн. назад — <span style="text-decoration:underline;cursor:pointer" onclick="closeVisitMode();scrollToBabyGrowth()">обновить</span></div>';
     else if(delta)html+='<div class="contr-tip" style="margin-bottom:12px">📈 '+escapeHtml(delta)+'</div>';
+  }
+  const nextTooth=getNextBabyTooth(age);
+  const teethN=getTeethDoneCount();
+  if(nextTooth&&(nextTooth.due||teethN>0)&&(age&&age.monthsInt>=5)){
+    html+='<div class="baby-milestone-cat" style="margin-top:4px"><span>🦷 Зубки · '+teethN+'/'+BABY_TEETH.length+'</span></div>';
+    html+='<div class="visit-prep-item" onclick="markBabyToothToday(\''+nextTooth.tooth.id+'\')"><div class="visit-prep-chk"></div><span class="visit-prep-lbl">'+escapeHtml(nextTooth.tooth.full||nextTooth.tooth.lbl)+' · прорезался сегодня</span></div>';
+    html+='<div class="journal-export-row" style="margin:8px 0 12px"><button type="button" class="journal-export-btn" onclick="closeVisitMode();scrollToBabyTeeth()">Сетка зубов →</button></div>';
   }
   html+='<div class="baby-milestone-cat"><span>Чек-лист к визиту</span></div>';
   html+=prep.map((item,j)=>'<div class="visit-prep-item" onclick="toggleVisitPrep(\''+prepKey+'\','+j+');openVisitMode()"><div class="visit-prep-chk'+(item.done?' done':'')+'"></div><span class="visit-prep-lbl'+(item.done?' done':'')+'">'+escapeHtml(item.label)+'</span></div>').join('');
@@ -10138,7 +10286,7 @@ function switchTab(id,btn){
   if(id==='journal'){renderGallery(localStorage.getItem('eddDate'));renderJournalTagRow();renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();try{updateVisitBackupNudge();}catch(e){}if(hasBabyBorn()){renderBabyJournalTrackers();renderBabyGallery();}}
   if(id==='bag')renderBag();
   if(id==='meds'){renderMedWeekChart();renderLettersLog();}
-  if(id==='home'){updateTodayDash();renderWeekWellness();if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();renderBabyFeedHist();updateBabyCareNowCard();updateBabyGrowthNudgeCard();}}
+  if(id==='home'){updateTodayDash();renderWeekWellness();if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();renderBabyFeedHist();updateBabyCareNowCard();updateBabyGrowthNudgeCard();updateBabyTeethHomeCard();updateBabyVaxHomeCard();}}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function toggleTheme(){H();const d=document.getElementById('thmTog').checked;if(d){document.documentElement.classList.add('dark');localStorage.setItem('theme','dark')}else{document.documentElement.classList.remove('dark');localStorage.setItem('theme','light')}}
