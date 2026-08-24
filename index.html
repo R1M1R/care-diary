@@ -1669,6 +1669,17 @@ body.mode-postpartum .mood-row .mb.postpartum-only{display:inline-flex!important
 .backup-actions{display:flex;flex-direction:column;gap:10px;margin-top:12px}
 .backup-btn{width:100%;padding:14px;border-radius:16px;border:2px solid var(--cb);background:var(--bg2);font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;color:var(--t1);cursor:pointer}
 .backup-btn-primary{background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;border:none;box-shadow:0 6px 18px rgba(232,50,90,.25)}
+.backup-status{display:none;margin-top:12px;padding:12px 14px;border-radius:14px;font-size:12px;font-weight:800;line-height:1.55}
+.backup-status.show{display:block}
+.backup-status.ok{background:rgba(82,184,130,.1);border:1px solid rgba(45,122,85,.22);color:#2D8A5E}
+.backup-status.due{background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);color:#8A5800}
+.backup-status.never{background:rgba(232,50,90,.07);border:1px solid rgba(232,50,90,.18);color:var(--rose)}
+.settings-jump{display:flex;gap:8px;margin:0 0 16px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.settings-jump::-webkit-scrollbar{display:none}
+body.mode-postpartum .settings-jump .journal-jump-pill.postpartum-only{display:inline-flex!important}
+.settings-soft{margin:0 0 16px;padding:14px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(82,184,130,.1),rgba(30,156,176,.06));border:1px solid rgba(82,184,130,.2)}
+.settings-soft-t{font-size:13px;font-weight:900;color:#2D8A5E;margin-bottom:4px}
+.settings-soft-s{font-size:12px;font-weight:700;color:var(--t3);line-height:1.5}
 #nav[role=tablist] .nb[aria-current=page]{color:var(--rose)}
 
 /* ── 44. PREMIUM v5 — weight corridor, appts, notifs, report ── */
@@ -2891,18 +2902,24 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
     <!-- ── SETTINGS ── -->
     <div id="tab-settings" class="tab-c">
       <div style="padding-top:16px">
-        <div class="page-h1" style="margin-bottom:18px">Настройки</div>
-
-        <div class="app-ready" id="appReadyBanner">
-          <div class="app-ready-title">✨ Приложение готово</div>
-          <div class="app-ready-sub">Все основные функции на месте — пользуйся каждый день, данные хранятся на телефоне</div>
+        <div class="page-h1" id="settingsPageH1">Настройки</div>
+        <p style="font-size:14px;font-weight:700;color:var(--t3);margin-bottom:14px" id="settingsPageSub">Профиль, фото, резервная копия — всё на этом телефоне</p>
+        <div class="settings-jump" id="settingsJumpBar" role="navigation" aria-label="Быстрый переход по настройкам">
+          <button type="button" class="journal-jump-pill" onclick="scrollToSettingsSection('baby')">👶 Малыш</button>
+          <button type="button" class="journal-jump-pill" onclick="scrollToSettingsSection('photos')">📸 Фото</button>
+          <button type="button" class="journal-jump-pill" onclick="scrollToSettingsSection('prefs')">⚙️ Параметры</button>
+          <button type="button" class="journal-jump-pill" onclick="scrollToSettingsSection('backup')">💾 Копия</button>
+        </div>
+        <div class="settings-soft" id="settingsCareStrip">
+          <div class="settings-soft-t" id="appReadyTitle">✨ Приложение готово</div>
+          <div class="settings-soft-s" id="appReadySub">Все основные функции на месте — пользуйся каждый день, данные хранятся на телефоне</div>
         </div>
 
         <!-- GENDER CARD -->
-        <div class="card" style="border:2px solid rgba(232,50,90,.18);overflow:visible">
+        <div class="card" id="settingsBabyBlock" style="border:2px solid rgba(232,50,90,.18);overflow:visible">
           <div class="cb">
-            <div style="font-family:'Playfair Display',serif;font-size:20px;font-style:italic;font-weight:700;margin-bottom:6px">👶 Пол малыша</div>
-            <p style="font-size:13px;font-weight:700;color:var(--t3);margin-bottom:16px;line-height:1.6">После скрининга 25 марта укажи здесь пол малыша — приложение изменит цвета и подстроит некоторые факты!</p>
+            <div style="font-family:'Playfair Display',serif;font-size:20px;font-style:italic;font-weight:700;margin-bottom:6px" id="genderCardTitle">👶 Пол малыша</div>
+            <p style="font-size:13px;font-weight:700;color:var(--t3);margin-bottom:16px;line-height:1.6" id="genderCardSub">После скрининга укажи пол — приложение подстроит цвета и некоторые факты</p>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
               <button id="gBtnN" onclick="setGender('n')" class="gender-btn active" style="border-radius:18px;padding:16px 8px;border:2px solid var(--cb);background:var(--bg2);cursor:pointer;font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;color:var(--t1);transition:all .3s;display:flex;flex-direction:column;align-items:center;gap:6px">
                 <span style="font-size:28px">🤍</span><span>Пока тайна</span>
@@ -2919,8 +2936,8 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
         </div>
 
         <div class="card" style="border:2px solid rgba(232,50,90,.18)"><div class="cb" id="babyBirthCard">
-          <div style="font-family:'Playfair Display',serif;font-size:20px;font-style:italic;font-weight:700;margin-bottom:6px">🎉 Малыш родился?</div>
-          <p style="font-size:13px;font-weight:700;color:var(--t3);margin-bottom:16px;line-height:1.6">Впиши дату рождения — приложение переключится в режим заботы о малыше: возраст, что нужно и что он должен уметь по возрасту, с точными научными данными (ВОЗ, CDC).</p>
+          <div style="font-family:'Playfair Display',serif;font-size:20px;font-style:italic;font-weight:700;margin-bottom:6px" id="babyBirthCardTitle">🎉 Малыш родился?</div>
+          <p style="font-size:13px;font-weight:700;color:var(--t3);margin-bottom:16px;line-height:1.6" id="babyBirthCardSub">Впиши дату рождения — приложение переключится в режим заботы о малыше: возраст, навыки и нормы (ВОЗ, CDC).</p>
           <div style="font-size:15px;font-weight:800;margin-bottom:8px">Дата рождения малыша:</div>
           <input type="date" id="babyBirthIn" style="width:100%;font-size:16px;padding:14px;text-align:center;font-weight:800;margin-bottom:14px">
           <div style="font-size:15px;font-weight:800;margin-bottom:8px">Имя малыша (необязательно):</div>
@@ -2935,15 +2952,15 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
               <input type="number" id="babyBirthHeightIn" placeholder="51" min="30" max="65" style="width:100%;font-size:15px;padding:12px;text-align:center;font-weight:800">
             </div>
           </div>
-          <button class="lq" onclick="saveBabyBirth()">Сохранить и включить заботу о малыше 👶</button>
+          <button class="lq" id="babyBirthSaveBtn" onclick="saveBabyBirth()">Сохранить и включить заботу о малыше 👶</button>
           <div id="babyBirthStatus" style="margin-top:14px;font-size:13px;font-weight:800;color:var(--rose);text-align:center;display:none"></div>
           <button type="button" id="babyBirthClearBtn" onclick="clearBabyBirth()" style="display:none;width:100%;margin-top:12px;background:none;border:none;color:var(--t3);font-size:12px;font-weight:700;text-decoration:underline;cursor:pointer">Ошибка в дате — вернуться в режим беременности</button>
         </div></div>
 
-        <div class="card"><div class="cb">
+        <div class="card" id="settingsPhotosBlock"><div class="cb">
           <div class="photo-storage-card">
             <div class="photo-storage-title">📸 Память для фото</div>
-            <p class="photo-storage-sub">Фото хранятся на телефоне и <b>не удаляются</b> при обновлении приложения — только если сама нажмёшь «Удалить». Можно добавлять и старые снимки из галереи.</p>
+            <p class="photo-storage-sub" id="photoStorageCardSub">Фото хранятся на телефоне и <b>не удаляются</b> при обновлении приложения — только если сама нажмёшь «Удалить». Можно добавлять и старые снимки из галереи.</p>
             <div class="tog-w" style="margin-bottom:14px;padding:12px 14px;border-radius:14px;background:var(--bg2);border:1px solid var(--cb)">
               <span style="font-size:14px;font-weight:800">Полные копии в приложении</span>
               <label class="tog"><input type="checkbox" id="photoModeTog" onchange="togglePhotoMode()"><span class="tog-sl"></span></label>
@@ -2968,17 +2985,19 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
           </div>
         </div></div>
 
-        <div class="card"><div class="cb">
+        <div class="card" id="settingsPrefsBlock"><div class="cb">
           <div class="tog-w"><span style="font-size:15px;font-weight:800">Тёмная тема 🌙</span><label class="tog"><input type="checkbox" id="thmTog" onchange="toggleTheme()"><span class="tog-sl"></span></label></div>
           <div class="tog-w"><span style="font-size:15px;font-weight:800">Уведомления 🔔</span><button id="notifBtn" onclick="reqNotifs()" style="background:linear-gradient(135deg,#1E9CB0,#30C0D8);color:#fff;border:none;border-radius:50px;padding:9px 20px;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(30,156,176,.3)">Включить</button></div>
           <div class="notif-status" id="notifStatus">Напомню о препаратах — разреши уведомления. На iPhone напоминания приходят, когда приложение открыто или недавно использовалось.</div>
-          <p style="font-size:12px;font-weight:700;color:var(--t3);padding:2px 4px 20px;line-height:1.65">На iPhone напоминания работают, когда приложение установлено на экран «Домой» и периодически открывается.</p>
+          <p style="font-size:12px;font-weight:700;color:var(--t3);padding:2px 4px 20px;line-height:1.65" id="notifHint">На iPhone напоминания работают, когда приложение установлено на экран «Домой» и периодически открывается.</p>
           
-          <div style="font-size:15px;font-weight:800;margin-bottom:8px">Твой рост (для расчёта ИМТ):</div>
-          <div style="display:flex;gap:8px;margin-bottom:22px;align-items:center">
-            <input type="number" id="heightIn" placeholder="165" min="140" max="210" style="flex:1;font-size:16px;padding:14px;text-align:center;font-weight:800">
-            <span style="font-size:15px;font-weight:800;color:var(--t3)">см</span>
-            <button onclick="saveHeight()" style="background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border:none;border-radius:16px;padding:14px 18px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 6px 18px rgba(30,156,176,0.32)">Сохранить</button>
+          <div class="pregnancy-only" id="heightSettingsBlock">
+            <div style="font-size:15px;font-weight:800;margin-bottom:8px">Твой рост (для расчёта ИМТ):</div>
+            <div style="display:flex;gap:8px;margin-bottom:22px;align-items:center">
+              <input type="number" id="heightIn" placeholder="165" min="140" max="210" style="flex:1;font-size:16px;padding:14px;text-align:center;font-weight:800">
+              <span style="font-size:15px;font-weight:800;color:var(--t3)">см</span>
+              <button onclick="saveHeight()" style="background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border:none;border-radius:16px;padding:14px 18px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 6px 18px rgba(30,156,176,0.32)">Сохранить</button>
+            </div>
           </div>
           <div style="font-size:15px;font-weight:800;margin-bottom:8px">Мой номер телефона:</div>
           <input type="text" id="phoneIn" placeholder="+7 (999) 123-45-67 / +996 777 123 456" style="width:100%;font-size:15px;padding:14px;margin-bottom:10px">
@@ -2990,18 +3009,20 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
           </div>
         </div></div>
 
-        <div class="card"><div class="cb">
-          <div class="photo-storage-title">🛡️ Твои данные на телефоне</div>
-          <p class="photo-storage-sub">Фото, лекарства, отметки и сумка хранятся только здесь. Обновление приложения их не стирает — но сделай резервную копию на всякий случай.</p>
+        <div class="card" id="settingsDataBlock"><div class="cb">
+          <div class="photo-storage-title" id="dataStatusTitle">🛡️ Твои данные на телефоне</div>
+          <p class="photo-storage-sub" id="dataStatusSub">Фото, лекарства, отметки и сумка хранятся только здесь. Обновление приложения их не стирает — но сделай резервную копию на всякий случай.</p>
           <div class="data-status-grid" id="dataStatusGrid"></div>
         </div></div>
 
-        <div class="card"><div class="cb">
+        <div class="card" id="settingsBackupBlock"><div class="cb">
           <div class="photo-storage-title">💾 Резервная копия</div>
-          <p class="photo-storage-sub">Сохрани все записи и фото в файл — можно перенести на новый телефон или восстановить после сброса.</p>
+          <p class="photo-storage-sub" id="backupCardSub">Сохрани все записи и фото в файл — можно перенести на новый телефон или восстановить после сброса.</p>
+          <div class="backup-status" id="backupStatus" aria-live="polite"></div>
           <div class="backup-reminder" id="backupReminder">💡 Давно не делала резервную копию — сохрани файл на всякий случай!</div>
           <div class="backup-actions">
             <button type="button" class="backup-btn backup-btn-primary" onclick="exportBackup()">Скачать резервную копию</button>
+            <button type="button" class="backup-btn" id="shareBackupBtn" onclick="shareBackup()" style="display:none">Поделиться копией</button>
             <label class="backup-btn" style="text-align:center;cursor:pointer;margin:0">
               Восстановить из файла
               <input type="file" id="backupIn" accept="application/json,.json" style="display:none" onchange="importBackup(event)">
@@ -3011,7 +3032,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v57</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v58</div>
         </div></div>
       </div>
     </div>
@@ -3195,7 +3216,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v57';
+const APP_DATA_VER='v58';
 let curGW=null;
 let curBMo=null;
 let photoGalMode='belly'; // belly | baby
@@ -3917,10 +3938,11 @@ function formatPhotoBytes(bytes){
   return (bytes/(1024*1024)).toFixed(1)+' MB';
 }
 async function getPhotoStorageStats(){
-  let uziBytes=0,galBytes=0,galCount=0,hasUzi=false,fullBytes=0;
+  let uziBytes=0,galBytes=0,galCount=0,babyBytes=0,babyCount=0,hasUzi=false,fullBytes=0;
   try{
     const keys=await photoDBKeys();
     const galWeeks=new Set();
+    const babyMonths=new Set();
     for(const k of keys){
       const blob=await photoDBGet(k);
       if(!blob)continue;
@@ -3929,11 +3951,15 @@ async function getPhotoStorageStats(){
       else if(k.startsWith('gal_')&&!k.endsWith('_full')){
         galBytes+=blob.size;
         galWeeks.add(k.replace('gal_',''));
+      }else if(k.startsWith('bgal_')&&!k.endsWith('_full')){
+        babyBytes+=blob.size;
+        babyMonths.add(k.replace('bgal_',''));
       }else if(k.endsWith('_full'))fullBytes+=blob.size;
     }
     galCount=galWeeks.size;
+    babyCount=babyMonths.size;
   }catch(e){}
-  return{uziBytes,galBytes,fullBytes,totalBytes:uziBytes+galBytes+fullBytes,galCount,hasUzi,mode:getPhotoMode()};
+  return{uziBytes,galBytes,babyBytes,fullBytes,totalBytes:uziBytes+galBytes+babyBytes+fullBytes,galCount,babyCount,hasUzi,mode:getPhotoMode()};
 }
 async function updatePhotoStorageUI(){
   const info=document.getElementById('photoStorageInfo');
@@ -3956,9 +3982,12 @@ async function updatePhotoStorageUI(){
   }else if(quotaEl){quotaEl.textContent='';}
   const pct=s.totalBytes?Math.min(100,Math.round(s.totalBytes/limit*100)):0;
   const modeLbl=s.mode==='full'?'полные копии':'превью · оригинал в галерее';
+  const born=hasBabyBorn();
   info.textContent=s.totalBytes
-    ?`${formatPhotoBytes(s.totalBytes)} · ${modeLbl} · УЗИ: ${s.hasUzi?1:0} · животик: ${s.galCount}/22`+(s.fullBytes?` (+${formatPhotoBytes(s.fullBytes)} полн.)`:'')
-    :'Фото пока нет — выбирай из галереи или снимай камерой';
+    ?(born
+      ?`${formatPhotoBytes(s.totalBytes)} · ${modeLbl} · малыш: ${s.babyCount} мес.`+(s.galCount||s.hasUzi?` · архив: УЗИ ${s.hasUzi?1:0} / животик ${s.galCount}`:'')+(s.fullBytes?` (+${formatPhotoBytes(s.fullBytes)} полн.)`:'')
+      :`${formatPhotoBytes(s.totalBytes)} · ${modeLbl} · УЗИ: ${s.hasUzi?1:0} · животик: ${s.galCount}/22`+(s.fullBytes?` (+${formatPhotoBytes(s.fullBytes)} полн.)`:''))
+    :(born?'Фото малыша пока нет — добавь снимок месяца в дневнике':'Фото пока нет — выбирай из галереи или снимай камерой');
   if(bar){
     bar.style.width=pct+'%';
     bar.classList.toggle('warn',pct>=75);
@@ -5778,7 +5807,47 @@ function applyAppMode(){
     nbBag.setAttribute('aria-label',born?'Сумка на визит':'Сумка в роддом');
     nbBag.innerHTML='<span>👜</span>'+(born?'Визит':'Сумка');
   }
+  const setH=document.getElementById('settingsPageH1');
+  if(setH)setH.textContent='Настройки';
+  const setS=document.getElementById('settingsPageSub');
+  if(setS)setS.textContent=born
+    ?'Профиль малыша, фото, копия дневника — спокойно и надёжно'
+    :'Профиль, фото, резервная копия — всё на этом телефоне';
+  const readyT=document.getElementById('appReadyTitle');
+  if(readyT)readyT.textContent=born?'✨ Режим заботы о малыше':'✨ Приложение готово';
+  const readyS=document.getElementById('appReadySub');
+  if(readyS)readyS.textContent=born
+    ?'Кормление, рост и тёплые записи рядом. Данные только на телефоне — сделай копию на всякий случай'
+    :'Все основные функции на месте — пользуйся каждый день, данные хранятся на телефоне';
+  const gTitle=document.getElementById('genderCardTitle');
+  if(gTitle)gTitle.textContent=born?'👶 Пол малыша':'👶 Пол малыша';
+  const gSub=document.getElementById('genderCardSub');
+  if(gSub)gSub.textContent=born
+    ?'Можно уточнить в любой момент — цвета и подписи подстроятся'
+    :'После скрининга укажи пол — приложение подстроит цвета и некоторые факты';
+  const bbTitle=document.getElementById('babyBirthCardTitle');
+  if(bbTitle)bbTitle.textContent=born?'👶 Профиль малыша':'🎉 Малыш родился?';
+  const bbSub=document.getElementById('babyBirthCardSub');
+  if(bbSub)bbSub.textContent=born
+    ?'Имя, дата и параметры при рождении — можно обновить. Возраст и нормы считаются автоматически'
+    :'Впиши дату рождения — приложение переключится в режим заботы о малыше: возраст, навыки и нормы (ВОЗ, CDC).';
+  const bbBtn=document.getElementById('babyBirthSaveBtn');
+  if(bbBtn)bbBtn.textContent=born?'Сохранить профиль малыша 👶':'Сохранить и включить заботу о малыше 👶';
+  const dataSub=document.getElementById('dataStatusSub');
+  if(dataSub)dataSub.textContent=born
+    ?'Кормления, рост, прививки и фото хранятся только здесь. Обновление не стирает их — резервная копия всё равно полезна'
+    :'Фото, лекарства, отметки и сумка хранятся только здесь. Обновление приложения их не стирает — но сделай резервную копию на всякий случай.';
+  const backupSub=document.getElementById('backupCardSub');
+  if(backupSub)backupSub.textContent=born
+    ?'Сохрани дневник малыша и фото в файл — удобно перенести на новый телефон'
+    :'Сохрани все записи и фото в файл — можно перенести на новый телефон или восстановить после сброса.';
+  const photoSub=document.getElementById('photoStorageCardSub');
+  if(photoSub)photoSub.textContent=born
+    ?'Фото по месяцам хранятся на телефоне и не удаляются при обновлении — только если сама нажмёшь «Удалить».'
+    :'Фото хранятся на телефоне и не удаляются при обновлении приложения — только если сама нажмёшь «Удалить». Можно добавлять и старые снимки из галереи.';
   try{renderCareFaq();}catch(e){}
+  try{updateBackupReminder();}catch(e){}
+  try{updateDataStatusUI();}catch(e){}
   if(born){
     const bmiSection=document.getElementById('bmiSection');
     const bmiBtn=document.getElementById('bmiToggleBtn');
@@ -7281,24 +7350,42 @@ async function ensureStoragePersisted(){
 async function updateDataStatusUI(){
   const el=document.getElementById('dataStatusGrid');
   if(!el)return;
-  let photoCount=0;
+  let photoCount=0,babyPhotos=0;
   try{
     const st=await getPhotoStorageStats();
-    photoCount=(st.hasUzi?1:0)+st.galCount;
+    photoCount=(st.hasUzi?1:0)+st.galCount+(st.babyCount||0);
+    babyPhotos=st.babyCount||0;
   }catch(e){}
   const meds=getMedRegistry().length;
   const streak=localStorage.getItem('streak'+V)||'0';
   const total=localStorage.getItem('totalFinishedDays'+V)||'0';
   const bag=loadBagList();
   const bagStats=getBagStats(bag);
-  el.innerHTML=[
-    {b:String(photoCount),t:'фото в приложении'},
-    {b:String(meds),t:'препаратов в списке'},
-    {b:streak,t:'дней подряд 🔥'},
-    {b:total,t:'завершённых дней'},
-    {b:bagStats.done+'/'+bagStats.total,t:'вещей в сумке'},
-    {b:localStorage.getItem('babyBirthDate')?'✓':(localStorage.getItem('eddDate')?'✓':'—'),t:localStorage.getItem('babyBirthDate')?'дата рождения малыша':'дата родов сохранена'}
-  ].map(x=>'<div class="data-status-item"><b>'+escapeHtml(x.b)+'</b>'+escapeHtml(x.t)+'</div>').join('');
+  const born=hasBabyBorn();
+  let items;
+  if(born){
+    const feeds=loadBabyFeed().length;
+    const growthN=Object.keys(loadBabyGrowthMap()).length;
+    const vaxDone=Object.keys(loadBabyVax()).length;
+    items=[
+      {b:String(babyPhotos||photoCount),t:'фото малыша / всего'},
+      {b:String(feeds),t:'кормлений записано'},
+      {b:String(growthN),t:'замеров роста'},
+      {b:String(vaxDone),t:'прививок отмечено'},
+      {b:streak,t:'дней подряд 🔥'},
+      {b:localStorage.getItem('babyBirthDate')?'✓':'—',t:'дата рождения сохранена'}
+    ];
+  }else{
+    items=[
+      {b:String(photoCount),t:'фото в приложении'},
+      {b:String(meds),t:'препаратов в списке'},
+      {b:streak,t:'дней подряд 🔥'},
+      {b:total,t:'завершённых дней'},
+      {b:bagStats.done+'/'+bagStats.total,t:'вещей в сумке'},
+      {b:localStorage.getItem('eddDate')?'✓':'—',t:'дата родов сохранена'}
+    ];
+  }
+  el.innerHTML=items.map(x=>'<div class="data-status-item"><b>'+escapeHtml(x.b)+'</b>'+escapeHtml(x.t)+'</div>').join('');
 }
 function init(){
   const migrated=migrateLegacyStorage();
@@ -9202,11 +9289,30 @@ function toggleVisitPrep(apptKey,idx){
 }
 function updateBackupReminder(){
   const el=document.getElementById('backupReminder');
-  if(!el)return;
+  const status=document.getElementById('backupStatus');
+  const shareBtn=document.getElementById('shareBackupBtn');
+  if(shareBtn)shareBtn.style.display=typeof navigator.share==='function'?'block':'none';
   const last=localStorage.getItem('lastBackupDate'+V);
-  if(!last){el.classList.add('show');return;}
+  if(!last){
+    if(el)el.classList.add('show');
+    if(status){
+      status.className='backup-status show never';
+      status.textContent='Ещё не сохраняла копию — сделай файл сегодня, чтобы ничего не потерять';
+    }
+    return;
+  }
   const days=Math.floor((Date.now()-new Date(last).getTime())/86400000);
-  el.classList.toggle('show',days>=14);
+  const due=days>=14;
+  if(el)el.classList.toggle('show',due);
+  if(status){
+    status.className='backup-status show '+(due?'due':'ok');
+    const when=days===0?'сегодня':days===1?'вчера':(days+' '+ruPlural(days,'день','дня','дней')+' назад');
+    const d=new Date(last);
+    const nice=d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+    status.textContent=due
+      ?('Последняя копия: '+nice+' · '+when+'. Пора обновить файл 💾')
+      :('Последняя копия: '+nice+' · '+when+' ✓');
+  }
 }
 function getLast7DayKeys(){
   const keys=[];
@@ -10034,17 +10140,7 @@ async function exportBackup(){
   H();
   showImgCompressOverlay('Собираем резервную копию…');
   try{
-    const data={version:5,appDataVer:APP_DATA_VER,exportedAt:new Date().toISOString(),local:{},photos:{}};
-    for(let i=0;i<localStorage.length;i++){
-      const k=localStorage.key(i);
-      if(k)data.local[k]=localStorage.getItem(k);
-    }
-    const keys=await photoDBKeys();
-    for(const k of keys){
-      const blob=await photoDBGet(k);
-      if(blob)data.photos[k]=await blobToDataUrl(blob);
-    }
-    const out=new Blob([JSON.stringify(data)],{type:'application/json'});
+    const out=await buildBackupBlob();
     const a=document.createElement('a');
     a.href=URL.createObjectURL(out);
     a.download='dlya-indiry-backup-'+new Date().toISOString().slice(0,10)+'.json';
@@ -10054,17 +10150,66 @@ async function exportBackup(){
     localStorage.setItem('lastBackupDate'+V,new Date().toISOString());
     updateBackupReminder();
     try{updateVisitBackupNudge();}catch(e){}
+    try{updateDataStatusUI();}catch(e){}
   }catch(e){
     console.error('exportBackup',e);
     toast('Не удалось создать резервную копию');
   }finally{hideImgCompressOverlay();}
+}
+async function buildBackupBlob(){
+  const data={version:5,appDataVer:APP_DATA_VER,exportedAt:new Date().toISOString(),local:{},photos:{}};
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k)data.local[k]=localStorage.getItem(k);
+  }
+  const keys=await photoDBKeys();
+  for(const k of keys){
+    const blob=await photoDBGet(k);
+    if(blob)data.photos[k]=await blobToDataUrl(blob);
+  }
+  return new Blob([JSON.stringify(data)],{type:'application/json'});
+}
+async function shareBackup(){
+  H();
+  if(!navigator.share){exportBackup();return;}
+  showImgCompressOverlay('Готовим файл для отправки…');
+  try{
+    const blob=await buildBackupBlob();
+    const name='dlya-indiry-backup-'+new Date().toISOString().slice(0,10)+'.json';
+    const file=new File([blob],name,{type:'application/json'});
+    if(navigator.canShare&&!navigator.canShare({files:[file]})){
+      hideImgCompressOverlay();
+      exportBackup();
+      return;
+    }
+    await navigator.share({title:'Резервная копия — Для Индиры',text:'Резервная копия дневника заботы',files:[file]});
+    localStorage.setItem('lastBackupDate'+V,new Date().toISOString());
+    updateBackupReminder();
+    try{updateVisitBackupNudge();}catch(e){}
+    toast('Копия отправлена 💾');
+  }catch(e){
+    if(e&&e.name==='AbortError')return;
+    console.error('shareBackup',e);
+    toast('Не удалось поделиться — скачай файл');
+    try{await exportBackup();}catch(e2){}
+  }finally{hideImgCompressOverlay();}
+}
+function scrollToSettingsSection(which){
+  H();
+  switchTabById('settings');
+  setTimeout(()=>{
+    const map={baby:'settingsBabyBlock',photos:'settingsPhotosBlock',prefs:'settingsPrefsBlock',backup:'settingsBackupBlock',data:'settingsDataBlock'};
+    const el=document.getElementById(map[which]||'settingsBabyBlock');
+    el&&el.scrollIntoView({behavior:'smooth',block:'start'});
+  },220);
 }
 async function importBackup(ev){
   const input=ev.target;
   const f=input&&input.files&&input.files[0];
   resetFileInput(input);
   if(!f)return;
-  if(!confirm('Восстановить данные из файла? Текущие записи будут заменены.'))return;
+  if(!confirm('Восстановить данные из файла? Текущие записи и фото будут заменены.'))return;
+  if(!confirm('Точно? После восстановления страница перезагрузится.'))return;
   showImgCompressOverlay('Восстанавливаем…');
   try{
     const text=await f.text();
