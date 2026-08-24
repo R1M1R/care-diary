@@ -2192,6 +2192,17 @@ body.mode-postpartum .pregnancy-only{display:none!important}
           <span class="baby-age-emoji" id="babyAgeEmoji">👶</span>
           <div class="baby-age-title" id="babyAgeTitle">—</div>
           <div class="baby-age-sub" id="babyAgeSub">—</div>
+          <div class="journal-export-row" style="margin-top:14px;justify-content:center">
+            <button type="button" class="journal-export-btn primary" onclick="shareBabyCard()">📋 Карточка малыша</button>
+            <button type="button" class="journal-export-btn" onclick="printBabyCard()">🖨️ Печать</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="babyVaxHomeCard" style="display:none">
+        <div class="cb" style="cursor:pointer" onclick="scrollToBabyVax()" role="button" tabindex="0">
+          <div class="sh" id="babyVaxHomeTitle">💉 Ближайшая прививка</div>
+          <div class="ssub" id="babyVaxHomeSub">—</div>
         </div>
       </div>
 
@@ -2435,9 +2446,9 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         </div>
       
         <div style="margin-top:20px">
-          <div style="font-family:'Playfair Display',serif;font-size:30px;font-style:italic;font-weight:900;margin-bottom:14px">Отчёт для врача 📋</div>
+          <div style="font-family:'Playfair Display',serif;font-size:30px;font-style:italic;font-weight:900;margin-bottom:14px" id="doctorReportH1">Отчёт для врача 📋</div>
           <div class="card"><div class="cb">
-            <p style="font-size:13px;font-weight:700;color:var(--t3);margin-bottom:14px;line-height:1.6">Сформируй сводку приёма препаратов и самочувствия — удобно показать врачу!</p>
+            <p style="font-size:13px;font-weight:700;color:var(--t3);margin-bottom:14px;line-height:1.6" id="doctorReportSub">Сформируй сводку приёма препаратов и самочувствия — удобно показать врачу!</p>
             <button class="report-btn" onclick="generateReport()">📊 Сформировать отчёт</button>
             <textarea class="report-area" id="reportArea" style="display:none" readonly></textarea>
             <div class="report-actions" id="reportActions" style="display:none">
@@ -2544,6 +2555,17 @@ body.mode-postpartum .pregnancy-only{display:none!important}
           <div class="wt-stats-v2" id="babyGrowthStats"></div>
           <div class="baby-growth-pct" id="babyGrowthPct"></div>
           <div class="baby-src-note">📚 Диапазон и медиана — WHO Child Growth Standards (2006), 0–5 лет. Ориентир, а не диагноз — обсуди динамику с педиатром.</div>
+        </div></div>
+
+        <div class="card postpartum-only" id="babyPhotoCard"><div class="cb">
+          <div class="sh">📷 Малыш по месяцам</div>
+          <div class="ssub">Одно фото на месяц — потом будет трогательный альбом роста</div>
+          <button type="button" class="gal-add-primary" onclick="openBabyGalCurrent()">📷 Добавить фото · <span id="babyGalCurLbl">этот месяц</span></button>
+          <div class="gal-section-head" style="margin-top:14px">
+            <span style="font-size:11px;font-weight:800;color:var(--t3)">Сетка месяцев</span>
+            <span class="gal-count" id="babyGalCount">0</span>
+          </div>
+          <div class="gal-grid" id="babyGalGrid" role="list" aria-label="Фото малыша по месяцам"></div>
         </div></div>
 
         <div class="card pregnancy-only"><div class="cb">
@@ -2797,7 +2819,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v45</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v46</div>
         </div></div>
       </div>
     </div>
@@ -2869,8 +2891,8 @@ body.mode-postpartum .pregnancy-only{display:none!important}
       <span class="gal-prev-badge" id="galPrevBadge" style="display:none">Неделя сохранена ✨</span>
     </div>
     <div class="gal-actions">
-      <button type="button" class="gal-btn gal-btn-primary" onclick="triggerGalCamera()">Снять животик 📷</button>
-      <button type="button" class="gal-btn gal-btn-secondary" onclick="triggerGalLibrary()">Выбрать из галереи 🖼️</button>
+      <button type="button" class="gal-btn gal-btn-primary" id="galCamBtn" onclick="triggerGalCamera()">Снять животик 📷</button>
+      <button type="button" class="gal-btn gal-btn-secondary" id="galLibBtn" onclick="triggerGalLibrary()">Выбрать из галереи 🖼️</button>
     </div>
     <div class="gal-share-row" id="galShareRow" style="display:none">
       <button type="button" class="gal-btn gal-btn-secondary" onclick="shareGalPhoto()">📤 Поделиться</button>
@@ -2962,8 +2984,10 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v45';
+const APP_DATA_VER='v46';
 let curGW=null;
+let curBMo=null;
+let photoGalMode='belly'; // belly | baby
 
 // ══ CANVAS PARTICLES ══
 (function(){
@@ -5446,6 +5470,12 @@ function applyAppMode(){
   if(jArea)jArea.placeholder=born?'Сегодня малыш впервые удержал(а) головку...':'Сегодня малыш так сильно пинался, когда папа гладил животик…';
   const wtSub=document.getElementById('wtTrackerSub');
   if(wtSub)wtSub.textContent=born?'Отслеживай восстановление после родов — в своём темпе 💛':'Следим за прибавкой вместе — это важно!';
+  const drH=document.getElementById('doctorReportH1');
+  if(drH)drH.textContent=born?'Карточка / отчёт для педиатра 📋':'Отчёт для врача 📋';
+  const drS=document.getElementById('doctorReportSub');
+  if(drS)drS.textContent=born
+    ?'Сводка по росту, прививкам, зубам и дню малыша — удобно показать педиатру!'
+    :'Сформируй сводку приёма препаратов и самочувствия — удобно показать врачу!';
   if(born){
     const bmiSection=document.getElementById('bmiSection');
     const bmiBtn=document.getElementById('bmiToggleBtn');
@@ -5456,6 +5486,8 @@ function applyAppMode(){
     renderBabyHero();renderBabySection();
     try{renderBabyJournalTrackers();}catch(e){}
     try{ensureBabyAppts();}catch(e){}
+    try{renderBabyGallery();}catch(e){}
+    try{updateBabyVaxHomeCard();}catch(e){}
   }else{
     const edd=localStorage.getItem('eddDate');
     if(edd)try{updateAll(edd);}catch(e){}
@@ -5538,6 +5570,7 @@ function renderBabySection(){
   try{renderBabyVax();}catch(e){}
   try{renderBabyTeeth();}catch(e){}
   try{renderBabyFirsts();}catch(e){}
+  try{updateBabyVaxHomeCard();}catch(e){}
 }
 
 // ── BABY: VACCINES (KR national calendar, 0–3y) ──
@@ -5602,6 +5635,55 @@ function renderBabyVax(){
     }).join('');
     return '<div class="vax-group">'+head+items+'</div>';
   }).join('');
+  updateBabyVaxHomeCard();
+}
+function getNextPendingVax(){
+  if(!hasBabyBorn())return null;
+  const age=calcBabyAge(getBabyBirthDate());
+  if(!age)return null;
+  const done=loadBabyVax();
+  const birth=age.birthDate;
+  for(const g of BABY_VAX){
+    const pending=g.items.filter(it=>!done[it.id]);
+    if(!pending.length)continue;
+    const dueDate=new Date(birth.getTime());
+    dueDate.setMonth(dueDate.getMonth()+Math.floor(g.ageMo));
+    if(g.ageMo%1)dueDate.setDate(dueDate.getDate()+Math.round((g.ageMo%1)*30.4));
+    const daysUntil=Math.ceil((dueDate.getTime()-Date.now())/86400000);
+    const overdue=age.monthsF>=g.ageMo;
+    const soon=daysUntil<=14||overdue||age.monthsF>=g.ageMo-0.35;
+    if(soon||age.monthsF<g.ageMo){
+      return{group:g,item:pending[0],pendingCount:pending.length,dueDate,daysUntil,overdue:overdue||daysUntil<0};
+    }
+  }
+  return null;
+}
+function updateBabyVaxHomeCard(){
+  const card=document.getElementById('babyVaxHomeCard');
+  const title=document.getElementById('babyVaxHomeTitle');
+  const sub=document.getElementById('babyVaxHomeSub');
+  if(!card)return;
+  if(!hasBabyBorn()){card.style.display='none';return;}
+  const next=getNextPendingVax();
+  if(!next){card.style.display='none';return;}
+  card.style.display='block';
+  if(title)title.textContent=next.overdue?'💉 Прививка просрочена / актуальна':'💉 Ближайшая прививка';
+  if(sub){
+    const when=next.overdue
+      ?('Пора: '+next.group.ageLabel)
+      :(next.daysUntil<=0?'Срок подошёл: '+next.group.ageLabel:('Через '+next.daysUntil+' '+pluralDays(next.daysUntil)+' · '+next.group.ageLabel));
+    sub.textContent=when+' — '+next.item.name+(next.pendingCount>1?' (+ ещё '+ (next.pendingCount-1)+')':'');
+  }
+}
+function scrollToBabyVax(){
+  H();
+  switchTabById('home');
+  setTimeout(()=>{
+    const el=document.getElementById('babyVaxBox');
+    const sec=document.getElementById('sec-baby');
+    if(sec&&!sec.classList.contains('open'))toggleHomeSec('baby');
+    el&&el.scrollIntoView({behavior:'smooth',block:'start'});
+  },200);
 }
 
 // ── BABY: TEETH ──
@@ -5701,6 +5783,87 @@ function renderBabyFirsts(){
     }
     return '<div class="first-item" onclick="toggleBabyFirst(\''+f.id+'\')"><span class="first-ico">'+f.ico+'</span><div class="first-body"><div class="first-title'+(on?' done':'')+'">'+escapeHtml(f.t)+'</div><div class="first-date">'+(on?(d+ageTxt):'Нажми, когда случится')+'</div></div><div class="first-chk'+(on?' on':'')+'">'+(on?'✓':'')+'</div></div>';
   }).join('');
+}
+function buildBabyCardText(){
+  const birth=getBabyBirthDate();
+  const age=calcBabyAge(birth);
+  const name=(localStorage.getItem('babyName')||'').trim()||'малыш';
+  const g=localStorage.getItem('babyGender')||'n';
+  const gStr=g==='g'?'девочка':g==='b'?'мальчик':'не указан';
+  const bw=localStorage.getItem('babyBirthWeight');
+  const bh=localStorage.getItem('babyBirthHeight');
+  let t='═══════════════════════════════\n';
+  t+='КАРТОЧКА МАЛЫША — Для Индиры\n';
+  t+='Дата отчёта: '+new Date().toLocaleString('ru-RU')+'\n';
+  t+='═══════════════════════════════\n\n';
+  t+='Имя: '+name+'\n';
+  t+='Пол: '+gStr+'\n';
+  t+='Дата рождения: '+(birth?formatBabyBirthDateRu(birth):'—')+'\n';
+  t+='Возраст: '+(age?formatBabyAge(age):'—')+'\n';
+  if(bw)t+='Вес при рождении: '+bw+' г\n';
+  if(bh)t+='Рост при рождении: '+bh+' см\n';
+  t+='\n─── РОСТ И ВЕС ───\n';
+  let gh;try{gh=JSON.parse(localStorage.getItem('babyGrowthH'+V)||'{}');}catch(e){gh={};}
+  const gk=Object.keys(gh).sort().slice(-6);
+  if(!gk.length)t+='(пока нет замеров)\n';
+  else gk.forEach(k=>{
+    const x=gh[k];
+    t+=k+': '+[x.w?x.w+' г':null,x.h?x.h+' см':null,x.hc?'ОГ '+x.hc+' см':null].filter(Boolean).join(' · ')+'\n';
+  });
+  t+='\n─── ПРИВИВКИ (календарь КР) ───\n';
+  const vaxDone=loadBabyVax();
+  BABY_VAX.forEach(g=>{
+    t+=g.ageLabel+':\n';
+    g.items.forEach(it=>{
+      t+='  '+(vaxDone[it.id]?'✓':'○')+' '+it.name+(vaxDone[it.id]?' ('+vaxDone[it.id]+')':'')+'\n';
+    });
+  });
+  const next=getNextPendingVax();
+  if(next)t+='\nБлижайшая / актуальная: '+next.group.ageLabel+' — '+next.item.name+'\n';
+  t+='\n─── ЗУБКИ ───\n';
+  const teeth=loadBabyTeeth();
+  const teethN=Object.keys(teeth).length;
+  t+='Отмечено групп: '+teethN+' из '+BABY_TEETH.length+'\n';
+  BABY_TEETH.filter(x=>teeth[x.id]).forEach(x=>{t+='  ✓ '+x.lbl+' ('+teeth[x.id]+')\n';});
+  t+='\n─── ПЕРВЫЕ РАЗЫ ───\n';
+  const firsts=loadBabyFirsts();
+  const fKeys=BABY_FIRSTS.filter(f=>firsts[f.id]);
+  if(!fKeys.length)t+='(пока не отмечены)\n';
+  else fKeys.forEach(f=>{t+='  ✓ '+f.t+': '+firsts[f.id]+'\n';});
+  t+='\n─── СЕГОДНЯ ───\n';
+  const feeds=loadBabyFeed().filter(f=>isToday(f.ts));
+  const diapers=loadBabyDiaper().filter(d=>isToday(d.ts));
+  const sleeps=loadBabySleep().filter(s=>isToday(s.start));
+  const sleepMin=sleeps.reduce((sum,s)=>sum+Math.round(((s.end||Date.now())-s.start)/60000),0);
+  t+='Еда/кормления: '+feeds.length+'\n';
+  t+='Подгузники/туалет: '+diapers.length+'\n';
+  t+='Сон: '+fmtDurMin(sleepMin)+' ('+sleeps.length+' раз)\n';
+  t+='\n═══════════════════════════════\n';
+  t+='Ориентир, не диагноз. Уточняйте у педиатра.\n';
+  t+='Сформировано приложением «Для Индиры»\n';
+  return t;
+}
+async function shareBabyCard(){
+  H();
+  if(!hasBabyBorn()){toast('Сначала сохрани дату рождения малыша');return;}
+  const text=buildBabyCardText();
+  try{
+    if(navigator.share){await navigator.share({title:'Карточка малыша — Для Индиры',text});return;}
+  }catch(e){if(e&&e.name==='AbortError')return;}
+  try{await navigator.clipboard.writeText(text);toast('Карточка скопирована 📋');}
+  catch(e){toast('Не удалось поделиться');}
+}
+function printBabyCard(){
+  H();
+  if(!hasBabyBorn()){toast('Сначала сохрани дату рождения малыша');return;}
+  const text=buildBabyCardText();
+  const w=window.open('','_blank');
+  if(!w){navigator.clipboard?.writeText(text).then(()=>toast('Карточка скопирована 📋'));return;}
+  const safe=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  w.document.write('<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Карточка малыша</title><style>@page{margin:16mm}body{font-family:Georgia,serif;padding:20px;line-height:1.6;color:#111;max-width:720px;margin:0 auto}h1{font-size:18px;color:#E8325A;margin-bottom:14px}pre{white-space:pre-wrap;font-family:Nunito,sans-serif;font-size:12.5px}</style></head><body><h1>Карточка малыша — Для Индиры</h1><pre>'+safe+'</pre></body></html>');
+  w.document.close();
+  w.focus();
+  setTimeout(()=>w.print(),400);
 }
 function saveBabyBirth(){
   H();
@@ -6751,6 +6914,7 @@ function updateGalToolbar(galCount,curWeek){
 }
 function openGalCurrentWeek(){
   H();
+  photoGalMode='belly';
   const{week}=calcW(localStorage.getItem('eddDate'));
   const w=Math.min(40,Math.max(19,week));
   switchTabById('journal');
@@ -6759,49 +6923,96 @@ function openGalCurrentWeek(){
     setTimeout(()=>openGal(w),400);
   },200);
 }
+function galActiveKey(){
+  return photoGalMode==='baby'?('bgal_'+curBMo):('gal_'+curGW);
+}
+function galActiveLabel(){
+  return photoGalMode==='baby'?('месяц '+curBMo):('неделя '+curGW);
+}
 async function openGal(w){
   H();
+  photoGalMode='belly';
   curGW=w;
+  curBMo=null;
   document.getElementById('galMoT').textContent='📷 Неделя '+w;
+  const cam=document.getElementById('galCamBtn');
+  const lib=document.getElementById('galLibBtn');
+  if(cam)cam.textContent='Снять животик 📷';
+  if(lib)lib.textContent='Выбрать из галереи 🖼️';
   updatePhotoModeUI();
+  await fillGalModalPreview(galActiveKey());
+  document.getElementById('galMo').classList.add('open');
+}
+async function openBabyGal(mo){
+  H();
+  photoGalMode='baby';
+  curBMo=mo;
+  curGW=null;
+  document.getElementById('galMoT').textContent='📷 Малыш · '+mo+' '+ruPlural(mo,'месяц','месяца','месяцев');
+  const cam=document.getElementById('galCamBtn');
+  const lib=document.getElementById('galLibBtn');
+  if(cam)cam.textContent='Снять малыша 📷';
+  if(lib)lib.textContent='Выбрать из галереи 🖼️';
+  updatePhotoModeUI();
+  await fillGalModalPreview(galActiveKey());
+  document.getElementById('galMo').classList.add('open');
+}
+async function fillGalModalPreview(key){
   const imgEl=document.getElementById('galPrevImg');
   const emptyEl=document.getElementById('galPrevEmpty');
   const badgeEl=document.getElementById('galPrevBadge');
   const delBtn=document.getElementById('galDel');
-  const url=await getPhotoUrl('gal_'+w,true)||await getPhotoUrl('gal_'+w,false);
+  const url=await getPhotoUrl(key,true)||await getPhotoUrl(key,false);
   if(url){
     imgEl.src=url;
     imgEl.style.display='block';
     emptyEl.style.display='none';
     badgeEl.style.display='inline-flex';
-    badgeEl.textContent=getPhotoMode()==='full'?'Неделя сохранена ✨':'Превью сохранено · оригинал в галерее';
+    badgeEl.textContent=photoGalMode==='baby'?'Месяц сохранён ✨':(getPhotoMode()==='full'?'Неделя сохранена ✨':'Превью сохранено · оригинал в галерее');
     delBtn.classList.add('show');
   }else{
     imgEl.removeAttribute('src');
     imgEl.style.display='none';
     emptyEl.style.display='block';
+    emptyEl.textContent=photoGalMode==='baby'?'👶':'👼';
     badgeEl.style.display='none';
     delBtn.classList.remove('show');
   }
   const shareRow=document.getElementById('galShareRow');
   if(shareRow)shareRow.style.display=url?'flex':'none';
-  document.getElementById('galMo').classList.add('open');
 }
-function closeGal(){document.getElementById('galMo').classList.remove('open')}
+function openBabyGalCurrent(){
+  H();
+  const age=calcBabyAge(getBabyBirthDate());
+  const mo=age?Math.min(36,Math.max(0,age.monthsInt)):0;
+  switchTabById('journal');
+  setTimeout(()=>{
+    document.getElementById('babyGalGrid')?.scrollIntoView({behavior:'smooth',block:'start'});
+    setTimeout(()=>openBabyGal(mo),400);
+  },200);
+}
+function closeGal(){
+  document.getElementById('galMo').classList.remove('open');
+  photoGalMode='belly';
+}
 async function handleGalPhotoFile(f){
   if(!f)return;
-  if(curGW==null){toast('Сначала выбери неделю — нажми на квадрат в сетке');return;}
+  if(photoGalMode==='baby'){
+    if(curBMo==null){toast('Сначала выбери месяц');return;}
+  }else if(curGW==null){toast('Сначала выбери неделю — нажми на квадрат в сетке');return;}
   if(!(await ensurePhotoDBReady()))return;
+  const key=galActiveKey();
   imgProcessing=true;
   setGalMoLoading(true);
   showImgCompressOverlay(/Lib$/i.test(lastPhotoPickSource)?'Сохраняем снимок из галереи…':'Сохраняем фото…');
   try{
-    await savePhotoFromFile('gal_'+curGW,f,'gallery');
-    toast('Неделя '+curGW+' сохранена! 📷');
+    await savePhotoFromFile(key,f,'gallery');
+    toast((photoGalMode==='baby'?'Месяц '+curBMo:'Неделя '+curGW)+' сохранён! 📷');
     try{
-      const previewUrl=await resolvePhotoPreviewUrl('gal_'+curGW);
+      const previewUrl=await resolvePhotoPreviewUrl(key);
       if(previewUrl)updateGalPreview(previewUrl);
-      await renderGallery(localStorage.getItem('eddDate'));
+      if(photoGalMode==='baby')await renderBabyGallery();
+      else await renderGallery(localStorage.getItem('eddDate'));
       updatePhotoStorageUI();
       if(typeof confetti==='function')confetti({particleCount:60,spread:70,origin:{y:.72},colors:['#E8325A','#FFD700','#fff']});
     }catch(uiErr){console.warn('gal UI',uiErr);}
@@ -6821,25 +7032,83 @@ async function loadGalPhoto(ev){
   if(f)await handleGalPhotoFile(f);
 }
 async function deleteGalPhoto(){
-  H();if(curGW==null)return;
-  const w=curGW;
-  const thumb=await photoDBGet('gal_'+w);
-  const full=await photoDBGet(photoFullKey('gal_'+w));
-  await photoDBDelete('gal_'+w);
-  try{await photoDBDelete(photoFullKey('gal_'+w));}catch(e){}
-  revokePhotoUrl('gal_'+w);
-  await renderGallery(localStorage.getItem('eddDate'));
+  H();
+  const key=galActiveKey();
+  if(photoGalMode==='baby'){if(curBMo==null)return;}
+  else if(curGW==null)return;
+  const thumb=await photoDBGet(key);
+  const full=await photoDBGet(photoFullKey(key));
+  await photoDBDelete(key);
+  try{await photoDBDelete(photoFullKey(key));}catch(e){}
+  revokePhotoUrl(key);
+  await fillGalModalPreview(key);
+  if(photoGalMode==='baby')await renderBabyGallery();
+  else await renderGallery(localStorage.getItem('eddDate'));
   updatePhotoStorageUI();
-  closeGal();
-  toast('Фото удалено',thumb?()=>{
-    photoDBPut('gal_'+w,thumb).then(()=>{
-      if(full)photoDBPut(photoFullKey('gal_'+w),full);
-      revokePhotoUrl('gal_'+w);
-      renderGallery(localStorage.getItem('eddDate'));
+  toast('Фото удалено',()=>{
+    photoDBPut(key,thumb).then(()=>{
+      if(full)photoDBPut(photoFullKey(key),full);
+      revokePhotoUrl(key);
+      fillGalModalPreview(key);
+      if(photoGalMode==='baby')renderBabyGallery();
+      else renderGallery(localStorage.getItem('eddDate'));
       updatePhotoStorageUI();
-      toast('Фото восстановлено ✨');
+      toast('Фото восстановлено');
     });
-  }:null);
+  });
+}
+async function shareGalPhoto(){
+  H();
+  const key=galActiveKey();
+  if(photoGalMode==='baby'&&curBMo==null)return;
+  if(photoGalMode!=='baby'&&curGW==null)return;
+  try{
+    const blob=await photoDBGet(key)||await photoDBGet(photoFullKey(key));
+    if(!blob){toast('Сначала добавь фото');return;}
+    const fname=photoGalMode==='baby'?('malysh-mesyac-'+curBMo+'.jpg'):('zhivotik-nedelya-'+curGW+'.jpg');
+    const title=photoGalMode==='baby'?('Малыш · '+curBMo+' мес'):('Животик · неделя '+curGW);
+    const file=new File([blob],fname,{type:blob.type||'image/jpeg'});
+    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({title,files:[file]});
+    }else if(navigator.share){
+      await navigator.share({title,text:title+' 🤍 · Для Индиры'});
+    }else toast('Поделиться не поддерживается на этом устройстве');
+  }catch(e){if(e&&e.name!=='AbortError')toast('Не удалось поделиться');}
+}
+async function renderBabyGallery(){
+  const gr=document.getElementById('babyGalGrid');
+  const countEl=document.getElementById('babyGalCount');
+  const lbl=document.getElementById('babyGalCurLbl');
+  if(!gr)return;
+  const age=calcBabyAge(getBabyBirthDate());
+  const curMo=age?Math.min(36,Math.max(0,age.monthsInt)):0;
+  if(lbl)lbl.textContent=curMo+' '+ruPlural(curMo,'месяц','месяца','месяцев');
+  let keys=[];
+  try{keys=await photoDBKeys();}catch(e){keys=[];}
+  const have=new Set();
+  keys.forEach(k=>{
+    const m=String(k).match(/^bgal_(\d+)$/);
+    if(m)have.add(parseInt(m[1],10));
+  });
+  const maxMo=Math.min(36,Math.max(curMo+1,12,...have));
+  let html='';
+  let n=0;
+  for(let m=0;m<=maxMo;m++){
+    const isCur=m===curMo;
+    const has=have.has(m);
+    if(has)n++;
+    html+='<div class="gal-item '+(isCur?'current-week':'')+'" data-bm="'+m+'" onclick="openBabyGal('+m+')"><div class="gal-plus" id="bgalPlus'+m+'">'+(has?'':'＋')+'</div><div class="gal-wk">'+m+' мес.'+(isCur?' ✨':'')+'</div></div>';
+  }
+  gr.innerHTML=html;
+  if(countEl)countEl.textContent=n+' / '+(maxMo+1);
+  for(const m of have){
+    const url=await getPhotoUrl('bgal_'+m,false);
+    const cell=gr.querySelector('[data-bm="'+m+'"]');
+    if(cell&&url){
+      const plus=cell.querySelector('.gal-plus');
+      if(plus)plus.innerHTML='<img src="'+url+'" alt="'+m+' мес" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">';
+    }
+  }
 }
 
 // UZI PHOTO
@@ -7322,14 +7591,27 @@ function updateMilestoneCard(){
   const card=document.getElementById('milestoneCard');
   if(!card)return;
   const candidates=[];
-  const daysSc=Math.ceil((new Date(SCREENING_DATE+'T12:00:00')-new Date())/86400000);
-  if(daysSc>=-1&&daysSc<=14){
-    candidates.push({date:SCREENING_DATE,title:'Скрининг 1 триместра',ico:'🔬',days:daysSc});
-  }
-  const appt=getNextAppt();
-  if(appt){
-    const days=Math.ceil((new Date(appt.date+'T12:00:00')-new Date())/86400000);
-    if(days>=0&&days<=30)candidates.push({date:appt.date,title:appt.title,ico:'🗓️',days});
+  if(hasBabyBorn()){
+    const vax=getNextPendingVax();
+    if(vax){
+      const days=vax.overdue?0:Math.max(0,vax.daysUntil);
+      candidates.push({date:vax.dueDate.toISOString().slice(0,10),title:vax.item.name+' · '+vax.group.ageLabel,ico:'💉',days:vax.overdue?0:days,kind:'vax'});
+    }
+    const appt=getNextAppt();
+    if(appt){
+      const days=Math.ceil((new Date(appt.date+'T12:00:00')-new Date())/86400000);
+      if(days>=0&&days<=30)candidates.push({date:appt.date,title:appt.title,ico:'🗓️',days,kind:'appt'});
+    }
+  }else{
+    const daysSc=Math.ceil((new Date(SCREENING_DATE+'T12:00:00')-new Date())/86400000);
+    if(daysSc>=-1&&daysSc<=14){
+      candidates.push({date:SCREENING_DATE,title:'Скрининг 1 триместра',ico:'🔬',days:daysSc,kind:'screen'});
+    }
+    const appt=getNextAppt();
+    if(appt){
+      const days=Math.ceil((new Date(appt.date+'T12:00:00')-new Date())/86400000);
+      if(days>=0&&days<=30)candidates.push({date:appt.date,title:appt.title,ico:'🗓️',days,kind:'appt'});
+    }
   }
   if(!candidates.length){card.style.display='none';milestoneHandler=null;return;}
   candidates.sort((a,b)=>a.days-b.days);
@@ -7344,7 +7626,11 @@ function updateMilestoneCard(){
   else if(m.days===0)cdEl.innerHTML='Сегодня · <b>не пропусти!</b>';
   else if(m.days===1)cdEl.innerHTML='Завтра · через <b>1</b> день';
   else cdEl.innerHTML='Через <b>'+m.days+'</b> '+pluralDays(m.days);
-  milestoneHandler=()=>{switchTabById('journal');setTimeout(()=>{const c=document.getElementById('visitPrepCard');c&&c.scrollIntoView({behavior:'smooth',block:'start'});},300);};
+  milestoneHandler=()=>{
+    if(m.kind==='vax'){scrollToBabyVax();return;}
+    switchTabById('journal');
+    setTimeout(()=>{const c=document.getElementById('visitPrepCard');c&&c.scrollIntoView({behavior:'smooth',block:'start'});},300);
+  };
 }
 function runMilestoneAction(){H();if(milestoneHandler)milestoneHandler();}
 
@@ -7382,20 +7668,6 @@ function updateOfflinePill(){
   const pill=document.getElementById('offlinePill');
   if(!pill)return;
   pill.style.display=navigator.onLine?'none':'block';
-}
-async function shareGalPhoto(){
-  H();
-  if(curGW==null)return;
-  try{
-    const blob=await photoDBGet('gal_'+curGW)||await photoDBGet(photoFullKey('gal_'+curGW));
-    if(!blob){toast('Сначала добавь фото');return;}
-    const file=new File([blob],'zhivotik-nedelya-'+curGW+'.jpg',{type:blob.type||'image/jpeg'});
-    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-      await navigator.share({title:'Животик · неделя '+curGW,files:[file]});
-    }else if(navigator.share){
-      await navigator.share({title:'Животик · неделя '+curGW,text:'Неделя '+curGW+' 🤍 · Для Индиры'});
-    }else toast('Поделиться не поддерживается на этом устройстве');
-  }catch(e){if(e&&e.name!=='AbortError')toast('Не удалось поделиться');}
 }
 function openPhotoFullscreen(){
   const src=document.getElementById('galPrevImg')?.src;
@@ -8756,6 +9028,19 @@ function checkBabyNotifs(now){
       }
     }
   }
+  const vax=getNextPendingVax();
+  if(vax&&(vax.overdue||vax.daysUntil<=3)&&now.getHours()>=10&&now.getHours()<21){
+    const today=now.toISOString().slice(0,10);
+    const key='babyVaxNtf'+V;
+    if(localStorage.getItem(key)!==today){
+      new Notification(vax.overdue?'Прививка актуальна 💉':'Скоро прививка 💉',{
+        body:vax.group.ageLabel+' — '+vax.item.name+(vax.pendingCount>1?' и ещё '+ (vax.pendingCount-1):''),
+        icon:'apple-icon.png',
+        tag:'baby-vax'
+      });
+      localStorage.setItem(key,today);
+    }
+  }
 }
 
 // MISC
@@ -8931,7 +9216,7 @@ function switchTab(id,btn){
   btn.setAttribute('aria-selected','true');
   btn.setAttribute('aria-current','page');
   if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();updateDataStatusUI();updateBackupReminder();updatePhotoModeUI();}
-  if(id==='journal'){renderGallery(localStorage.getItem('eddDate'));renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();if(hasBabyBorn())renderBabyJournalTrackers();}
+  if(id==='journal'){renderGallery(localStorage.getItem('eddDate'));renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();if(hasBabyBorn()){renderBabyJournalTrackers();renderBabyGallery();}}
   if(id==='bag')renderBag();
   if(id==='meds'){renderMedWeekChart();renderLettersLog();}
   if(id==='home'){updateTodayDash();renderWeekWellness();if(hasBabyBorn()){renderBabyHero();renderBabySection();}}
@@ -9166,11 +9451,23 @@ function buildReportText(){
     const ghKeys=Object.keys(gh).sort();
     const lastG=ghKeys.length?gh[ghKeys[ghKeys.length-1]]:null;
     const lastGLine=lastG?('  Последний замер ('+ghKeys[ghKeys.length-1]+'): '+[lastG.w?lastG.w+' г':null,lastG.h?lastG.h+' см':null].filter(Boolean).join(' · ')):'  (нет замеров роста)';
+    const vaxDone=loadBabyVax();
+    let vaxDoneN=0,vaxTotal=0;
+    BABY_VAX.forEach(g=>g.items.forEach(it=>{vaxTotal++;if(vaxDone[it.id])vaxDoneN++;}));
+    const next=getNextPendingVax();
+    const teethN=Object.keys(loadBabyTeeth()).length;
+    const firstsN=Object.keys(loadBabyFirsts()).length;
     return [
       '',
       '─── МАЛЫШ СЕГОДНЯ ───',
       '  Кормлений: '+feeds.length+' · Подгузников: '+diapers.length+' · Сон: '+(sleepMin/60).toFixed(1).replace('.0','')+' ч',
-      lastGLine
+      lastGLine,
+      '',
+      '─── ПРИВИВКИ / ЗУБЫ / ПЕРВЫЕ РАЗЫ ───',
+      '  Прививки отмечены: '+vaxDoneN+' из '+vaxTotal,
+      next?('  Ближайшая: '+next.group.ageLabel+' — '+next.item.name):'  Календарь прививок до 3 лет закрыт ✓',
+      '  Зубки: '+teethN+' из '+BABY_TEETH.length+' групп',
+      '  Первые разы: '+firstsN
     ];
   })():(function(){
     const kickHist=JSON.parse(localStorage.getItem('kickHist'+V)||'[]').slice(0,5).map(h=>'  '+new Date(h.date).toLocaleDateString('ru-RU')+': '+h.count+' шев. '+(h.ok?'✓':'!'));
@@ -9224,13 +9521,13 @@ function buildReportText(){
 }
 function generateReport(){
   H();
-  if(!localStorage.getItem('eddDate')){toast('Сначала укажи дату родов!');return;}
+  if(!localStorage.getItem('eddDate')&&!hasBabyBorn()){toast('Сначала укажи дату родов!');return;}
   const report=buildReportText();
   const area=document.getElementById('reportArea');
   const actions=document.getElementById('reportActions');
   if(area){area.style.display='block';area.value=report;}
   if(actions)actions.style.display='flex';
-  toast('Отчёт готов! 📋');
+  toast(hasBabyBorn()?'Карточка для педиатра готова! 📋':'Отчёт готов! 📋');
 }
 function copyReport(){
   H();
