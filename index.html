@@ -1816,6 +1816,12 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 .offline-pill{position:fixed;top:calc(env(safe-area-inset-top,12px) + 8px);left:50%;transform:translateX(-50%);z-index:200;padding:6px 14px;border-radius:999px;background:rgba(30,156,176,.92);color:#fff;font-size:11px;font-weight:900;box-shadow:0 4px 16px rgba(0,0,0,.15);display:none}
 .journal-search{width:100%;padding:12px 14px;margin-bottom:12px;border:2px solid var(--cb);border-radius:16px;background:var(--bg2);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--t1);outline:none}
 .journal-search:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(232,50,90,.1)}
+.journal-tag-row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.journal-tag{padding:8px 12px;border:2px solid var(--cb);border-radius:14px;background:var(--bg2);font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:var(--t2);cursor:pointer;transition:all .2s;line-height:1.2}
+.journal-tag.on{border-color:var(--rose);background:rgba(232,50,90,.09);color:var(--rose)}
+.journal-tag.filter-on{border-color:var(--rose);background:rgba(232,50,90,.14);color:var(--rose);box-shadow:0 0 0 2px rgba(232,50,90,.12)}
+.journal-entry-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.journal-entry-tag{font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px;background:rgba(232,50,90,.08);color:var(--rose);letter-spacing:.2px}
 .gal-share-row{display:flex;gap:8px;margin-top:10px}
 .gal-share-row .gal-btn{flex:1;margin:0}
 .photo-fullscreen{position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;padding:20px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
@@ -2516,14 +2522,24 @@ body.mode-postpartum .pregnancy-only{display:none!important}
           <div id="visitPrepList"></div>
           <button type="button" class="gal-add-primary" id="visitModeFromPrep" style="margin-top:12px;display:none" onclick="openVisitMode()">🩺 Режим визита сегодня</button>
         </div></div>
+        <div class="card" id="visitBackupNudgeCard" style="display:none"><div class="cb">
+          <div class="sh">💾 Перед визитом — бэкап</div>
+          <div class="ssub" id="visitBackupNudgeSub">Сохрани копию на всякий случай — займёт минуту</div>
+          <div class="journal-export-row" style="margin-top:12px">
+            <button type="button" class="journal-export-btn primary" onclick="exportBackup()">Скачать копию</button>
+            <button type="button" class="journal-export-btn" onclick="dismissVisitBackupNudge()">Позже</button>
+          </div>
+        </div></div>
         <div class="card"><div class="cb">
           <div class="sh" id="journalCardTitle">📓 Записи по дням</div>
           <div class="ssub" id="journalCardSub">Мысли, события и воспоминания — с датой и неделей беременности</div>
           <input type="search" class="journal-search" id="journalSearch" placeholder="🔍 Искать в записях…" oninput="renderJournalLog()" aria-label="Поиск по дневнику">
+          <div class="journal-tag-row" id="journalFilterRow" aria-label="Фильтр по тегам"></div>
           <div class="journal-export-row">
             <button type="button" class="journal-export-btn primary" onclick="printJournal()">🖨️ Экспорт дневника</button>
             <button type="button" class="journal-export-btn" onclick="shareJournal()">📤 Поделиться</button>
           </div>
+          <div class="journal-tag-row" id="journalTagRow" aria-label="Теги новой записи"></div>
           <textarea id="journalNewT" class="journal-new" placeholder="Сегодня малыш так сильно пинался, когда папа гладил животик…"></textarea>
           <button type="button" class="lq" style="margin-top:12px" onclick="saveJournalEntry()">Сохранить запись 💖</button>
           <div class="journal-log" id="journalLog"></div>
@@ -2867,7 +2883,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v49</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v50</div>
         </div></div>
       </div>
     </div>
@@ -3051,7 +3067,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v49';
+const APP_DATA_VER='v50';
 let curGW=null;
 let curBMo=null;
 let photoGalMode='belly'; // belly | baby
@@ -5565,6 +5581,8 @@ function applyAppMode(){
     const edd=localStorage.getItem('eddDate');
     if(edd)try{updateAll(edd);}catch(e){}
   }
+  try{renderJournalTagRow();}catch(e){}
+  try{updateVisitBackupNudge();}catch(e){}
 }
 function renderBabyHero(){
   const age=calcBabyAge(getBabyBirthDate());
@@ -8250,6 +8268,9 @@ function markVisitDoneFromMode(){
   updateBabyVisitModeCard();
   closeVisitMode();
   toast('Визит отмечен · сумка сброшена к следующему ✓');
+  setTimeout(()=>{
+    if(confirm('Добавить короткую запись о визите в дневник?'))promptJournalAfterVisit();
+  },280);
 }
 function setComparePos(val){
   const pct=Math.min(100,Math.max(0,parseFloat(val)||50));
@@ -8289,9 +8310,13 @@ function buildJournalText(){
     text+='═'.repeat(36)+'\n\n';
   }
   if(!log.length){text+='(Пока нет записей)\n';return text;}
+  const tagMap={};getJournalTags().forEach(t=>{tagMap[t.id]=t;});
   log.slice().reverse().forEach(e=>{
     const d=new Date(e.date);
-    text+=d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+(born?'':' · '+e.week+' нед.')+'\n';
+    const ageBit=e.babyAge?(' · '+e.babyAge):(born?'':(' · '+(e.week||'?')+' нед.'));
+    const tags=(e.tags||[]).map(id=>tagMap[id]?(tagMap[id].ico+' '+tagMap[id].label):id).join(', ');
+    text+=d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+ageBit+'\n';
+    if(tags)text+='['+tags+']\n';
     text+=e.text+'\n\n';
   });
   return text;
@@ -8385,6 +8410,7 @@ function renderVisitPrep(){
   saveVisitPrep(prep);
   if(modeBtn)modeBtn.style.display=(hasBabyBorn()&&days<=1)?'block':'none';
   updateBabyVisitModeCard();
+  try{updateVisitBackupNudge();}catch(e){}
 }
 function toggleVisitPrep(apptKey,idx){
   H();
@@ -8564,6 +8590,91 @@ function initHomeSections(){
     if(body){body.classList.toggle('open',open);if(chev)chev.textContent=open?'▾':'▸';}
   });
 }
+const JOURNAL_TAGS_PREG=[
+  {id:'visit',ico:'🩺',label:'Визит'},
+  {id:'uzi',ico:'📷',label:'УЗИ'},
+  {id:'feel',ico:'💭',label:'Самочувствие'},
+  {id:'joy',ico:'💛',label:'Радость'}
+];
+const JOURNAL_TAGS_BABY=[
+  {id:'visit',ico:'🩺',label:'Визит'},
+  {id:'vax',ico:'💉',label:'Прививка'},
+  {id:'tooth',ico:'🦷',label:'Зуб'},
+  {id:'first',ico:'✨',label:'Первый раз'},
+  {id:'sleep',ico:'💤',label:'Сон'},
+  {id:'feed',ico:'🍼',label:'Кормление'}
+];
+let journalSelectedTags=[];
+let journalFilterTag='';
+function getJournalTags(){return hasBabyBorn()?JOURNAL_TAGS_BABY:JOURNAL_TAGS_PREG;}
+function renderJournalTagRow(){
+  const row=document.getElementById('journalTagRow');
+  if(!row)return;
+  row.innerHTML=getJournalTags().map(t=>{
+    const on=journalSelectedTags.includes(t.id);
+    return '<button type="button" class="journal-tag'+(on?' on':'')+'" onclick="toggleJournalTag(\''+t.id+'\')">'+t.ico+' '+escapeHtml(t.label)+'</button>';
+  }).join('');
+}
+function renderJournalFilterRow(log){
+  const row=document.getElementById('journalFilterRow');
+  if(!row)return;
+  const used=new Set();
+  (log||loadJournalLog()).forEach(e=>{(e.tags||[]).forEach(id=>used.add(id));});
+  if(!used.size&&!journalFilterTag){row.innerHTML='';return;}
+  const tags=getJournalTags().filter(t=>used.has(t.id)||t.id===journalFilterTag);
+  let html='<button type="button" class="journal-tag'+(journalFilterTag?'':' filter-on')+'" onclick="setJournalFilter(\'\')">Все</button>';
+  html+=tags.map(t=>'<button type="button" class="journal-tag'+(journalFilterTag===t.id?' filter-on':'')+'" onclick="setJournalFilter(\''+t.id+'\')">'+t.ico+' '+escapeHtml(t.label)+'</button>').join('');
+  row.innerHTML=html;
+}
+function toggleJournalTag(id){
+  H();
+  const i=journalSelectedTags.indexOf(id);
+  if(i>=0)journalSelectedTags.splice(i,1);else journalSelectedTags.push(id);
+  renderJournalTagRow();
+}
+function setJournalFilter(id){
+  H();
+  journalFilterTag=journalFilterTag===id?'':id;
+  renderJournalLog();
+}
+function promptJournalAfterVisit(){
+  // Soft draft: open diary with «Визит» tag ready
+  journalSelectedTags=['visit'];
+  journalFilterTag='';
+  switchTabById('journal');
+  setTimeout(()=>{
+    renderJournalTagRow();
+    const ta=document.getElementById('journalNewT');
+    if(ta){ta.focus();if(!ta.value.trim())ta.placeholder='Как прошёл визит? Что сказал врач…';}
+    toast('Можешь коротко записать визит 🩺');
+  },220);
+}
+function updateVisitBackupNudge(){
+  const card=document.getElementById('visitBackupNudgeCard');
+  const sub=document.getElementById('visitBackupNudgeSub');
+  if(!card)return;
+  const next=getNextAppt();
+  if(!next){card.style.display='none';return;}
+  const days=Math.ceil((new Date(next.date+'T12:00:00')-new Date())/86400000);
+  if(days<0||days>2){card.style.display='none';return;}
+  const dismissed=localStorage.getItem('visitBackupNudgeDismiss'+V);
+  if(dismissed===String(next.id)){card.style.display='none';return;}
+  const last=localStorage.getItem('lastBackupDate'+V);
+  if(last){
+    const since=Math.floor((Date.now()-new Date(last).getTime())/86400000);
+    if(since<7){card.style.display='none';return;}
+  }
+  card.style.display='block';
+  if(sub)sub.textContent=(days===0?'Визит сегодня':'Через '+days+' '+pluralDays(days))+' · '+next.title+' — лучше сохранить копию заранее';
+}
+function dismissVisitBackupNudge(){
+  H();
+  const next=getNextAppt();
+  if(next)localStorage.setItem('visitBackupNudgeDismiss'+V,String(next.id));
+  const card=document.getElementById('visitBackupNudgeCard');
+  if(card)card.style.display='none';
+  toast('Напомню перед следующим визитом');
+}
 function loadJournalLog(){
   try{
     const raw=localStorage.getItem(JOURNAL_KEY);
@@ -8576,13 +8687,22 @@ function renderJournalLog(){
   if(!el)return;
   const log=loadJournalLog();
   const q=(document.getElementById('journalSearch')?.value||'').trim().toLowerCase();
-  const filtered=q?log.filter(e=>(e.text||'').toLowerCase().includes(q)):log;
+  const tagMap={};getJournalTags().forEach(t=>{tagMap[t.id]=t;});
+  let filtered=log;
+  if(journalFilterTag)filtered=filtered.filter(e=>(e.tags||[]).includes(journalFilterTag));
+  if(q){
+    filtered=filtered.filter(e=>{
+      const tagTxt=(e.tags||[]).map(id=>tagMap[id]?(tagMap[id].ico+' '+tagMap[id].label):id).join(' ').toLowerCase();
+      return (e.text||'').toLowerCase().includes(q)||tagTxt.includes(q);
+    });
+  }
+  renderJournalFilterRow(log);
   if(!log.length){
     el.innerHTML='<div class="empty-state"><div class="empty-ico">📓</div><div class="empty-title">Первые воспоминания</div><div class="empty-sub">Запиши, как прошёл день — через годы будет приятно перечитать</div></div>';
     return;
   }
   if(!filtered.length){
-    el.innerHTML='<div class="empty-state"><div class="empty-ico">🔍</div><div class="empty-title">Ничего не найдено</div><div class="empty-sub">Попробуй другие слова</div></div>';
+    el.innerHTML='<div class="empty-state"><div class="empty-ico">🔍</div><div class="empty-title">Ничего не найдено</div><div class="empty-sub">Попробуй другие слова или сними фильтр тега</div></div>';
     return;
   }
   const birthISO=getBabyBirthDate();
@@ -8595,7 +8715,11 @@ function renderJournalLog(){
     }else if(e.week&&!(birthMs&&d.getTime()>=birthMs)){
       tag=' · '+e.week+' нед.';
     }
-    return '<div class="journal-entry"><div class="journal-entry-meta">'+d.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'})+tag+'</div><div class="journal-entry-text">'+escapeHtml(e.text).replace(/\n/g,'<br>')+'</div><button type="button" class="journal-del" onclick="deleteJournalEntry('+e.id+')" aria-label="Удалить запись">✕</button></div>';
+    const pills=(e.tags||[]).map(id=>{
+      const t=tagMap[id]||{ico:'🏷',label:id};
+      return '<span class="journal-entry-tag">'+t.ico+' '+escapeHtml(t.label)+'</span>';
+    }).join('');
+    return '<div class="journal-entry"><div class="journal-entry-meta">'+d.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'})+tag+'</div><div class="journal-entry-text">'+escapeHtml(e.text).replace(/\n/g,'<br>')+'</div>'+(pills?'<div class="journal-entry-tags">'+pills+'</div>':'')+'<button type="button" class="journal-del" onclick="deleteJournalEntry('+e.id+')" aria-label="Удалить запись">✕</button></div>';
   }).join('');
 }
 function saveJournalEntry(){
@@ -8605,6 +8729,7 @@ function saveJournalEntry(){
   if(!text){toast('Напиши хотя бы пару строк');return;}
   const log=loadJournalLog();
   const entry={id:Date.now(),date:new Date().toISOString(),text};
+  if(journalSelectedTags.length)entry.tags=[...journalSelectedTags];
   if(hasBabyBorn()){
     const age=calcBabyAge(getBabyBirthDate());
     if(age)entry.babyAge=formatBabyAge(age);
@@ -8614,6 +8739,8 @@ function saveJournalEntry(){
   log.unshift(entry);
   try{localStorage.setItem(JOURNAL_KEY,JSON.stringify(log.slice(0,120)));}catch(e){toast('Не удалось сохранить запись');return;}
   ta.value='';
+  journalSelectedTags=[];
+  renderJournalTagRow();
   renderJournalLog();
   toast('Запись сохранена в дневнике 📓');
 }
@@ -9113,6 +9240,7 @@ async function exportBackup(){
     toast('Резервная копия скачана 💾');
     localStorage.setItem('lastBackupDate'+V,new Date().toISOString());
     updateBackupReminder();
+    try{updateVisitBackupNudge();}catch(e){}
   }catch(e){
     console.error('exportBackup',e);
     toast('Не удалось создать резервную копию');
@@ -9696,7 +9824,7 @@ function switchTab(id,btn){
   btn.setAttribute('aria-selected','true');
   btn.setAttribute('aria-current','page');
   if(id==='settings'){updatePhotoStorageUI();updatePWAStatusUI();updateNotifUI();updateDataStatusUI();updateBackupReminder();updatePhotoModeUI();}
-  if(id==='journal'){renderGallery(localStorage.getItem('eddDate'));renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();if(hasBabyBorn()){renderBabyJournalTrackers();renderBabyGallery();}}
+  if(id==='journal'){renderGallery(localStorage.getItem('eddDate'));renderJournalTagRow();renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();try{updateVisitBackupNudge();}catch(e){}if(hasBabyBorn()){renderBabyJournalTrackers();renderBabyGallery();}}
   if(id==='bag')renderBag();
   if(id==='meds'){renderMedWeekChart();renderLettersLog();}
   if(id==='home'){updateTodayDash();renderWeekWellness();if(hasBabyBorn()){renderBabyHero();renderBabySection();}}
