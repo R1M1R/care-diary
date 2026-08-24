@@ -2429,21 +2429,23 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 
         <!-- ── BABY: FEEDING & DIAPERS (postpartum) ── -->
         <div class="card postpartum-only" id="babyFeedCard"><div class="cb">
-          <div class="sh">🍼 Кормления и подгузники</div>
-          <div class="ssub">Отмечай за секунду — увидишь историю дня</div>
-          <div class="baby-quick-row">
+          <div class="sh" id="babyFeedTitle">🍼 Кормления и подгузники</div>
+          <div class="ssub" id="babyFeedSub">Отмечай за секунду — увидишь историю дня</div>
+          <div class="baby-quick-row" id="babyFeedBtns">
             <button type="button" class="baby-q-btn" onclick="logBabyFeed('bl')">🤱 Грудь Л</button>
             <button type="button" class="baby-q-btn" onclick="logBabyFeed('br')">🤱 Грудь П</button>
             <button type="button" class="baby-q-btn" onclick="toggleBabyFormulaRow()">🍼 Смесь</button>
+            <button type="button" class="baby-q-btn" id="babyMealBtn" style="display:none" onclick="logBabyFeed('meal')">🥣 Еда</button>
           </div>
           <div class="appt-form" id="babyFormulaRow" style="display:none;margin-top:10px">
             <input type="number" class="appt-inp" id="babyFormulaMl" placeholder="мл" min="10" max="400" style="max-width:110px">
             <button type="button" class="wt-save-btn" style="flex:0 0 auto;padding:12px 16px" onclick="logBabyFeedFormula()">Записать</button>
           </div>
-          <div class="baby-quick-row" style="margin-top:10px">
+          <div class="baby-quick-row" style="margin-top:10px" id="babyDiaperBtns">
             <button type="button" class="baby-q-btn" style="background:linear-gradient(135deg,#1E9CB0,#30C0D8);box-shadow:0 6px 16px rgba(30,156,176,.24)" onclick="logBabyDiaper('pee')">💧 Пописал</button>
             <button type="button" class="baby-q-btn" style="background:linear-gradient(135deg,#B8752E,#DDA34E);box-shadow:0 6px 16px rgba(184,117,46,.24)" onclick="logBabyDiaper('poop')">💩 Покакал</button>
             <button type="button" class="baby-q-btn" style="background:linear-gradient(135deg,#8B5CF6,#B18AFF);box-shadow:0 6px 16px rgba(139,92,246,.24)" onclick="logBabyDiaper('both')">🧷 Оба</button>
+            <button type="button" class="baby-q-btn" id="babyPottyBtn" style="display:none;background:linear-gradient(135deg,#52B882,#2D8A5E);box-shadow:0 6px 16px rgba(82,184,130,.24)" onclick="logBabyDiaper('potty')">🚽 Горшок</button>
           </div>
           <div class="baby-today-stats" id="babyTodayStats"></div>
           <div class="contr-hist" id="babyFeedHist"></div>
@@ -2474,7 +2476,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
             <button onclick="saveBabyGrowth()" class="wt-save-btn">Записать</button>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 4px">
-            <input type="number" id="babyHtIn" placeholder="Рост, см" step="0.5" min="30" max="120" style="font-size:14px;padding:12px;text-align:center;font-weight:800">
+            <input type="number" id="babyHtIn" placeholder="Рост, см" step="0.5" min="30" max="130" style="font-size:14px;padding:12px;text-align:center;font-weight:800">
             <input type="number" id="babyHcIn" placeholder="Голова, см" step="0.1" min="25" max="60" style="font-size:14px;padding:12px;text-align:center;font-weight:800">
           </div>
           <div class="baby-growth-hint" id="babyGrowthHint"></div>
@@ -2484,7 +2486,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
           <div class="baby-growth-legend" id="babyGrowthLegend"></div>
           <div class="wt-stats-v2" id="babyGrowthStats"></div>
           <div class="baby-growth-pct" id="babyGrowthPct"></div>
-          <div class="baby-src-note">📚 Диапазон и медиана — WHO Child Growth Standards (2006), 0–2 года. Ориентир, а не диагноз — обсуди динамику с педиатром.</div>
+          <div class="baby-src-note">📚 Диапазон и медиана — WHO Child Growth Standards (2006), 0–5 лет. Ориентир, а не диагноз — обсуди динамику с педиатром.</div>
         </div></div>
 
         <div class="card pregnancy-only"><div class="cb">
@@ -2738,7 +2740,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v43</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v44</div>
         </div></div>
       </div>
     </div>
@@ -2903,7 +2905,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v43';
+const APP_DATA_VER='v44';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -5227,36 +5229,56 @@ const BABY_STAGES=[
       'Танцы и музыка — развивают чувство ритма и координацию',
       'Катать и пинать мяч вместе'
     ]},
-  {id:'m24',fromMo:24,label:'2–3 года',
+  {id:'m24',fromMo:24,label:'2–2,5 года',
     milestones:[
       {c:'🤝 Общение',t:'Играет рядом с другими детьми, успокаивается за ~10 минут после разлуки с мамой'},
-      {c:'👂 Речь',t:'Говорит фразами из 2+ слов с действием («собачка бежит»), к 3 годам — простой диалог из 2+ реплик'},
+      {c:'👂 Речь',t:'Говорит фразы из 2+ слов с действием («собачка бежит»), показывает части тела по просьбе'},
       {c:'🧠 Познание',t:'Знает хотя бы 1 цвет, выполняет просьбу из 2 шагов («положи игрушку и закрой дверь»)'},
-      {c:'🏃 Движение',t:'Прыгает на месте двумя ногами, хорошо бегает и лазает, снимает часть одежды сама (штаны, куртку)'}
+      {c:'🏃 Движение',t:'Прыгает на месте двумя ногами, хорошо бегает и лазает, снимает часть одежды сама'}
     ],
     needs:[
       'Одежда с крупными застёжками — учимся одеваться самостоятельно',
       'Мелки, пластилин, материалы для творчества',
       'Беговел или трёхколёсный велосипед',
-      'Режим дня перед садом, если планируется'
+      'Горшок / насадка — мягко продолжаем приучение, без давления'
     ],
     activities:[
       'Настольные игры для малышей (лото с картинками, простое домино)',
       'Рисование мелками и пластилин — развивают мелкую моторику',
       'Ролевые игры с посудой, машинками, куклами',
       'Простые вопросы «что это?», «какого цвета?» — развивают речь'
+    ]},
+  {id:'m30',fromMo:30,label:'2,5–3 года',
+    milestones:[
+      {c:'🤝 Общение',t:'Играет с другими детьми (не только рядом), называет друзей, может сказать, что чувствует («мне грустно»)'},
+      {c:'👂 Речь',t:'К 3 годам — простой диалог из 2+ реплик, речь в основном понятна близким, задаёт «почему?»'},
+      {c:'🧠 Познание',t:'Рисует круг (не идеальный), знает несколько цветов, считает до 2–3, играет в «понарошку» дольше'},
+      {c:'🏃 Движение',t:'Ходит на цыпочках, бросает мяч руками, надевает простую одежду, увереннее на лестнице'}
+    ],
+    needs:[
+      'Режим дня перед садом: сон, еда, прогулка — предсказуемо',
+      'Книжки с сюжетом на 3–5 минут чтения вместе',
+      'Безопасные ножницы для творчества под присмотром',
+      'Место для «своих» вещей — учимся порядку и самостоятельности'
+    ],
+    activities:[
+      'Сюжетные игры: магазин, доктор, кухня — развивают речь и эмпатию',
+      'Сортировка по цвету/размеру, простое лото',
+      'Песни с движениями и танцы',
+      'Короткие поручения: «принеси носочки», «положи книгу на стол»'
     ]}
 ];
 // WHO Child Growth Standards (2006) — Simplified field tables, percentiles P3/P15/P50/P85/P97
-// Строки: [месяц, P3, P15, медиана(P50), P85, P97]
+// 0–24 мес: length-for-age; с 30 мес: height-for-age (стоя). Строки: [месяц, P3, P15, медиана, P85, P97]
 const WHO_WEIGHT_KG={
-  boy:[[0,2.5,2.9,3.3,3.9,4.3],[1,3.4,3.9,4.5,5.1,5.7],[2,4.4,4.9,5.6,6.3,7.0],[3,5.1,5.6,6.4,7.2,7.9],[4,5.6,6.2,7.0,7.9,8.6],[5,6.1,6.7,7.5,8.4,9.2],[6,6.4,7.1,7.9,8.9,9.7],[9,7.2,7.9,8.9,10.0,10.9],[12,7.8,8.6,9.6,10.8,11.8],[15,8.4,9.2,10.3,11.6,12.7],[18,8.9,9.7,10.9,12.3,13.5],[21,9.3,10.3,11.5,13.0,14.3],[24,9.8,10.8,12.2,13.7,15.1]],
-  girl:[[0,2.4,2.8,3.2,3.7,4.2],[1,3.2,3.6,4.2,4.8,5.4],[2,4.0,4.5,5.1,5.9,6.5],[3,4.6,5.1,5.8,6.7,7.4],[4,5.1,5.6,6.4,7.3,8.1],[5,5.5,6.1,6.9,7.8,8.7],[6,5.8,6.4,7.3,8.3,9.2],[9,6.6,7.3,8.2,9.3,10.4],[12,7.1,7.9,8.9,10.2,11.3],[15,7.7,8.5,9.6,10.9,12.2],[18,8.2,9.0,10.2,11.6,13.0],[21,8.7,9.6,10.9,12.4,13.8],[24,9.2,10.1,11.5,13.1,14.6]]
+  boy:[[0,2.5,2.9,3.3,3.9,4.3],[1,3.4,3.9,4.5,5.1,5.7],[2,4.4,4.9,5.6,6.3,7.0],[3,5.1,5.6,6.4,7.2,7.9],[4,5.6,6.2,7.0,7.9,8.6],[5,6.1,6.7,7.5,8.4,9.2],[6,6.4,7.1,7.9,8.9,9.7],[9,7.2,7.9,8.9,10.0,10.9],[12,7.8,8.6,9.6,10.8,11.8],[15,8.4,9.2,10.3,11.6,12.7],[18,8.9,9.7,10.9,12.3,13.5],[21,9.3,10.3,11.5,13.0,14.3],[24,9.8,10.8,12.2,13.7,15.1],[30,10.7,11.8,13.3,15.0,16.6],[36,11.4,12.7,14.3,16.3,18.0],[42,12.2,13.5,15.3,17.5,19.4],[48,12.9,14.3,16.3,18.7,20.9],[54,13.6,15.2,17.3,19.9,22.3],[60,14.3,16.0,18.3,21.1,23.8]],
+  girl:[[0,2.4,2.8,3.2,3.7,4.2],[1,3.2,3.6,4.2,4.8,5.4],[2,4.0,4.5,5.1,5.9,6.5],[3,4.6,5.1,5.8,6.7,7.4],[4,5.1,5.6,6.4,7.3,8.1],[5,5.5,6.1,6.9,7.8,8.7],[6,5.8,6.4,7.3,8.3,9.2],[9,6.6,7.3,8.2,9.3,10.4],[12,7.1,7.9,8.9,10.2,11.3],[15,7.7,8.5,9.6,10.9,12.2],[18,8.2,9.0,10.2,11.6,13.0],[21,8.7,9.6,10.9,12.4,13.8],[24,9.2,10.1,11.5,13.1,14.6],[30,10.1,11.2,12.7,14.5,16.2],[36,11.0,12.1,13.9,15.9,17.8],[42,11.8,13.1,15.0,17.3,19.5],[48,12.5,14.0,16.1,18.6,21.1],[54,13.2,14.8,17.2,20.0,22.8],[60,14.0,15.7,18.2,21.3,24.4]]
 };
 const WHO_LENGTH_CM={
-  boy:[[0,46.3,47.9,49.9,51.8,53.4],[1,51.1,52.7,54.7,56.7,58.4],[2,54.7,56.4,58.4,60.5,62.2],[3,57.6,59.3,61.4,63.5,65.3],[4,60.0,61.7,63.9,66.0,67.8],[5,61.9,63.7,65.9,68.1,69.9],[6,63.6,65.4,67.6,69.8,71.6],[9,67.7,69.6,72.0,74.3,76.2],[12,71.3,73.3,75.7,78.2,80.2],[15,74.4,76.5,79.1,81.8,83.9],[18,77.2,79.5,82.3,85.1,87.3],[21,79.7,82.2,85.1,88.1,90.5],[24,82.1,84.6,87.8,91.0,93.6]],
-  girl:[[0,45.6,47.2,49.1,51.1,52.7],[1,50.0,51.7,53.7,55.7,57.4],[2,53.2,55.0,57.1,59.2,60.9],[3,55.8,57.6,59.8,62.0,63.8],[4,58.0,59.8,62.1,64.3,66.2],[5,59.9,61.7,64.0,66.3,68.2],[6,61.5,63.4,65.7,68.1,70.0],[9,65.6,67.6,70.1,72.6,74.7],[12,69.2,71.3,74.0,76.7,78.9],[15,72.4,74.7,77.5,80.3,82.7],[18,75.2,77.7,80.7,83.7,86.2],[21,77.9,80.5,83.7,86.8,89.4],[24,80.3,83.1,86.4,89.8,92.5]]
+  boy:[[0,46.3,47.9,49.9,51.8,53.4],[1,51.1,52.7,54.7,56.7,58.4],[2,54.7,56.4,58.4,60.5,62.2],[3,57.6,59.3,61.4,63.5,65.3],[4,60.0,61.7,63.9,66.0,67.8],[5,61.9,63.7,65.9,68.1,69.9],[6,63.6,65.4,67.6,69.8,71.6],[9,67.7,69.6,72.0,74.3,76.2],[12,71.3,73.3,75.7,78.2,80.2],[15,74.4,76.5,79.1,81.8,83.9],[18,77.2,79.5,82.3,85.1,87.3],[21,79.7,82.2,85.1,88.1,90.5],[24,82.1,84.6,87.8,91.0,93.6],[30,85.5,88.4,91.9,95.5,98.3],[36,89.1,92.2,96.1,99.9,103.1],[42,92.4,95.7,99.9,104.0,107.3],[48,95.4,99.0,103.3,107.7,111.2],[54,98.4,102.1,106.7,111.2,115.0],[60,101.2,105.2,110.0,114.8,118.7]],
+  girl:[[0,45.6,47.2,49.1,51.1,52.7],[1,50.0,51.7,53.7,55.7,57.4],[2,53.2,55.0,57.1,59.2,60.9],[3,55.8,57.6,59.8,62.0,63.8],[4,58.0,59.8,62.1,64.3,66.2],[5,59.9,61.7,64.0,66.3,68.2],[6,61.5,63.4,65.7,68.1,70.0],[9,65.6,67.6,70.1,72.6,74.7],[12,69.2,71.3,74.0,76.7,78.9],[15,72.4,74.7,77.5,80.3,82.7],[18,75.2,77.7,80.7,83.7,86.2],[21,77.9,80.5,83.7,86.8,89.4],[24,80.3,83.1,86.4,89.8,92.5],[30,84.0,87.0,90.7,94.3,97.3],[36,87.9,91.1,95.1,99.0,102.2],[42,91.4,94.8,99.0,103.3,106.7],[48,94.6,98.3,102.7,107.2,110.8],[54,97.6,101.5,106.2,110.9,114.7],[60,100.5,104.5,109.4,114.4,118.4]]
 };
+const WHO_MAX_AGE_MO=60;
 function whoGenderKey(){const gv=localStorage.getItem('babyGender')||'n';return gv==='b'?'boy':gv==='g'?'girl':null;}
 function whoTableRows(table){
   const gk=whoGenderKey();
@@ -5410,6 +5432,7 @@ function babyProgressHead(text,done,total){
 function renderBabySection(){
   const age=calcBabyAge(getBabyBirthDate());
   if(!age)return;
+  try{updateBabyTrackerCopy();}catch(e){}
   const stage=getBabyStage(age.monthsInt);
   const idx=BABY_STAGES.findIndex(s=>s.id===stage.id);
   const next=BABY_STAGES[idx+1];
@@ -5606,8 +5629,8 @@ function logBabyFeed(type){
   list.push({ts:Date.now(),type});
   saveBabyFeedList(list);
   renderBabyFeedHist();
-  const lbl=type==='bl'?'левая грудь':'правая грудь';
-  toast('Кормление записано — '+lbl+' 🤱');
+  const lbl=type==='bl'?'левая грудь':type==='br'?'правая грудь':type==='meal'?'приём пищи':'кормление';
+  toast((type==='meal'?'Еда записана':'Кормление записано')+' — '+lbl+(type==='meal'?' 🥣':' 🤱'));
 }
 function toggleBabyFormulaRow(){
   H();
@@ -5636,31 +5659,81 @@ function logBabyDiaper(type){
   list.push({ts:Date.now(),type});
   saveBabyDiaperList(list);
   renderBabyFeedHist();
-  toast('Подгузник отмечен ✓');
+  toast(type==='potty'?'Горшок отмечен ✓':'Подгузник отмечен ✓');
 }
 function isToday(ts){
   const d=new Date(ts),n=new Date();
   return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate();
 }
+function feedTypeLabel(f){
+  if(f.type==='bl')return'🤱 Грудь Л';
+  if(f.type==='br')return'🤱 Грудь П';
+  if(f.type==='meal')return'🥣 Еда';
+  if(f.type==='formula')return'🍼 Смесь '+(f.ml||'')+' мл';
+  return'🍼 Кормление';
+}
+function diaperTypeLabel(d){
+  if(d.type==='pee')return'💧 Пописал';
+  if(d.type==='poop')return'💩 Покакал';
+  if(d.type==='potty')return'🚽 Горшок';
+  if(d.type==='both')return'🧷 Оба';
+  return'🧷 Подгузник';
+}
+function updateBabyTrackerCopy(){
+  const age=calcBabyAge(getBabyBirthDate());
+  const mo=age?age.monthsInt:0;
+  const title=document.getElementById('babyFeedTitle');
+  const sub=document.getElementById('babyFeedSub');
+  const mealBtn=document.getElementById('babyMealBtn');
+  const pottyBtn=document.getElementById('babyPottyBtn');
+  const sleepSub=document.getElementById('babySleepSub');
+  const growthSub=document.querySelector('#babyGrowthCard .ssub');
+  if(mealBtn)mealBtn.style.display=mo>=6?'':'none';
+  if(pottyBtn)pottyBtn.style.display=mo>=18?'':'none';
+  if(title){
+    if(mo>=24)title.textContent='🥣 Еда, горшок и уход';
+    else if(mo>=12)title.textContent='🍼 Еда и подгузники';
+    else title.textContent='🍼 Кормления и подгузники';
+  }
+  if(sub){
+    if(mo>=24)sub.textContent='Еда, горшок и подгузники — удобный дневник дня';
+    else if(mo>=12)sub.textContent='Грудь/смесь ещё можно отмечать, плюс еда и подгузники';
+    else if(mo>=6)sub.textContent='Грудь, смесь и прикорм — отмечай за секунду';
+    else sub.textContent='Отмечай за секунду — увидишь историю дня';
+  }
+  if(sleepSub&&!(loadBabySleep().slice(-1)[0]&&!loadBabySleep().slice(-1)[0].end)){
+    if(mo>=24)sleepSub.textContent='Дневной и ночной сон — полезно видеть ритм перед садом';
+    else if(mo>=12)sleepSub.textContent='Сон всё ещё важен: отмечай дневные и ночные сны';
+    else sleepSub.textContent='Нажми, когда малыш уснёт — и когда проснётся';
+  }
+  if(growthSub){
+    growthSub.textContent=mo>=24
+      ?'Вес и рост со сравнением с нормами ВОЗ до 5 лет — удобно показать педиатру'
+      :'Вес и рост — с нормами ВОЗ прямо на графике, удобно показать педиатру';
+  }
+}
 function renderBabyFeedHist(){
+  updateBabyTrackerCopy();
   const statsEl=document.getElementById('babyTodayStats');
   const histEl=document.getElementById('babyFeedHist');
   if(!statsEl&&!histEl)return;
   const feeds=loadBabyFeed().filter(f=>isToday(f.ts));
   const diapers=loadBabyDiaper().filter(d=>isToday(d.ts));
   if(statsEl){
-    const wetCount=diapers.filter(d=>d.type==='pee'||d.type==='both').length;
+    const wetCount=diapers.filter(d=>d.type==='pee'||d.type==='both'||d.type==='potty').length;
     const dirtyCount=diapers.filter(d=>d.type==='poop'||d.type==='both').length;
+    const age=calcBabyAge(getBabyBirthDate());
+    const mo=age?age.monthsInt:0;
     statsEl.innerHTML=[
-      {b:String(feeds.length),t:'кормлений'},
-      {b:String(wetCount),t:'мокрых'},
+      {b:String(feeds.length),t:mo>=12?'приёмов еды':'кормлений'},
+      {b:String(wetCount),t:mo>=18?'туалет/мокрых':'мокрых'},
       {b:String(dirtyCount),t:'грязных'}
     ].map(x=>'<div class="baby-today-stat"><b>'+x.b+'</b><span>'+x.t+'</span></div>').join('');
   }
   if(histEl){
     const items=[
-      ...feeds.map(f=>({ts:f.ts,txt:f.type==='bl'?'🤱 Грудь Л':f.type==='br'?'🤱 Грудь П':'🍼 Смесь '+(f.ml||'')+' мл'})),
-      ...diapers.map(d=>({ts:d.ts,txt:d.type==='pee'?'💧 Пописал':d.type==='poop'?'💩 Покакал':'🧷 Оба'}))
+      ...feeds.map(f=>({ts:f.ts,txt:feedTypeLabel(f)})),
+      ...diapers.map(d=>({ts:d.ts,txt:diaperTypeLabel(d)}))
     ].sort((a,b)=>b.ts-a.ts).slice(0,14);
     histEl.innerHTML=items.length?items.map(it=>'<div class="contr-hist-item"><span>'+new Date(it.ts).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'</span><span>'+it.txt+'</span></div>').join(''):'<div class="empty-sub" style="text-align:center;padding:8px 0">Пока пусто — отметь первое кормление</div>';
   }
@@ -5724,7 +5797,7 @@ function saveBabyGrowth(){
   const wIn=document.getElementById('babyWtIn'),hIn=document.getElementById('babyHtIn'),hcIn=document.getElementById('babyHcIn');
   const w=parseFloat(wIn&&wIn.value),ht=parseFloat(hIn&&hIn.value),hc=parseFloat(hcIn&&hcIn.value);
   const hasW=!isNaN(w)&&w>=500&&w<=30000;
-  const hasH=!isNaN(ht)&&ht>=30&&ht<=120;
+  const hasH=!isNaN(ht)&&ht>=30&&ht<=130;
   const hasHc=!isNaN(hc)&&hc>=25&&hc<=60;
   if(!hasW&&!hasH&&!hasHc){toast('Заполни хотя бы одно поле — вес, рост или окружность головы');return;}
   const t=new Date().toISOString().slice(0,10);
@@ -5742,11 +5815,12 @@ function updateBabyGrowthHint(){
   const birth=getBabyBirthDate();
   if(!birth){hintEl.innerHTML='';return;}
   const age=calcBabyAge(birth);
-  if(!age||age.monthsF>25){hintEl.innerHTML='';return;}
-  const ageM=age.monthsF;
+  if(!age||age.monthsF>WHO_MAX_AGE_MO+0.5){hintEl.innerHTML='';return;}
+  const ageM=Math.min(age.monthsF,WHO_MAX_AGE_MO);
   const wBand=whoInterp(whoTableRows(WHO_WEIGHT_KG),ageM);
   const hBand=whoInterp(whoTableRows(WHO_LENGTH_CM),ageM);
-  hintEl.innerHTML='📐 Ожидаемо в этом возрасте (ВОЗ, 15–85%): вес <b>'+wBand.p15.toFixed(1)+'–'+wBand.p85.toFixed(1)+' кг</b>, рост <b>'+hBand.p15.toFixed(0)+'–'+hBand.p85.toFixed(0)+' см</b>';
+  const hLabel=ageM>=24?'рост':'длина';
+  hintEl.innerHTML='📐 Ожидаемо в этом возрасте (ВОЗ, 15–85%): вес <b>'+wBand.p15.toFixed(1)+'–'+wBand.p85.toFixed(1)+' кг</b>, '+hLabel+' <b>'+hBand.p15.toFixed(0)+'–'+hBand.p85.toFixed(0)+' см</b>';
 }
 function renderBabyGrowthChart(){
   updateBabyGrowthHint();
@@ -5769,14 +5843,14 @@ function renderBabyGrowthChart(){
   }
   const pts=wKeys.map(k2=>({age:ageAtMs(new Date(k2+'T12:00:00').getTime()),kg:h[k2].w/1000,date:k2}));
   const lastPt=pts[pts.length-1];
-  const showWho=bTime&&lastPt.age<=25;
-  const maxAge=showWho?Math.max(24,Math.ceil(lastPt.age)):Math.max(1,Math.ceil(lastPt.age));
-  const rows=whoTableRows(WHO_WEIGHT_KG).filter(r=>r[0]<=maxAge+1);
+  const showWho=bTime&&lastPt.age<=WHO_MAX_AGE_MO+0.5;
+  const maxAge=showWho?Math.max(24,Math.min(WHO_MAX_AGE_MO,Math.ceil(Math.max(lastPt.age,12)))):Math.max(1,Math.ceil(lastPt.age));
+  const rows=whoTableRows(WHO_WEIGHT_KG).filter(r=>r[0]<=maxAge+0.01);
   const allVals=[...pts.map(p=>p.kg)];
   if(showWho)rows.forEach(r=>{allVals.push(r[1],r[5]);});
   const yMin=Math.min(...allVals)*0.92,yMax=Math.max(...allVals)*1.06;
   const W=300,H=150,padL=6,padR=6,padT=6,padB=6;
-  const xOf=(age)=>padL+(age/maxAge)*(W-padL-padR);
+  const xOf=(age)=>padL+(Math.min(age,maxAge)/maxAge)*(W-padL-padR);
   const yOf=(kg)=>padT+(1-(kg-yMin)/(yMax-yMin||1))*(H-padT-padB);
   let svg='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="width:100%;height:100%;display:block">';
   if(showWho){
@@ -5811,20 +5885,20 @@ function renderBabyGrowthChart(){
   }
   if(pctEl){
     if(showWho){
-      const band=whoInterp(whoTableRows(WHO_WEIGHT_KG),lastPt.age);
+      const band=whoInterp(whoTableRows(WHO_WEIGHT_KG),Math.min(lastPt.age,WHO_MAX_AGE_MO));
       const cat=whoCategoryLabel(lastPt.kg,band);
       let extra='';
       const hKeys=Object.keys(h).filter(k2=>h[k2]&&typeof h[k2].h==='number').sort();
       if(hKeys.length){
         const lastH=h[hKeys[hKeys.length-1]].h;
-        const hAge=ageAtMs(new Date(hKeys[hKeys.length-1]+'T12:00:00').getTime());
+        const hAge=Math.min(ageAtMs(new Date(hKeys[hKeys.length-1]+'T12:00:00').getTime()),WHO_MAX_AGE_MO);
         const hBand=whoInterp(whoTableRows(WHO_LENGTH_CM),hAge);
         const hCat=whoCategoryLabel(lastH,hBand);
         extra='<br>📏 Рост '+lastH+' см — '+hCat.txt;
       }
       pctEl.innerHTML='⚖️ Вес — '+cat.txt+extra+(whoGenderKey()?'':'<br><span style="opacity:.75">Укажи пол малыша в настройках для точного сравнения</span>');
     }else{
-      pctEl.innerHTML='<span style="opacity:.7">Сравнение с нормами ВОЗ доступно для возраста 0–2 года</span>';
+      pctEl.innerHTML='<span style="opacity:.7">Сравнение с нормами ВОЗ доступно до 5 лет</span>';
     }
   }
 }
