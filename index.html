@@ -2212,7 +2212,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
           <div class="ssub" id="babyVisitModeSub">Всё нужное — в одном месте</div>
           <div class="journal-export-row" style="margin-top:12px">
             <button type="button" class="journal-export-btn primary" onclick="openVisitMode()">Открыть режим визита</button>
-            <button type="button" class="journal-export-btn" onclick="shareBabyCard()">📋 Карточка</button>
+            <button type="button" class="journal-export-btn" onclick="shareVisitBrief()">⚡ Кратко врачу</button>
           </div>
         </div>
       </div>
@@ -2284,8 +2284,12 @@ body.mode-postpartum .pregnancy-only{display:none!important}
       <div class="card">
         <div class="cb">
           <div class="sh">👜 В поликлинику с собой</div>
-          <div class="ssub">Короткий список — отмечай, что уже в сумке</div>
+          <div class="ssub" id="clinicBagSub">Короткий список — отмечай, что уже в сумке</div>
           <div id="clinicBagBox"></div>
+          <div class="journal-export-row" style="margin-top:12px">
+            <button type="button" class="journal-export-btn primary" onclick="markClinicBagAll()">Всё собрано</button>
+            <button type="button" class="journal-export-btn" onclick="resetClinicBag()">Сбросить</button>
+          </div>
         </div>
       </div>
 
@@ -2863,7 +2867,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v48</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v49</div>
         </div></div>
       </div>
     </div>
@@ -2987,7 +2991,11 @@ body.mode-postpartum .pregnancy-only{display:none!important}
     <p style="text-align:center;font-size:12px;font-weight:800;color:var(--t3);margin:0 0 14px;line-height:1.5" id="visitModeMoSub">Всё важное для педиатра</p>
     <div id="visitModeBody"></div>
     <div class="journal-export-row" style="margin-top:14px">
-      <button type="button" class="journal-export-btn primary" onclick="shareBabyCard()">📋 Карточка малыша</button>
+      <button type="button" class="journal-export-btn primary" onclick="shareVisitBrief()">⚡ Кратко врачу</button>
+      <button type="button" class="journal-export-btn" onclick="shareBabyCard()">📋 Карточка</button>
+    </div>
+    <div class="journal-export-row" style="margin-top:8px">
+      <button type="button" class="journal-export-btn" onclick="printBabyCard()">🖨 Печать</button>
       <button type="button" class="journal-export-btn" onclick="generateReport();closeVisitMode();switchTabById('meds');">📊 Полный отчёт</button>
     </div>
     <button type="button" class="contr-btn secondary" style="margin-top:10px" id="visitModeDoneBtn" onclick="markVisitDoneFromMode()">✓ Визит был — отметить</button>
@@ -3043,7 +3051,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v48';
+const APP_DATA_VER='v49';
 let curGW=null;
 let curBMo=null;
 let photoGalMode='belly'; // belly | baby
@@ -5928,6 +5936,24 @@ function toggleClinicBag(id){
   if(map[id])delete map[id];else map[id]=true;
   saveClinicBag(map);
   renderClinicBag();
+  try{updateBabyVisitModeCard();}catch(e){}
+}
+function markClinicBagAll(){
+  H();
+  const map={};
+  getClinicBagItems().forEach(it=>{map[it.id]=true;});
+  saveClinicBag(map);
+  renderClinicBag();
+  try{updateBabyVisitModeCard();}catch(e){}
+  toast('Сумка собрана ✓');
+}
+function resetClinicBag(opts){
+  const quiet=opts&&opts.quiet;
+  if(!quiet)H();
+  saveClinicBag({});
+  renderClinicBag();
+  try{updateBabyVisitModeCard();}catch(e){}
+  if(!quiet)toast('Список сумки сброшен');
 }
 function renderClinicBag(){
   const box=document.getElementById('clinicBagBox');
@@ -5935,6 +5961,12 @@ function renderClinicBag(){
   const items=getClinicBagItems();
   const done=loadClinicBag();
   const n=items.filter(i=>done[i.id]).length;
+  const sub=document.getElementById('clinicBagSub');
+  if(sub){
+    if(n===0)sub.textContent='Короткий список — отмечай, что уже в сумке';
+    else if(n===items.length)sub.textContent='Всё собрано — можно выходить 💛';
+    else sub.textContent='Собрано '+n+' из '+items.length;
+  }
   box.innerHTML=babyProgressHead('Собрано',n,items.length)+items.map(it=>{
     const on=!!done[it.id];
     return '<div class="bag-item"><div class="bag-item-main" onclick="toggleClinicBag(\''+it.id+'\')"><div class="bag-chk '+(on?'done':'')+'"></div><span class="bag-lbl '+(on?'done':'')+'">'+escapeHtml(it.t)+'</span></div></div>';
@@ -6044,6 +6076,40 @@ async function shareBabyCard(){
   }catch(e){if(e&&e.name==='AbortError')return;}
   try{await navigator.clipboard.writeText(text);toast('Карточка скопирована 📋');}
   catch(e){toast('Не удалось поделиться');}
+}
+function buildVisitBriefText(){
+  const birth=getBabyBirthDate();
+  const age=calcBabyAge(birth);
+  const name=(localStorage.getItem('babyName')||'').trim()||'малыш';
+  let gh;try{gh=JSON.parse(localStorage.getItem('babyGrowthH'+V)||'{}');}catch(e){gh={};}
+  const gk=Object.keys(gh).sort();
+  const last=gk.length?gh[gk[gk.length-1]]:null;
+  const nextVax=getNextPendingVax();
+  const feeds=loadBabyFeed().filter(f=>isToday(f.ts)).length;
+  const diapers=loadBabyDiaper().filter(d=>isToday(d.ts)).length;
+  const sleeps=loadBabySleep().filter(s=>isToday(s.start));
+  const sleepMin=sleeps.reduce((sum,s)=>sum+Math.round(((s.end||Date.now())-s.start)/60000),0);
+  const teeth=Object.keys(loadBabyTeeth()).length;
+  let t=name.toUpperCase()+' — кратко для педиатра\n';
+  t+='Возраст: '+(age?formatBabyAge(age):'—')+'\n';
+  t+='ДР: '+(birth?formatBabyBirthDateRu(birth):'—')+'\n';
+  if(last)t+='Последний замер: '+[last.w?last.w+' г':null,last.h?last.h+' см':null,last.hc?'ОГ '+last.hc+' см':null].filter(Boolean).join(', ')+(gk.length?' ('+gk[gk.length-1]+')':'')+'\n';
+  else t+='Последний замер: пока нет\n';
+  t+='Сегодня: еда '+feeds+', туалет '+diapers+', сон '+fmtDurMin(sleepMin)+'\n';
+  t+='Зубы: '+teeth+'\n';
+  if(nextVax)t+='Прививки: '+nextVax.group.ageLabel+' — '+nextVax.item.name+(nextVax.overdue?' (актуально)':'')+'\n';
+  t+='\n(из приложения «Для Индиры»)';
+  return t;
+}
+async function shareVisitBrief(){
+  H();
+  if(!hasBabyBorn()){toast('Сначала сохрани дату рождения малыша');return;}
+  const text=buildVisitBriefText();
+  try{
+    if(navigator.share){await navigator.share({title:'Кратко для педиатра — Для Индиры',text});return;}
+  }catch(e){if(e&&e.name==='AbortError')return;}
+  try{await navigator.clipboard.writeText(text);toast('Краткая сводка скопирована ⚡');}
+  catch(e){toast('Не удалось скопировать');}
 }
 function printBabyCard(){
   H();
@@ -8094,7 +8160,16 @@ function updateBabyVisitModeCard(){
   const title=document.getElementById('babyVisitModeTitle');
   const sub=document.getElementById('babyVisitModeSub');
   if(title)title.textContent=info.days===0?'🩺 Визит к педиатру сегодня':'🩺 Скоро визит';
-  if(sub)sub.textContent=(info.days===0?'Сегодня':'Через '+info.days+' '+pluralDays(info.days))+' — '+info.appt.title;
+  const bag=getClinicBagItems();
+  const bagDone=loadClinicBag();
+  const bagN=bag.filter(i=>bagDone[i.id]).length;
+  let bagHint='';
+  if(info.days<=1){
+    if(bagN===0)bagHint=' · сумка ещё не собрана';
+    else if(bagN<bag.length)bagHint=' · в сумке '+bagN+'/'+bag.length;
+    else bagHint=' · сумка готова ✓';
+  }
+  if(sub)sub.textContent=(info.days===0?'Сегодня':'Через '+info.days+' '+pluralDays(info.days))+' — '+info.appt.title+bagHint;
 }
 function openVisitMode(){
   H();
@@ -8140,10 +8215,12 @@ function openVisitMode(){
   const bagDone=loadClinicBag();
   const bagN=bag.filter(i=>bagDone[i.id]).length;
   html+='<div class="baby-milestone-cat" style="margin-top:14px"><span>👜 В сумку · '+bagN+'/'+bag.length+'</span></div>';
+  if(bagN<bag.length&&info&&info.days===0)html+='<div class="contr-tip" style="margin-bottom:8px">Перед выходом отметь оставшееся — или нажми «Всё собрано» в разделе малыша</div>';
   html+=bag.map(it=>{
     const on=!!bagDone[it.id];
     return '<div class="visit-prep-item" onclick="toggleClinicBag(\''+it.id+'\');openVisitMode()"><div class="visit-prep-chk'+(on?' done':'')+'"></div><span class="visit-prep-lbl'+(on?' done':'')+'">'+escapeHtml(it.t)+'</span></div>';
   }).join('');
+  if(bag.length)html+='<div class="journal-export-row" style="margin-top:8px"><button type="button" class="journal-export-btn" onclick="markClinicBagAll();openVisitMode()">Всё собрано</button><button type="button" class="journal-export-btn" onclick="resetClinicBag();openVisitMode()">Сбросить сумку</button></div>';
   body.innerHTML=html;
   mo.classList.add('open');
 }
@@ -8163,11 +8240,16 @@ function markVisitDoneFromMode(){
   if(i<0){toast('Визит не найден');return;}
   list[i].done=true;
   saveAppts(list);
+  // Fresh bag for the next clinic trip
+  resetClinicBag({quiet:true});
+  const prep=loadVisitPrep();
+  if(prep[String(id)]){delete prep[String(id)];saveVisitPrep(prep);}
   renderAppts();
   updateApptHomeCard();
   updateMilestoneCard();
+  updateBabyVisitModeCard();
   closeVisitMode();
-  toast('Визит отмечен ✓');
+  toast('Визит отмечен · сумка сброшена к следующему ✓');
 }
 function setComparePos(val){
   const pct=Math.min(100,Math.max(0,parseFloat(val)||50));
