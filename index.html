@@ -1655,6 +1655,17 @@ body.night-calm #nav{background:rgba(18,10,28,.92)}
 .sleep-week-lbl{font-size:9px;font-weight:900;color:var(--t3);text-transform:uppercase}
 .sleep-week-val{font-size:9px;font-weight:800;color:var(--t2)}
 .sleep-week-note{font-size:11px;font-weight:800;color:var(--t3);text-align:center;line-height:1.45;margin-bottom:4px}
+.feed-week .sleep-week-bar{background:linear-gradient(180deg,#FF8FA8,var(--rose))}
+.feed-week .sleep-week-bar.today{background:linear-gradient(180deg,var(--rose2),var(--plum));box-shadow:0 4px 12px rgba(232,50,90,.28)}
+.feed-week .sleep-week-bar.diaper{background:linear-gradient(180deg,#5BC4D6,#1E9CB0);opacity:.9}
+.feed-week-dual{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 2px}
+.feed-week-dual .sleep-week{height:72px;margin:6px 0 2px}
+.feed-week-kicker{font-size:9px;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;text-align:center;margin-bottom:2px}
+.baby-week-spark{display:flex;align-items:flex-end;gap:4px;height:28px;padding:10px 16px 12px;border-top:1px solid rgba(232,50,90,.08)}
+.baby-week-spark-bar{flex:1;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,rgba(232,50,90,.35),rgba(232,50,90,.55));min-height:3px;max-width:18px;margin:0 auto;transition:height .35s ease}
+.baby-week-spark-bar.empty{background:rgba(148,163,184,.22)}
+.baby-week-spark-bar.today{background:linear-gradient(180deg,var(--rose2),var(--rose));box-shadow:0 2px 8px rgba(232,50,90,.3)}
+.baby-week-spark-meta{padding:0 16px 12px;font-size:11px;font-weight:800;color:var(--t3);line-height:1.4;text-align:center}
 .baby-quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2px}
 .baby-q-btn{flex:1;min-width:88px;padding:13px 8px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:900;cursor:pointer;box-shadow:0 6px 16px rgba(232,50,90,.24);transition:transform .15s}
 .baby-q-btn:active{transform:scale(.95)}
@@ -2156,6 +2167,8 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
           </div>
           <div class="baby-day-rhythm" id="babyDayRhythm" role="list" aria-label="Ритм дня"></div>
           <div class="baby-day-quick" id="babyCareNowActions"></div>
+          <div class="baby-week-spark" id="babyWeekSpark" role="img" aria-label="Кормления за неделю"></div>
+          <div class="baby-week-spark-meta" id="babyWeekSparkMeta"></div>
         </div>
       </div>
 
@@ -2808,6 +2821,20 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
             <button type="button" class="baby-q-btn" id="babyPottyBtn" style="display:none;background:linear-gradient(135deg,#52B882,#2D8A5E);box-shadow:0 6px 16px rgba(82,184,130,.24)" onclick="logBabyDiaper('potty')">🚽 Горшок</button>
           </div>
           <div class="baby-today-stats" id="babyTodayStats"></div>
+          <div class="trend-block" style="margin-top:14px">
+            <div class="trend-label" id="babyFeedWeekLbl">Кормления · 7 дней</div>
+            <div class="feed-week-dual">
+              <div>
+                <div class="feed-week-kicker" id="babyFeedWeekKick">🍼 кормления</div>
+                <div class="sleep-week feed-week" id="babyFeedWeekChart" role="img" aria-label="Кормления за неделю"></div>
+              </div>
+              <div>
+                <div class="feed-week-kicker">🧷 туалет</div>
+                <div class="sleep-week feed-week" id="babyDiaperWeekChart" role="img" aria-label="Туалет за неделю"></div>
+              </div>
+            </div>
+            <div class="sleep-week-note" id="babyFeedWeekNote"></div>
+          </div>
           <div class="contr-hist" id="babyFeedHist"></div>
         </div></div>
 
@@ -3157,7 +3184,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v62</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v63</div>
         </div></div>
       </div>
     </div>
@@ -3362,7 +3389,7 @@ body.mode-postpartum .home-quick-nav.postpartum-only{display:flex!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v62';
+const APP_DATA_VER='v63';
 let curGW=null;
 let curBMo=null;
 let photoGalMode='belly'; // belly | baby
@@ -7155,6 +7182,7 @@ function updateBabyCareNowCard(){
     if(!feedsToday.length&&!diapersToday.length&&!sleep)chips.push('<span class="baby-day-chip" role="listitem">Начни день одной отметкой ✨</span>');
     rhythm.innerHTML=chips.join('');
   }
+  try{renderBabyWeekSpark();}catch(e){}
   const visitPill=document.getElementById('homeVisitPill');
   if(visitPill){
     const info=typeof getTodayOrSoonAppt==='function'?getTodayOrSoonAppt():null;
@@ -7267,6 +7295,10 @@ function updateBabyTrackerCopy(){
       ?'Вес и рост со сравнением с нормами ВОЗ до 5 лет — удобно показать педиатру'
       :'Вес и рост — с нормами ВОЗ прямо на графике, удобно показать педиатру';
   }
+  const feedWeekLbl=document.getElementById('babyFeedWeekLbl');
+  const feedWeekKick=document.getElementById('babyFeedWeekKick');
+  if(feedWeekLbl)feedWeekLbl.textContent=mo>=12?'Еда и туалет · 7 дней':'Кормления · 7 дней';
+  if(feedWeekKick)feedWeekKick.textContent=mo>=12?'🥣 приёмы':'🍼 кормления';
 }
 function renderBabyFeedHist(){
   updateBabyTrackerCopy();
@@ -7293,7 +7325,9 @@ function renderBabyFeedHist(){
   if(live){
     if(last){
       live.classList.add('on');
-      live.innerHTML='<span>Последнее: <b>'+feedTypeLabel(last)+'</b> · '+agoLabel(last.ts)+'</span><span>'+feeds.length+' сегодня</span>';
+      const gap=getAvgFeedIntervalMin(feeds);
+      const gapTxt=gap?(' · интервал ~'+fmtDurMin(gap)):'';
+      live.innerHTML='<span>Последнее: <b>'+feedTypeLabel(last)+'</b> · '+agoLabel(last.ts)+gapTxt+'</span><span>'+feeds.length+' сегодня</span>';
     }else{
       live.classList.remove('on');
       live.innerHTML='<span>Ещё нет кормлений сегодня — отметь первое</span>';
@@ -7318,6 +7352,7 @@ function renderBabyFeedHist(){
     histEl.innerHTML=items.length?items.map(it=>'<div class="contr-hist-item"><span>'+new Date(it.ts).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'</span><span>'+it.txt+'</span></div>').join(''):'<div class="empty-state" style="padding:16px 8px"><div class="empty-ico">🍼</div><div class="empty-title">Тихий старт дня</div><div class="empty-sub">Отметь кормление или подгузник — история появится здесь</div></div>';
   }
   try{renderBabyDayTimeline();}catch(e){}
+  try{renderBabyFeedWeekChart();}catch(e){}
   try{updateBabyCareNowCard();}catch(e){}
 }
 
@@ -7663,18 +7698,113 @@ function renderBabyDayCompare(){
     '<div class="day-cmp-row"><span>🧷 туалет</span><b>'+st.diapers+'</b></div></div>';
   box.innerHTML=card('Вчера',yest,'')+card('Сегодня',today,'today')+'<div class="day-cmp-hint">'+escapeHtml(hint)+'</div>';
 }
+function getWeekDayKeysLocal(){
+  if(typeof getLast7DayKeys==='function'){
+    const k=getLast7DayKeys();
+    if(k&&k.length)return k;
+  }
+  const keys=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    keys.push(getDayKey(d));
+  }
+  return keys;
+}
+function getAvgFeedIntervalMin(feeds){
+  if(!feeds||feeds.length<2)return 0;
+  const sorted=feeds.slice().sort((a,b)=>a.ts-b.ts);
+  let sum=0;
+  for(let i=1;i<sorted.length;i++)sum+=Math.round((sorted[i].ts-sorted[i-1].ts)/60000);
+  return Math.round(sum/(sorted.length-1));
+}
+function renderWeekBars(el,values,opts){
+  if(!el)return;
+  const keys=opts.keys||[];
+  const todayKey=opts.todayKey||getDayKey(new Date());
+  const max=Math.max(opts.minMax||1,...values,1);
+  const fmt=opts.fmt||(v=>String(v||'—'));
+  const barExtra=opts.barClass||'';
+  el.innerHTML=keys.map((k,i)=>{
+    const v=values[i]||0;
+    const h=v?Math.max(8,Math.round(v/max*(opts.barH||56))):4;
+    const d=new Date(k+'T12:00:00');
+    const lbl=d.toLocaleDateString('ru-RU',{weekday:'short'}).replace('.','');
+    const isToday=k===todayKey;
+    return '<div class="sleep-week-col" title="'+escapeHtml(fmt(v))+'">'+
+      '<div class="sleep-week-val">'+(v?fmt(v):'—')+'</div>'+
+      '<div class="sleep-week-bar'+(v?'':' empty')+(isToday?' today':'')+(barExtra?' '+barExtra:'')+'" style="height:'+h+'px"></div>'+
+      '<div class="sleep-week-lbl">'+(isToday?'сег':escapeHtml(lbl))+'</div></div>';
+  }).join('');
+}
+function renderBabyFeedWeekChart(){
+  const feedEl=document.getElementById('babyFeedWeekChart');
+  const diaperEl=document.getElementById('babyDiaperWeekChart');
+  const note=document.getElementById('babyFeedWeekNote');
+  if(!feedEl&&!diaperEl)return;
+  if(!hasBabyBorn()){
+    if(feedEl)feedEl.innerHTML='';
+    if(diaperEl)diaperEl.innerHTML='';
+    if(note)note.textContent='';
+    return;
+  }
+  const keys=getWeekDayKeysLocal();
+  const stats=keys.map(k=>getBabyDayStatsForKey(k));
+  const feeds=stats.map(s=>s.feeds);
+  const diapers=stats.map(s=>s.diapers);
+  const todayKey=getDayKey(new Date());
+  renderWeekBars(feedEl,feeds,{keys,todayKey,minMax:3,barH:56,fmt:v=>String(v)});
+  renderWeekBars(diaperEl,diapers,{keys,todayKey,minMax:3,barH:56,barClass:'diaper',fmt:v=>String(v)});
+  if(note){
+    const daysF=stats.filter(s=>s.feeds>0).length;
+    const daysD=stats.filter(s=>s.diapers>0).length;
+    const avgF=daysF?Math.round(stats.reduce((n,s)=>n+s.feeds,0)/daysF):0;
+    const avgD=daysD?Math.round(stats.reduce((n,s)=>n+s.diapers,0)/daysD):0;
+    const todayFeeds=loadBabyFeed().filter(f=>isToday(f.ts));
+    const gap=getAvgFeedIntervalMin(todayFeeds);
+    const age=calcBabyAge(getBabyBirthDate());
+    const mo=age?age.monthsInt:0;
+    const feedWord=mo>=12?'приёмов еды':'кормлений';
+    if(!daysF&&!daysD){
+      note.textContent='Отмечай кормления несколько дней — появится красивая неделя';
+    }else{
+      let t='В среднем '+avgF+' '+feedWord;
+      if(daysD)t+=' и '+avgD+' туалет';
+      t+=' в дни с записями';
+      if(gap)t+=' · сегодня интервал ~'+fmtDurMin(gap);
+      note.textContent=t;
+    }
+  }
+}
+function renderBabyWeekSpark(){
+  const el=document.getElementById('babyWeekSpark');
+  const meta=document.getElementById('babyWeekSparkMeta');
+  if(!el)return;
+  if(!hasBabyBorn()){el.innerHTML='';if(meta)meta.textContent='';return;}
+  const keys=getWeekDayKeysLocal();
+  const stats=keys.map(k=>getBabyDayStatsForKey(k));
+  const feeds=stats.map(s=>s.feeds);
+  const max=Math.max(2,...feeds,1);
+  const todayKey=getDayKey(new Date());
+  el.innerHTML=keys.map((k,i)=>{
+    const v=feeds[i]||0;
+    const h=v?Math.max(4,Math.round(v/max*22)):3;
+    const isToday=k===todayKey;
+    return '<div class="baby-week-spark-bar'+(v?'':' empty')+(isToday?' today':'')+'" style="height:'+h+'px" title="'+v+'"></div>';
+  }).join('');
+  if(meta){
+    const days=stats.filter(s=>s.feeds>0).length;
+    const total=feeds.reduce((a,b)=>a+b,0);
+    const sleepDays=stats.filter(s=>s.sleepMin>0).length;
+    if(!days)meta.textContent='Неделя кормлений начнётся с первой отметки';
+    else meta.textContent='Неделя: '+total+' кормл. за '+days+' '+ruPlural(days,'день','дня','дней')+(sleepDays?' · сон '+sleepDays+' дн.':'');
+  }
+}
 function renderBabySleepWeekChart(){
   const el=document.getElementById('babySleepWeekChart');
   const note=document.getElementById('babySleepWeekNote');
   if(!el)return;
   if(!hasBabyBorn()){el.innerHTML='';if(note)note.textContent='';return;}
-  const keys=typeof getLast7DayKeys==='function'?getLast7DayKeys():[];
-  if(!keys.length){
-    for(let i=6;i>=0;i--){
-      const d=new Date();d.setDate(d.getDate()-i);
-      keys.push(getDayKey(d));
-    }
-  }
+  const keys=getWeekDayKeysLocal();
   const stats=keys.map(k=>getBabyDayStatsForKey(k));
   const max=Math.max(60,...stats.map(s=>s.sleepMin),1);
   const todayKey=getDayKey(new Date());
@@ -7780,6 +7910,20 @@ function buildBabyDayText(){
     t+='• Кормления вчера: '+yest.feeds+' → сегодня '+feeds.length+'\n';
     t+='• Сон вчера: '+fmtDurMin(yest.sleepMin)+' → сегодня '+fmtDurMin(sleepMin)+'\n';
   }
+  const weekKeys=getWeekDayKeysLocal();
+  const weekStats=weekKeys.map(k=>getBabyDayStatsForKey(k));
+  const weekFeedDays=weekStats.filter(s=>s.feeds>0).length;
+  if(weekFeedDays){
+    const weekFeeds=weekStats.reduce((n,s)=>n+s.feeds,0);
+    const weekSleep=weekStats.reduce((n,s)=>n+s.sleepMin,0);
+    const avgFeed=Math.round(weekFeeds/weekFeedDays);
+    const sleepDays=weekStats.filter(s=>s.sleepMin>0).length;
+    t+='\nЗа неделю:\n';
+    t+='• Кормления: '+weekFeeds+' (ср. '+avgFeed+'/день с записями)\n';
+    if(sleepDays)t+='• Сон отмечен '+sleepDays+' дн. · всего '+fmtDurMin(weekSleep)+'\n';
+  }
+  const gap=getAvgFeedIntervalMin(feeds);
+  if(gap)t+='\nИнтервал кормлений сегодня: ~'+fmtDurMin(gap)+'\n';
   const events=getBabyDayEvents();
   if(events.length){
     t+='\nПо времени:\n';
