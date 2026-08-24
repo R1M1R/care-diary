@@ -1571,6 +1571,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 .bgl-dash{display:inline-block;width:12px;height:0;border-top:2px dashed var(--rose);margin:0 3px;vertical-align:middle;opacity:.55}
 .baby-growth-pct{font-size:12px;font-weight:800;color:var(--t2);text-align:center;line-height:1.7;margin-top:2px;padding:0 4px}
 .baby-growth-hint{font-size:11px;font-weight:800;color:var(--rose);background:rgba(232,50,90,.07);border-radius:12px;padding:8px 10px;text-align:center;margin:2px 0 4px;line-height:1.5}
+.baby-growth-delta{font-size:12px;font-weight:800;color:var(--t2);background:var(--bg2);border:1px solid var(--cb);border-radius:14px;padding:10px 12px;margin:8px 0 4px;line-height:1.55;text-align:center}
 .baby-quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2px}
 .baby-q-btn{flex:1;min-width:88px;padding:13px 8px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:900;cursor:pointer;box-shadow:0 6px 16px rgba(232,50,90,.24);transition:transform .15s}
 .baby-q-btn:active{transform:scale(.95)}
@@ -2231,6 +2232,17 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         </div>
       </div>
 
+      <div class="card" id="babyGrowthNudgeCard" style="display:none">
+        <div class="cb">
+          <div class="sh">📈 Замер перед визитом</div>
+          <div class="ssub" id="babyGrowthNudgeSub">Обнови вес и рост дома — врачу будет удобнее</div>
+          <div class="journal-export-row" style="margin-top:12px">
+            <button type="button" class="journal-export-btn primary" onclick="scrollToBabyGrowth()">Внести замер</button>
+            <button type="button" class="journal-export-btn" onclick="dismissBabyGrowthNudge()">Позже</button>
+          </div>
+        </div>
+      </div>
+
       <div class="card" id="babyPhotoNudgeCard" style="display:none">
         <div class="cb">
           <div class="sh">📷 Фото этого месяца</div>
@@ -2622,6 +2634,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
           </div>
           <div class="baby-growth-legend" id="babyGrowthLegend"></div>
           <div class="wt-stats-v2" id="babyGrowthStats"></div>
+          <div class="baby-growth-delta" id="babyGrowthDelta" style="display:none"></div>
           <div class="baby-growth-pct" id="babyGrowthPct"></div>
           <div class="baby-src-note">📚 Диапазон и медиана — WHO Child Growth Standards (2006), 0–5 лет. Ориентир, а не диагноз — обсуди динамику с педиатром.</div>
         </div></div>
@@ -2892,7 +2905,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v51</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v52</div>
         </div></div>
       </div>
     </div>
@@ -3076,7 +3089,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v51';
+const APP_DATA_VER='v52';
 let curGW=null;
 let curBMo=null;
 let photoGalMode='belly'; // belly | baby
@@ -5584,7 +5597,7 @@ function applyAppMode(){
     try{renderBabyFirstsHome();}catch(e){}
     try{updateBabyVisitModeCard();}catch(e){}
   }else{
-    ['babyPhotoNudgeCard','babyFirstsHomeCard','babyVisitModeCard','babyVaxHomeCard'].forEach(id=>{
+    ['babyPhotoNudgeCard','babyFirstsHomeCard','babyVisitModeCard','babyVaxHomeCard','babyGrowthNudgeCard'].forEach(id=>{
       const el=document.getElementById(id);if(el)el.style.display='none';
     });
     const edd=localStorage.getItem('eddDate');
@@ -5592,6 +5605,7 @@ function applyAppMode(){
   }
   try{renderJournalTagRow();}catch(e){}
   try{updateVisitBackupNudge();}catch(e){}
+  try{updateBabyGrowthNudgeCard();}catch(e){}
 }
 function renderBabyHero(){
   const age=calcBabyAge(getBabyBirthDate());
@@ -6118,9 +6132,9 @@ function buildVisitBriefText(){
   const birth=getBabyBirthDate();
   const age=calcBabyAge(birth);
   const name=(localStorage.getItem('babyName')||'').trim()||'малыш';
-  let gh;try{gh=JSON.parse(localStorage.getItem('babyGrowthH'+V)||'{}');}catch(e){gh={};}
-  const gk=Object.keys(gh).sort();
-  const last=gk.length?gh[gk[gk.length-1]]:null;
+  const entries=getBabyGrowthEntries();
+  const last=entries.length?entries[entries.length-1]:null;
+  const prev=entries.length>=2?entries[entries.length-2]:null;
   const nextVax=getNextPendingVax();
   const feeds=loadBabyFeed().filter(f=>isToday(f.ts)).length;
   const diapers=loadBabyDiaper().filter(d=>isToday(d.ts)).length;
@@ -6130,8 +6144,10 @@ function buildVisitBriefText(){
   let t=name.toUpperCase()+' — кратко для педиатра\n';
   t+='Возраст: '+(age?formatBabyAge(age):'—')+'\n';
   t+='ДР: '+(birth?formatBabyBirthDateRu(birth):'—')+'\n';
-  if(last)t+='Последний замер: '+[last.w?last.w+' г':null,last.h?last.h+' см':null,last.hc?'ОГ '+last.hc+' см':null].filter(Boolean).join(', ')+(gk.length?' ('+gk[gk.length-1]+')':'')+'\n';
+  if(last)t+='Последний замер: '+[last.w?last.w+' г':null,last.h?last.h+' см':null,last.hc?'ОГ '+last.hc+' см':null].filter(Boolean).join(', ')+' ('+last.date+')\n';
   else t+='Последний замер: пока нет\n';
+  const delta=buildGrowthDeltaText(prev,last);
+  if(delta)t+=delta+'\n';
   t+='Сегодня: еда '+feeds+', туалет '+diapers+', сон '+fmtDurMin(sleepMin)+'\n';
   t+='Зубы: '+teeth+'\n';
   if(nextVax)t+='Прививки: '+nextVax.group.ageLabel+' — '+nextVax.item.name+(nextVax.overdue?' (актуально)':'')+'\n';
@@ -6558,6 +6574,88 @@ function fmtDurMin(min){
 }
 
 // ── BABY: GROWTH ──
+function loadBabyGrowthMap(){
+  try{const h=JSON.parse(localStorage.getItem('babyGrowthH'+V)||'{}');return(typeof h==='object'&&h&&!Array.isArray(h))?h:{};}
+  catch(e){return{};}
+}
+function getBabyGrowthEntries(){
+  const h=loadBabyGrowthMap();
+  return Object.keys(h).sort().map(d=>({date:d,w:h[d].w,h:h[d].h,hc:h[d].hc}));
+}
+function getLastGrowthEntry(){
+  const list=getBabyGrowthEntries();
+  return list.length?list[list.length-1]:null;
+}
+function growthDaysBetween(a,b){
+  const d1=new Date(a+'T12:00:00'),d2=new Date(b+'T12:00:00');
+  if(isNaN(d1)||isNaN(d2))return 0;
+  return Math.max(0,Math.round((d2-d1)/86400000));
+}
+function formatSigned(n,unit){
+  if(n===0)return 'без изменений'+unit;
+  return(n>0?'+':'')+n+unit;
+}
+function buildGrowthDeltaText(prev,cur){
+  if(!prev||!cur)return'';
+  const days=growthDaysBetween(prev.date,cur.date);
+  const bits=[];
+  if(typeof prev.w==='number'&&typeof cur.w==='number')bits.push('вес '+formatSigned(Math.round(cur.w-prev.w),' г'));
+  if(typeof prev.h==='number'&&typeof cur.h==='number'){
+    const dh=Math.round((cur.h-prev.h)*10)/10;
+    bits.push('рост '+formatSigned(dh,' см'));
+  }
+  if(typeof prev.hc==='number'&&typeof cur.hc==='number'){
+    const dhc=Math.round((cur.hc-prev.hc)*10)/10;
+    bits.push('ОГ '+formatSigned(dhc,' см'));
+  }
+  if(!bits.length)return'';
+  return 'С прошлого раза'+(days?(' · '+days+' '+ruPlural(days,'день','дня','дней')):'')+': '+bits.join(' · ');
+}
+function scrollToBabyGrowth(){
+  H();
+  switchTabById('journal');
+  setTimeout(()=>{
+    const el=document.getElementById('babyGrowthCard');
+    el&&el.scrollIntoView({behavior:'smooth',block:'start'});
+    const w=document.getElementById('babyWtIn');
+    w&&w.focus();
+  },220);
+}
+function updateBabyGrowthNudgeCard(){
+  const card=document.getElementById('babyGrowthNudgeCard');
+  const sub=document.getElementById('babyGrowthNudgeSub');
+  if(!card)return;
+  if(!hasBabyBorn()){card.style.display='none';return;}
+  const next=getNextAppt();
+  if(!next){card.style.display='none';return;}
+  const days=Math.ceil((new Date(next.date+'T12:00:00')-new Date())/86400000);
+  if(days<0||days>3){card.style.display='none';return;}
+  if(localStorage.getItem('babyGrowthNudgeDismiss'+V)===String(next.id)){card.style.display='none';return;}
+  const last=getLastGrowthEntry();
+  const today=new Date().toISOString().slice(0,10);
+  let stale=true;
+  if(last){
+    const ago=growthDaysBetween(last.date,today);
+    stale=ago>=14;
+  }
+  if(!stale){card.style.display='none';return;}
+  card.style.display='block';
+  if(sub){
+    if(!last)sub.textContent=(days===0?'Визит сегодня':'Через '+days+' '+pluralDays(days))+' · ещё нет домашнего замера';
+    else{
+      const ago=growthDaysBetween(last.date,today);
+      sub.textContent=(days===0?'Визит сегодня':'Через '+days+' '+pluralDays(days))+' · последний замер '+ago+' '+ruPlural(ago,'день','дня','дней')+' назад';
+    }
+  }
+}
+function dismissBabyGrowthNudge(){
+  H();
+  const next=getNextAppt();
+  if(next)localStorage.setItem('babyGrowthNudgeDismiss'+V,String(next.id));
+  const card=document.getElementById('babyGrowthNudgeCard');
+  if(card)card.style.display='none';
+  toast('Напомню перед следующим визитом');
+}
 function saveBabyGrowth(){
   H();
   const wIn=document.getElementById('babyWtIn'),hIn=document.getElementById('babyHtIn'),hcIn=document.getElementById('babyHcIn');
@@ -6567,13 +6665,17 @@ function saveBabyGrowth(){
   const hasHc=!isNaN(hc)&&hc>=25&&hc<=60;
   if(!hasW&&!hasH&&!hasHc){toast('Заполни хотя бы одно поле — вес, рост или окружность головы');return;}
   const t=new Date().toISOString().slice(0,10);
-  let h;try{h=JSON.parse(localStorage.getItem('babyGrowthH'+V)||'{}');}catch(e){h={};}
-  if(typeof h!=='object'||Array.isArray(h))h={};
+  const prevList=getBabyGrowthEntries();
+  const prevBefore=prevList.length?(prevList[prevList.length-1].date===t&&prevList.length>=2?prevList[prevList.length-2]:(prevList[prevList.length-1].date===t?null:prevList[prevList.length-1])):null;
+  let h=loadBabyGrowthMap();
   h[t]={w:hasW?w:(h[t]&&h[t].w)||null,h:hasH?ht:(h[t]&&h[t].h)||null,hc:hasHc?hc:(h[t]&&h[t].hc)||null};
   localStorage.setItem('babyGrowthH'+V,JSON.stringify(h));
   if(wIn)wIn.value='';if(hIn)hIn.value='';if(hcIn)hcIn.value='';
   renderBabyGrowthChart();
-  toast('Замеры малыша сохранены 📈');
+  try{updateBabyGrowthNudgeCard();}catch(e){}
+  try{renderBabyHero();}catch(e){}
+  const delta=buildGrowthDeltaText(prevBefore,{date:t,w:h[t].w,h:h[t].h,hc:h[t].hc});
+  toast(delta?('Сохранено · '+delta):'Замеры малыша сохранены 📈');
 }
 function updateBabyGrowthHint(){
   const hintEl=document.getElementById('babyGrowthHint');
@@ -6594,12 +6696,27 @@ function renderBabyGrowthChart(){
   const statsEl=document.getElementById('babyGrowthStats');
   const legendEl=document.getElementById('babyGrowthLegend');
   const pctEl=document.getElementById('babyGrowthPct');
+  const deltaEl=document.getElementById('babyGrowthDelta');
   if(!el)return;
-  let h;try{h=JSON.parse(localStorage.getItem('babyGrowthH'+V)||'{}');}catch(e){h={};}
+  const h=loadBabyGrowthMap();
   const birth=getBabyBirthDate();
   const bTime=birth?new Date(birth+'T00:00:00').getTime():null;
   const ageAtMs=(ts)=>bTime?Math.max(0,(ts-bTime)/86400000/30.4368):0;
-  const wKeys=Object.keys(h).filter(k2=>h[k2]&&typeof h[k2].w==='number').sort();
+  const entries=getBabyGrowthEntries();
+  const wKeys=entries.filter(e=>typeof e.w==='number').map(e=>e.date);
+  // Placeholders from last entry
+  const lastAll=entries.length?entries[entries.length-1]:null;
+  const wIn=document.getElementById('babyWtIn'),hIn=document.getElementById('babyHtIn'),hcIn=document.getElementById('babyHcIn');
+  if(wIn&&!wIn.value)wIn.placeholder=lastAll&&lastAll.w?String(lastAll.w):'3200';
+  if(hIn&&!hIn.value)hIn.placeholder=lastAll&&lastAll.h?('Рост '+lastAll.h):'Рост, см';
+  if(hcIn&&!hcIn.value)hcIn.placeholder=lastAll&&lastAll.hc?('ОГ '+lastAll.hc):'Голова, см';
+  if(deltaEl){
+    if(entries.length>=2){
+      const txt=buildGrowthDeltaText(entries[entries.length-2],entries[entries.length-1]);
+      if(txt){deltaEl.style.display='block';deltaEl.textContent='📊 '+txt;}
+      else{deltaEl.style.display='none';deltaEl.textContent='';}
+    }else{deltaEl.style.display='none';deltaEl.textContent='';}
+  }
   if(!wKeys.length){
     el.innerHTML='<p style="color:var(--t3);font-size:13px;font-weight:700;width:100%;text-align:center;padding:16px 0;opacity:.6">Запиши первый вес малыша!</p>';
     if(statsEl)statsEl.textContent='';
@@ -6641,12 +6758,15 @@ function renderBabyGrowthChart(){
     legendEl.innerHTML=showWho?'<span class="bgl-dot" style="background:var(--rose)"></span>наш малыш &nbsp; <span class="bgl-dot" style="background:rgba(232,50,90,.35)"></span>норма ВОЗ (15–85%) &nbsp; <span class="bgl-dash"></span>медиана ВОЗ':'';
   }
   if(statsEl){
+    const cur=h[wKeys[wKeys.length-1]];
     if(pts.length===1){
-      statsEl.innerHTML='<span>📍 Первая запись: <b>'+h[wKeys[0]].w+' г</b></span>';
+      statsEl.innerHTML='<span>📍 Первая запись: <b>'+cur.w+' г</b>'+(cur.h?(' · '+cur.h+' см'):'')+'</span>';
     }else{
-      const g=h[wKeys[wKeys.length-1]].w-h[wKeys[0]].w;
+      const prevW=h[wKeys[wKeys.length-2]];
+      const g=cur.w-prevW.w;
+      const days=growthDaysBetween(wKeys[wKeys.length-2],wKeys[wKeys.length-1]);
       const arrow=g>0?'↑':g<0?'↓':'→';
-      statsEl.innerHTML='Прибавка: <b style="color:var(--rose)">'+arrow+' '+(g>0?'+':'')+g+' г</b> &nbsp;·&nbsp; Сейчас: <b>'+h[wKeys[wKeys.length-1]].w+' г</b>';
+      statsEl.innerHTML='С прошлого веса: <b style="color:var(--rose)">'+arrow+' '+(g>0?'+':'')+g+' г</b>'+(days?(' за '+days+' дн.'):'')+' &nbsp;·&nbsp; Сейчас: <b>'+cur.w+' г</b>';
     }
   }
   if(pctEl){
@@ -6667,6 +6787,7 @@ function renderBabyGrowthChart(){
       pctEl.innerHTML='<span style="opacity:.7">Сравнение с нормами ВОЗ доступно до 5 лет</span>';
     }
   }
+  try{updateBabyGrowthNudgeCard();}catch(e){}
 }
 function renderBabyJournalTrackers(){
   renderBabyFeedHist();
@@ -6796,7 +6917,7 @@ function init(){
   else if(localStorage.getItem('dataMigrateToast_v8')!=='1'&&localStorage.getItem('eddDate')){
     localStorage.setItem('dataMigrateToast_v8','1');
   }
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();updateApptHomeCard();updateWaterHint();if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();renderBabyFeedHist();updateBabyVisitModeCard();updateBabyPhotoNudgeCard();renderBabyFirstsHome();updateBabyCareNowCard();}}});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkNotifs();updateNotifUI();updateNextActionCard();updateMilestoneCard();updateApptHomeCard();updateWaterHint();if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();renderBabyFeedHist();updateBabyVisitModeCard();updateBabyPhotoNudgeCard();renderBabyFirstsHome();updateBabyCareNowCard();updateBabyGrowthNudgeCard();}}});
   if(!_appTimersSet){
     _appTimersSet=true;
     setInterval(()=>updateCD(localStorage.getItem('eddDate')||edd),60000);
@@ -8331,6 +8452,17 @@ function openVisitMode(){
   html+='</div>';
   html+='<div style="font-size:12px;font-weight:800;color:var(--t3);margin-bottom:8px">Сегодня: еда '+feeds+' · туалет '+diapers+' · сон '+fmtDurMin(sleepMin)+'</div>';
   if(nextVax)html+='<div class="contr-tip" style="margin-bottom:12px">💉 '+escapeHtml(nextVax.group.ageLabel)+' — '+escapeHtml(nextVax.item.name)+(nextVax.overdue?' · актуально':'')+'</div>';
+  const growthEntries=getBabyGrowthEntries();
+  const lastGrowth=growthEntries.length?growthEntries[growthEntries.length-1]:null;
+  const prevGrowth=growthEntries.length>=2?growthEntries[growthEntries.length-2]:null;
+  const todayISO=new Date().toISOString().slice(0,10);
+  if(!lastGrowth)html+='<div class="contr-tip" style="margin-bottom:12px">📈 Домашнего замера ещё нет — <span style="text-decoration:underline;cursor:pointer" onclick="closeVisitMode();scrollToBabyGrowth()">внести сейчас</span></div>';
+  else{
+    const ago=growthDaysBetween(lastGrowth.date,todayISO);
+    const delta=buildGrowthDeltaText(prevGrowth,lastGrowth);
+    if(ago>=14)html+='<div class="contr-tip" style="margin-bottom:12px">📈 Последний замер '+ago+' дн. назад — <span style="text-decoration:underline;cursor:pointer" onclick="closeVisitMode();scrollToBabyGrowth()">обновить</span></div>';
+    else if(delta)html+='<div class="contr-tip" style="margin-bottom:12px">📈 '+escapeHtml(delta)+'</div>';
+  }
   html+='<div class="baby-milestone-cat"><span>Чек-лист к визиту</span></div>';
   html+=prep.map((item,j)=>'<div class="visit-prep-item" onclick="toggleVisitPrep(\''+prepKey+'\','+j+');openVisitMode()"><div class="visit-prep-chk'+(item.done?' done':'')+'"></div><span class="visit-prep-lbl'+(item.done?' done':'')+'">'+escapeHtml(item.label)+'</span></div>').join('');
   const bag=getClinicBagItems();
@@ -8515,6 +8647,7 @@ function renderVisitPrep(){
   if(modeBtn)modeBtn.style.display=(hasBabyBorn()&&days<=1)?'block':'none';
   updateBabyVisitModeCard();
   try{updateVisitBackupNudge();}catch(e){}
+  try{updateBabyGrowthNudgeCard();}catch(e){}
 }
 function toggleVisitPrep(apptKey,idx){
   H();
@@ -9931,7 +10064,7 @@ function switchTab(id,btn){
   if(id==='journal'){renderGallery(localStorage.getItem('eddDate'));renderJournalTagRow();renderJournalLog();renderAppts();renderSymptomsUI();renderContrUI();renderVisitPrep();updateApptHomeCard();try{updateVisitBackupNudge();}catch(e){}if(hasBabyBorn()){renderBabyJournalTrackers();renderBabyGallery();}}
   if(id==='bag')renderBag();
   if(id==='meds'){renderMedWeekChart();renderLettersLog();}
-  if(id==='home'){updateTodayDash();renderWeekWellness();if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();renderBabyFeedHist();updateBabyCareNowCard();}}
+  if(id==='home'){updateTodayDash();renderWeekWellness();if(hasBabyBorn()){renderBabyHero();renderBabySection();renderBabySleep();renderBabyFeedHist();updateBabyCareNowCard();updateBabyGrowthNudgeCard();}}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function toggleTheme(){H();const d=document.getElementById('thmTog').checked;if(d){document.documentElement.classList.add('dark');localStorage.setItem('theme','dark')}else{document.documentElement.classList.remove('dark');localStorage.setItem('theme','light')}}
