@@ -1701,16 +1701,26 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 .bp-trend-val{font-size:9px;font-weight:900;color:var(--t2);line-height:1}
 .bp-trend-empty{font-size:11px;font-weight:800;color:var(--t3);opacity:.35;padding-bottom:6px;line-height:1}
 .contr-card .contr-big{font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:var(--rose);text-align:center;line-height:1.1;margin:8px 0}
-.contr-meta{display:flex;justify-content:space-around;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.contr-stat{text-align:center;padding:10px 12px;border-radius:14px;background:var(--bg2);border:1px solid var(--cb);flex:1;min-width:88px}
+.contr-tip{margin:0 0 14px;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(30,156,176,.1),rgba(232,50,90,.06));border:1px solid rgba(30,156,176,.2);font-size:12px;font-weight:800;color:var(--t2);line-height:1.55}
+.contr-tip b{color:var(--rose);font-weight:900}
+.contr-live{text-align:center;font-size:15px;font-weight:900;color:var(--plum);margin:0 0 12px;min-height:22px;font-variant-numeric:tabular-nums}
+.contr-live.active{color:var(--rose);animation:contrPulse 1.2s ease-in-out infinite}
+@keyframes contrPulse{0%,100%{opacity:1}50%{opacity:.72}}
+.contr-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.contr-stat{text-align:center;padding:10px 12px;border-radius:14px;background:var(--bg2);border:1px solid var(--cb)}
 .contr-stat-val{font-size:18px;font-weight:900;color:var(--rose);font-variant-numeric:tabular-nums}
 .contr-stat-lbl{font-size:9px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
-.contr-btn{width:100%;padding:16px;border:none;border-radius:18px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 8px 24px rgba(232,50,90,.32);margin-bottom:10px}
-.contr-btn.secondary{background:var(--bg2);color:var(--t2);border:2px solid var(--cb);box-shadow:none;font-size:13px;padding:12px}
+.contr-btn{width:100%;padding:18px;border:none;border-radius:18px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 8px 24px rgba(232,50,90,.32);margin-bottom:10px;transition:transform .15s,box-shadow .2s}
+.contr-btn:active{transform:scale(.98)}
+.contr-btn.recording{background:linear-gradient(135deg,#C41E3A,#E8325A);box-shadow:0 10px 28px rgba(196,30,58,.45);animation:contrPulse 1.4s ease-in-out infinite}
+.contr-btn.secondary{background:var(--bg2);color:var(--t2);border:2px solid var(--cb);box-shadow:none;font-size:13px;padding:12px;animation:none}
+.contr-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px}
+.contr-actions .contr-btn{margin-bottom:0}
 .contr-warn{padding:12px 14px;border-radius:14px;background:rgba(232,50,90,.08);border:1px solid rgba(232,50,90,.2);font-size:12px;font-weight:800;color:var(--rose);line-height:1.5;margin-top:10px;display:none}
 .contr-warn.show{display:block}
 .contr-hist{margin-top:14px;display:flex;flex-direction:column;gap:6px}
-.contr-hist-item{display:flex;justify-content:space-between;padding:8px 12px;border-radius:12px;font-size:11px;font-weight:800;background:var(--bg2);border:1px solid var(--cb);color:var(--t2)}
+.contr-hist-item{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:12px;font-size:11px;font-weight:800;background:var(--bg2);border:1px solid var(--cb);color:var(--t2)}
+.contr-hist-item span{white-space:nowrap}
 
 /* ── 47. PREMIUM v8 — bag edit, data guard ── */
 .bag-toolbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
@@ -2501,15 +2511,21 @@ body.mode-postpartum .pregnancy-only{display:none!important}
         </div></div>
         <div class="card contr-card pregnancy-only"><div class="cb">
           <div class="sh">⏱️ Таймер схваток</div>
-          <div class="ssub">На случай родов — отмечай каждую схватку, приложение посчитает интервал</div>
+          <div class="ssub">Нажми в начале схватки и ещё раз в конце — посчитаем длительность и интервал</div>
+          <div class="contr-tip">Правило <b>5‑1‑1</b>: интервал ≤5 мин, длится около 1 мин, так уже час — пора в роддом. Воды отошли — едем сразу, даже без схваток.</div>
+          <div class="contr-live" id="contrLive">Готова отметить первую схватку</div>
           <div class="contr-meta">
-            <div class="contr-stat"><div class="contr-stat-val" id="contrCount">0</div><div class="contr-stat-lbl">за сессию</div></div>
+            <div class="contr-stat"><div class="contr-stat-val" id="contrCount">0</div><div class="contr-stat-lbl">схваток</div></div>
             <div class="contr-stat"><div class="contr-stat-val" id="contrLast">—</div><div class="contr-stat-lbl">интервал</div></div>
-            <div class="contr-stat"><div class="contr-stat-val" id="contrAvg">—</div><div class="contr-stat-lbl">средний</div></div>
+            <div class="contr-stat"><div class="contr-stat-val" id="contrDur">—</div><div class="contr-stat-lbl">длительность</div></div>
+            <div class="contr-stat"><div class="contr-stat-val" id="contrAvg">—</div><div class="contr-stat-lbl">ср. интервал</div></div>
           </div>
-          <button type="button" class="contr-btn" id="contrAddBtn" onclick="addContraction()">💗 Была схватка</button>
-          <button type="button" class="contr-btn secondary" onclick="endContrSession()">Завершить сессию</button>
-          <div class="contr-warn" id="contrWarn">⚠️ Схватки частые и регулярные — позвони врачу или мне прямо сейчас!</div>
+          <button type="button" class="contr-btn" id="contrAddBtn" onclick="toggleContraction()">💗 Начало схватки</button>
+          <div class="contr-actions">
+            <button type="button" class="contr-btn secondary" onclick="undoLastContraction()">↩ Отменить</button>
+            <button type="button" class="contr-btn secondary" onclick="endContrSession()">Завершить</button>
+          </div>
+          <div class="contr-warn" id="contrWarn">⚠️ Похоже на правило 5‑1‑1 — позвони врачу или мне прямо сейчас и собирайтесь в роддом!</div>
           <div class="contr-hist" id="contrHist"></div>
         </div></div>
         <div class="card"><div class="cb">
@@ -2722,7 +2738,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 
         <div class="card"><div class="cb">
           <button onclick="resetAll()" style="width:100%;background:none;border:2.5px solid #EF4444;color:#EF4444;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:16px;border-radius:18px;cursor:pointer">Очистить все данные</button>
-          <div class="app-version" id="appVersionLbl">Для Индиры · v42</div>
+          <div class="app-version" id="appVersionLbl">Для Индиры · v43</div>
         </div></div>
       </div>
     </div>
@@ -2887,7 +2903,7 @@ body.mode-postpartum .pregnancy-only{display:none!important}
 <script src="./heic2any.min.js"></script>
 <script>
 const V="_v16";
-const APP_DATA_VER='v42';
+const APP_DATA_VER='v43';
 let curGW=null;
 
 // ══ CANVAS PARTICLES ══
@@ -5279,22 +5295,39 @@ function calcBabyAge(birthISO){
   if(!birthISO)return null;
   const b=new Date(birthISO+'T00:00:00');
   if(isNaN(b.getTime()))return null;
-  const ms=Math.max(0,Date.now()-b.getTime());
+  const now=new Date();
+  const ms=Math.max(0,now.getTime()-b.getTime());
   const days=Math.floor(ms/86400000);
+  let years=now.getFullYear()-b.getFullYear();
+  let months=now.getMonth()-b.getMonth();
+  if(now.getDate()<b.getDate())months--;
+  if(months<0){years--;months+=12;}
+  years=Math.max(0,years);
+  months=Math.max(0,months);
+  const monthsInt=years*12+months;
   const monthsF=days/30.4368;
-  return{days,weeks:Math.floor(days/7),monthsF,monthsInt:Math.floor(monthsF),birthDate:b};
+  return{days,weeks:Math.floor(days/7),monthsF,monthsInt,years,monthsRem:months,birthDate:b};
+}
+function ruPlural(n,one,few,many){
+  const abs=Math.abs(n)%100,n1=abs%10;
+  if(abs>10&&abs<20)return many;
+  if(n1>1&&n1<5)return few;
+  if(n1===1)return one;
+  return many;
 }
 function formatBabyAge(age){
   if(!age)return'—';
   if(age.days<60){
     const w=Math.floor(age.days/7),d=age.days%7;
-    const wl=w===1?'неделя':(w>=2&&w<=4?'недели':'недель');
-    const dl=d===1?'день':(d>=2&&d<=4?'дня':'дней');
-    return w+' '+wl+(d?' '+d+' '+dl:'');
+    return w+' '+ruPlural(w,'неделя','недели','недель')+(d?' '+d+' '+ruPlural(d,'день','дня','дней'):'');
   }
-  const mo=age.monthsInt;
-  const ml=mo===1?'месяц':(mo>=2&&mo<=4?'месяца':'месяцев');
-  return mo+' '+ml;
+  if(age.years<1){
+    const mo=Math.max(1,age.monthsInt);
+    return mo+' '+ruPlural(mo,'месяц','месяца','месяцев');
+  }
+  const yPart=age.years+' '+ruPlural(age.years,'год','года','лет');
+  if(!age.monthsRem)return yPart;
+  return yPart+' '+age.monthsRem+' '+ruPlural(age.monthsRem,'месяц','месяца','месяцев');
 }
 function getBabyStage(monthsInt){
   let cur=BABY_STAGES[0];
@@ -5536,24 +5569,28 @@ function getBabyApptDates(birthISO){
     {day:270,title:'Осмотр педиатра · 9 месяцев'},
     {day:365,title:'Осмотр педиатра · 1 год + вакцинация'},
     {day:548,title:'Осмотр педиатра · 1,5 года'},
-    {day:730,title:'Осмотр педиатра · 2 года'}
+    {day:730,title:'Осмотр педиатра · 2 года'},
+    {day:912,title:'Осмотр педиатра · 2,5 года'},
+    {day:1095,title:'Осмотр педиатра · 3 года'}
   ].map(m=>({date:addDays(m.day),title:m.title}));
 }
 function ensureBabyAppts(){
   const birth=getBabyBirthDate();
   if(!birth)return;
-  if(localStorage.getItem('babyApptsSeeded'+V)==='1')return;
   const list=loadAppts();
   const titles=new Set(list.map(a=>a.title));
   const toAdd=getBabyApptDates(birth).filter(m=>!titles.has(m.title));
-  if(toAdd.length){
-    toAdd.forEach((m,i)=>list.push({id:Date.now()+i+500,date:m.date,title:m.title,done:false}));
-    saveAppts(list);
-    renderAppts();
-    updateApptHomeCard();
+  if(!toAdd.length){
+    localStorage.setItem('babyApptsSeeded'+V,'1');
+    return;
   }
+  const firstSeed=localStorage.getItem('babyApptsSeeded'+V)!=='1';
+  toAdd.forEach((m,i)=>list.push({id:Date.now()+i+500,date:m.date,title:m.title,done:false}));
+  saveAppts(list);
+  renderAppts();
+  updateApptHomeCard();
   localStorage.setItem('babyApptsSeeded'+V,'1');
-  toast('Добавили ориентировочные визиты к педиатру — уточни точные сроки вакцинации у своего врача 🩺');
+  if(firstSeed)toast('Добавили ориентировочные визиты к педиатру — уточни точные сроки вакцинации у своего врача 🩺');
 }
 
 // ── BABY: FEEDING & DIAPERS ──
@@ -7779,47 +7816,168 @@ function renderBPTrend(){
 }
 const CONTR_KEY='contrHist'+V;
 const CONTR_SESSION='contrSession'+V;
+const CONTR_MIN_DUR_MS=4000;
+const CONTR_DEBOUNCE_MS=2500;
+let _contrTickTimer=null;
+let _contrLastTap=0;
 function formatContrInterval(ms){
-  if(!ms||ms<0)return '—';
+  if(ms==null||ms<0||!isFinite(ms))return '—';
   const sec=Math.floor(ms/1000);
   const m=Math.floor(sec/60);
   const s=sec%60;
   return m+':'+String(s).padStart(2,'0');
 }
-function loadContrSession(){
-  try{const r=localStorage.getItem(CONTR_SESSION);if(r)return JSON.parse(r);}catch(e){}
-  return null;
+function emptyContrSession(){return{start:Date.now(),contractions:[],activeStart:null};}
+function normalizeContrSession(raw){
+  if(!raw||typeof raw!=='object')return null;
+  if(Array.isArray(raw.contractions)){
+    return{
+      start:raw.start||Date.now(),
+      contractions:raw.contractions.filter(c=>c&&typeof c.start==='number').map(c=>({start:c.start,end:typeof c.end==='number'?c.end:null})),
+      activeStart:typeof raw.activeStart==='number'?raw.activeStart:null
+    };
+  }
+  if(Array.isArray(raw.times)&&raw.times.length){
+    return{
+      start:raw.start||raw.times[0],
+      contractions:raw.times.map(t=>({start:t,end:t})),
+      activeStart:null
+    };
+  }
+  return{start:raw.start||Date.now(),contractions:[],activeStart:null};
 }
-function addContraction(){
-  H();
-  if(navigator.vibrate)navigator.vibrate([12,40,12]);
-  const now=Date.now();
-  let sess=loadContrSession();
-  if(!sess)sess={start:now,times:[]};
-  sess.times.push(now);
+function loadContrSession(){
+  try{
+    const r=localStorage.getItem(CONTR_SESSION);
+    if(!r)return null;
+    return normalizeContrSession(JSON.parse(r));
+  }catch(e){return null;}
+}
+function saveContrSession(sess){
   localStorage.setItem(CONTR_SESSION,JSON.stringify(sess));
-  renderContrUI();
-  toast('Схватка отмечена · '+sess.times.length+' за сессию');
-  if(sess.times.length>=3){
-    const intervals=[];
-    for(let i=1;i<sess.times.length;i++)intervals.push(sess.times[i]-sess.times[i-1]);
-    const avg=intervals.reduce((a,b)=>a+b,0)/intervals.length;
-    if(avg<300000&&intervals.every(x=>x<600000)){
+}
+function completedContractions(sess){
+  return(sess&&sess.contractions?sess.contractions:[]).filter(c=>typeof c.end==='number'&&c.end>=c.start);
+}
+function contrIntervals(list){
+  const out=[];
+  for(let i=1;i<list.length;i++)out.push(list[i].start-list[i-1].start);
+  return out;
+}
+function contrDurations(list){
+  return list.map(c=>Math.max(0,c.end-c.start)).filter(d=>d>0);
+}
+function avgNum(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0;}
+function ensureContrTick(){
+  const sess=loadContrSession();
+  const need=!!(sess&&(sess.activeStart||completedContractions(sess).length));
+  if(need&&!_contrTickTimer)_contrTickTimer=setInterval(()=>{if(document.getElementById('contrLive'))updateContrLive();},1000);
+  if(!need&&_contrTickTimer){clearInterval(_contrTickTimer);_contrTickTimer=null;}
+}
+function updateContrLive(){
+  const live=document.getElementById('contrLive');
+  if(!live)return;
+  const sess=loadContrSession();
+  if(!sess){live.textContent='Готова отметить первую схватку';live.classList.remove('active');return;}
+  if(sess.activeStart){
+    live.textContent='Схватка идёт · '+formatContrInterval(Date.now()-sess.activeStart);
+    live.classList.add('active');
+    return;
+  }
+  const done=completedContractions(sess);
+  if(!done.length){live.textContent='Готова отметить первую схватку';live.classList.remove('active');return;}
+  const since=Date.now()-done[done.length-1].end;
+  live.textContent='С прошлой схватки · '+formatContrInterval(since);
+  live.classList.remove('active');
+}
+function evaluateContrWarn(list){
+  if(list.length<3)return false;
+  const intervals=contrIntervals(list);
+  const durs=contrDurations(list);
+  if(intervals.length<2||!durs.length)return false;
+  const avgI=avgNum(intervals);
+  const avgD=avgNum(durs);
+  const recent=list.filter(c=>Date.now()-c.start<=60*60*1000);
+  const hourOk=recent.length>=5||(list.length>=4&&avgI<=5*60*1000);
+  return avgI<=5*60*1000&&avgD>=45*1000&&hourOk&&intervals.every(x=>x<10*60*1000);
+}
+function toggleContraction(){
+  H();
+  const now=Date.now();
+  if(now-_contrLastTap<CONTR_DEBOUNCE_MS){toast('Подожди секунду — защита от случайного нажатия');return;}
+  _contrLastTap=now;
+  let sess=loadContrSession()||emptyContrSession();
+  if(sess.activeStart){
+    const dur=now-sess.activeStart;
+    if(dur<CONTR_MIN_DUR_MS){
+      sess.activeStart=null;
+      saveContrSession(sess);
+      renderContrUI();
+      toast('Слишком коротко — схватка не сохранена');
+      return;
+    }
+    sess.contractions.push({start:sess.activeStart,end:now});
+    sess.activeStart=null;
+    saveContrSession(sess);
+    if(navigator.vibrate)navigator.vibrate([10,30,10]);
+    renderContrUI();
+    toast('Схватка записана · '+formatContrInterval(dur));
+    if(evaluateContrWarn(completedContractions(sess))){
       const warn=document.getElementById('contrWarn');
       if(warn)warn.classList.add('show');
-      toast('Схватки частые — позвони врачу ⚠️');
+      toast('Похоже на 5‑1‑1 — звони мне ⚠️');
     }
+    return;
   }
+  sess.activeStart=now;
+  if(!sess.start)sess.start=now;
+  saveContrSession(sess);
+  if(navigator.vibrate)navigator.vibrate(18);
+  renderContrUI();
+  toast('Схватка началась — нажми ещё раз, когда закончится');
+}
+function addContraction(){toggleContraction();}
+function undoLastContraction(){
+  H();
+  const sess=loadContrSession();
+  if(!sess){toast('Нечего отменять');return;}
+  if(sess.activeStart){
+    sess.activeStart=null;
+    saveContrSession(sess);
+    renderContrUI();
+    toast('Текущая схватка отменена');
+    return;
+  }
+  if(!sess.contractions.length){toast('Нечего отменять');return;}
+  sess.contractions.pop();
+  saveContrSession(sess);
+  const warn=document.getElementById('contrWarn');
+  if(warn&&!evaluateContrWarn(completedContractions(sess)))warn.classList.remove('show');
+  renderContrUI();
+  toast('Последняя схватка удалена');
 }
 function endContrSession(){
   H();
   const sess=loadContrSession();
-  if(!sess||!sess.times.length){toast('Сначала отметь хотя бы одну схватку');return;}
+  if(!sess){toast('Сначала отметь хотя бы одну схватку');return;}
+  if(sess.activeStart){
+    toast('Сначала заверши текущую схватку кнопкой');
+    return;
+  }
+  const list=completedContractions(sess);
+  if(!list.length){toast('Сначала отметь хотя бы одну схватку');return;}
+  const intervals=contrIntervals(list);
+  const durs=contrDurations(list);
+  const avgMs=avgNum(intervals);
+  const avgDur=avgNum(durs);
   const hist=JSON.parse(localStorage.getItem(CONTR_KEY)||'[]');
-  const intervals=[];
-  for(let i=1;i<sess.times.length;i++)intervals.push(sess.times[i]-sess.times[i-1]);
-  const avgMs=intervals.length?intervals.reduce((a,b)=>a+b,0)/intervals.length:0;
-  hist.unshift({date:new Date().toISOString(),count:sess.times.length,avgMin:avgMs?Math.round(avgMs/60000):0,duration:Math.round((sess.times[sess.times.length-1]-sess.start)/60000)});
+  hist.unshift({
+    date:new Date().toISOString(),
+    count:list.length,
+    avgMin:avgMs?Math.round(avgMs/60000):0,
+    avgDurSec:avgDur?Math.round(avgDur/1000):0,
+    duration:Math.round((list[list.length-1].end-sess.start)/60000)
+  });
   localStorage.setItem(CONTR_KEY,JSON.stringify(hist.slice(0,15)));
   localStorage.removeItem(CONTR_SESSION);
   const warn=document.getElementById('contrWarn');
@@ -7832,24 +7990,43 @@ function renderContrUI(){
   const countEl=document.getElementById('contrCount');
   const lastEl=document.getElementById('contrLast');
   const avgEl=document.getElementById('contrAvg');
+  const durEl=document.getElementById('contrDur');
+  const btn=document.getElementById('contrAddBtn');
   const histEl=document.getElementById('contrHist');
-  if(sess&&sess.times.length){
-    if(countEl)countEl.textContent=sess.times.length;
-    const intervals=[];
-    for(let i=1;i<sess.times.length;i++)intervals.push(sess.times[i]-sess.times[i-1]);
-    if(lastEl)lastEl.textContent=sess.times.length>1?formatContrInterval(intervals[intervals.length-1]):'первая';
-    if(avgEl)avgEl.textContent=intervals.length?formatContrInterval(intervals.reduce((a,b)=>a+b,0)/intervals.length):'—';
-  }else{
-    if(countEl)countEl.textContent='0';
-    if(lastEl)lastEl.textContent='—';
-    if(avgEl)avgEl.textContent='—';
+  const list=completedContractions(sess);
+  const intervals=contrIntervals(list);
+  const durs=contrDurations(list);
+  if(countEl)countEl.textContent=String(list.length+(sess&&sess.activeStart?1:0));
+  if(lastEl)lastEl.textContent=intervals.length?formatContrInterval(intervals[intervals.length-1]):(list.length?'первая':'—');
+  if(avgEl)avgEl.textContent=intervals.length?formatContrInterval(avgNum(intervals)):'—';
+  if(durEl){
+    if(sess&&sess.activeStart)durEl.textContent=formatContrInterval(Date.now()-sess.activeStart);
+    else if(durs.length)durEl.textContent=formatContrInterval(durs[durs.length-1]);
+    else durEl.textContent='—';
   }
+  if(btn){
+    if(sess&&sess.activeStart){
+      btn.textContent='⏹️ Конец схватки';
+      btn.classList.add('recording');
+    }else{
+      btn.textContent='💗 Начало схватки';
+      btn.classList.remove('recording');
+    }
+  }
+  const warn=document.getElementById('contrWarn');
+  if(warn){
+    if(evaluateContrWarn(list))warn.classList.add('show');
+    else if(!(sess&&sess.activeStart))warn.classList.remove('show');
+  }
+  updateContrLive();
+  ensureContrTick();
   if(histEl){
     const hist=JSON.parse(localStorage.getItem(CONTR_KEY)||'[]');
     if(!hist.length){histEl.innerHTML='<div class="empty-sub" style="text-align:center;padding:8px 0">История сессий появится здесь</div>';return;}
     histEl.innerHTML=hist.slice(0,5).map(h=>{
       const d=new Date(h.date);
-      return '<div class="contr-hist-item"><span>'+d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'</span><span>'+h.count+' схв.</span><span>'+(h.avgMin?h.avgMin+' мин':'—')+'</span></div>';
+      const durTxt=h.avgDurSec?(' · '+Math.round(h.avgDurSec)+'с'):'';
+      return '<div class="contr-hist-item"><span>'+d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'</span><span>'+h.count+' схв.</span><span>'+(h.avgMin?h.avgMin+' мин':'—')+durTxt+'</span></div>';
     }).join('');
   }
 }
@@ -7858,7 +8035,8 @@ function getContrReportLines(){
   if(!hist.length)return['  (нет записей)'];
   return hist.slice(0,5).map(h=>{
     const d=new Date(h.date);
-    return '  '+d.toLocaleDateString('ru-RU')+' '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+': '+h.count+' схваток, ср. '+h.avgMin+' мин, длит. '+h.duration+' мин';
+    const dur=h.avgDurSec?(', ср. длит. '+h.avgDurSec+' с'):'';
+    return '  '+d.toLocaleDateString('ru-RU')+' '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+': '+h.count+' схваток, ср. интервал '+h.avgMin+' мин'+dur+', сессия '+h.duration+' мин';
   });
 }
 function getSymptomsReportLines(){
